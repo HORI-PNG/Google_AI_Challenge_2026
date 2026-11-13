@@ -8,7 +8,9 @@ import {
   orderBy,
   query,
   serverTimestamp,
+  Timestamp,
   updateDoc,
+  where,
   type DocumentSnapshot,
 } from "firebase/firestore";
 import {
@@ -123,6 +125,18 @@ function toDiary(snapshot: DocumentSnapshot): Diary {
     analysis: parsed?.success ? parsed.data : null,
     analyzedModel: typeof data.analyzedModel === "string" ? data.analyzedModel : null,
   };
+}
+
+/** since 以降の日記を、古い順に読む（気分のグラフ用） */
+export async function getDiariesSince(uid: string, since: Date): Promise<Diary[]> {
+  const snapshot = await getDocs(
+    query(
+      diariesRef(uid),
+      where("createdAt", ">=", Timestamp.fromDate(since)),
+      orderBy("createdAt", "asc"),
+    ),
+  );
+  return snapshot.docs.map(toDiary);
 }
 
 export async function getLatestDiary(uid: string): Promise<Diary | null> {

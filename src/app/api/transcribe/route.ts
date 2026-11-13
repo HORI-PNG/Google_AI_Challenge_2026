@@ -1,4 +1,4 @@
-import { MAX_AUDIO_BYTES, normalizeAudioMimeType } from "@/lib/audio";
+import { MAX_AUDIO_BYTES, MAX_RECORDING_SECONDS, normalizeAudioMimeType } from "@/lib/audio";
 import { transcriptionSchema, type TranscribeResponse } from "@/lib/diaryAnalysis";
 import { AllAttemptsFailedError, FatalAttemptError } from "@/lib/retry";
 import { GeminiConfigError, generateJson } from "@/lib/server/gemini";
@@ -12,6 +12,8 @@ export const maxDuration = 150;
 
 /** プロンプト④の推奨値（src/prompts/04_voice_transcription.md） */
 const TEMPERATURE = 0.1;
+
+const TOO_LARGE_MESSAGE = `録音が長すぎます。${MAX_RECORDING_SECONDS / 60}分以内で話してください`;
 
 function errorResponse(status: number, error: string, message: string) {
   return Response.json({ error, message }, { status });
@@ -30,7 +32,7 @@ export async function POST(request: Request) {
   // 大きすぎる音声は、中身を読む前に断る
   const declaredLength = Number(request.headers.get("content-length") ?? "0");
   if (declaredLength > MAX_AUDIO_BYTES + 64 * 1024) {
-    return errorResponse(413, "too_large", "録音が長すぎます。3分以内で話してください");
+    return errorResponse(413, "too_large", TOO_LARGE_MESSAGE);
   }
 
   let audio: File;
@@ -49,7 +51,7 @@ export async function POST(request: Request) {
     return errorResponse(400, "bad_request", "録音が空でした");
   }
   if (audio.size > MAX_AUDIO_BYTES) {
-    return errorResponse(413, "too_large", "録音が長すぎます。3分以内で話してください");
+    return errorResponse(413, "too_large", TOO_LARGE_MESSAGE);
   }
   const mimeType = normalizeAudioMimeType(audio.type);
   if (!mimeType) {

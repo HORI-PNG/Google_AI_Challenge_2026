@@ -58,6 +58,19 @@ export function HomeScreen() {
         <>
           <LatestDiary user={state.user} profile={profile.profile} />
 
+          <Link
+            href="/mood"
+            className="flex items-center justify-between rounded-2xl bg-card p-5 shadow-sm"
+          >
+            <span className="flex flex-col gap-1">
+              <span className="text-sm font-medium text-muted">気分のグラフ</span>
+              <span className="text-base">自分の調子の波を見てみよう</span>
+            </span>
+            <span aria-hidden className="text-xl text-muted">
+              ›
+            </span>
+          </Link>
+
           <section
             aria-label="今日のはかどり予報"
             className="flex flex-col gap-1 rounded-2xl bg-card p-5 shadow-sm"
