@@ -10,6 +10,14 @@
   --card: #ffffff;
   --accent: #e2725b;
   --accent-foreground: #ffffff;
+
+  /* 気分のグラフの系列の色（色覚の多様性を考えて検証した順番。入れ替えない） */
+  --series-mood: #2a78d6;
+  --series-energy: #eb6834;
+  --series-focus: #1baf7a;
+  --series-stress: #eda100;
+  --chart-grid: #e1e0d9;
+  --chart-axis: #c3c2b7;
 }
 
 @theme inline {

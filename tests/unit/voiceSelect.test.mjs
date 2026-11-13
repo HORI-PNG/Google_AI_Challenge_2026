@@ -82,9 +82,13 @@ describe("録音の形式", () => {
     assert.equal(normalizeAudioMimeType("audio/x-unknown"), null);
   });
 
-  test("3分録音しても、サーバーが受け取れる大きさに収まる", () => {
+  test("上限まで録音しても、サーバーが受け取れる大きさに収まる", () => {
     const bytes = (MAX_RECORDING_SECONDS * RECORDING_BITS_PER_SECOND) / 8;
     assert.ok(bytes * 1.5 < MAX_AUDIO_BYTES, `${bytes} bytes`);
+  });
+
+  test("録音の上限は2分（音声はトークンを多く使うため）", () => {
+    assert.equal(MAX_RECORDING_SECONDS, 120);
   });
 });
 

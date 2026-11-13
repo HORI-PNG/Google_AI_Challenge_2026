@@ -213,6 +213,11 @@ export function VoiceRecorder({
             <br />
             そのまま話してね（{MAX_RECORDING_SECONDS / 60}分まで）
           </p>
+          <p className="text-xs leading-relaxed text-muted">
+            長く話すと、全部は文字にできないことがあるよ。
+            <br />
+            伝えたいことを短めに話すと、早く文章になるよ。
+          </p>
           <button type="button" onClick={start} className={primaryButton}>
             🎙️ 話しはじめる
           </button>
