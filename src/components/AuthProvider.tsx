@@ -18,19 +18,33 @@ import {
   useState,
 } from "react";
 import { firebaseConfigError, getFirebaseAuth } from "@/lib/firebase";
-import { ensureUserProfile } from "@/lib/userProfile";
+import {
+  loadOrCreateUser,
+  saveUserProfile,
+  type UserProfile,
+} from "@/lib/userProfile";
 
 type AuthState =
   | { status: "loading" }
   | { status: "signedOut" }
   | { status: "signedIn"; user: User };
 
+/** 基本情報（名前・ニックネーム・学年）の読み込み状態 */
+export type ProfileState =
+  | { status: "loading" }
+  /** まだ登録していない（初回） */
+  | { status: "missing" }
+  | { status: "ready"; profile: UserProfile }
+  | { status: "error" };
+
 type AuthContextValue = {
   state: AuthState;
+  profile: ProfileState;
   /** ログインやユーザー情報の準備で起きたエラー（画面に出す文） */
   error: string | null;
   signIn: () => Promise<void>;
   signOut: () => Promise<void>;
+  updateProfile: (profile: UserProfile) => Promise<void>;
 };
 
 const AuthContext = createContext<AuthContextValue | null>(null);
@@ -41,7 +55,7 @@ const IGNORED_SIGN_IN_ERRORS = new Set([
   "auth/cancelled-popup-request",
 ]);
 
-function toMessage(error: unknown, fallback: string): string {
+export function toMessage(error: unknown, fallback: string): string {
   if (error instanceof FirebaseError) {
     if (error.code === "auth/popup-blocked") {
       return "ポップアップがブロックされました。ブラウザの設定でこのサイトのポップアップを許可してください。";
@@ -62,6 +76,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [state, setState] = useState<AuthState>(
     firebaseConfigError ? { status: "signedOut" } : { status: "loading" },
   );
+  const [profile, setProfile] = useState<ProfileState>({ status: "loading" });
   const [error, setError] = useState<string | null>(firebaseConfigError);
 
   useEffect(() => {
@@ -69,15 +84,27 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       return;
     }
 
+    let currentUid: string | null = null;
     return onAuthStateChanged(getFirebaseAuth(), (user) => {
+      currentUid = user?.uid ?? null;
       if (!user) {
         setState({ status: "signedOut" });
+        setProfile({ status: "loading" });
         return;
       }
       setState({ status: "signedIn", user });
-      ensureUserProfile(user.uid).catch((e: unknown) => {
-        setError(toMessage(e, "ユーザー情報を準備できませんでした"));
-      });
+      setProfile({ status: "loading" });
+      loadOrCreateUser(user.uid)
+        .then(({ profile }) => {
+          // 読み込み中に別のユーザーに切り替わっていたら、結果を捨てる
+          if (currentUid !== user.uid) return;
+          setProfile(profile ? { status: "ready", profile } : { status: "missing" });
+        })
+        .catch((e: unknown) => {
+          if (currentUid !== user.uid) return;
+          setProfile({ status: "error" });
+          setError(toMessage(e, "ユーザー情報を準備できませんでした"));
+        });
     });
   }, []);
 
@@ -102,9 +129,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   }, []);
 
+  const updateProfile = useCallback(
+    async (next: UserProfile) => {
+      if (state.status !== "signedIn") {
+        throw new Error("ログインしてから登録してください");
+      }
+      const saved = await saveUserProfile(state.user.uid, next);
+      setProfile({ status: "ready", profile: saved });
+    },
+    [state],
+  );
+
   const value = useMemo(
-    () => ({ state, error, signIn, signOut }),
-    [state, error, signIn, signOut],
+    () => ({ state, profile, error, signIn, signOut, updateProfile }),
+    [state, profile, error, signIn, signOut, updateProfile],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

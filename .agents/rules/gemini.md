@@ -7,3 +7,5 @@
 - 音声日記は、音声データをそのまま Gemini に渡して文章にする
 - プロンプトは `src/prompts/` にまとめ、Google AI Studio で試したものと同じ内容にする
 - Gemini の応答が失敗したり形式が崩れたりしても、日記の本文は必ず保存する
+- Gemini がつながらないときは、同じモデルでやり直し、だめなら別の Gemini モデル（`GEMINI_FALLBACK_MODEL`）に切り替える（`src/lib/retry.ts`、`src/lib/server/gemini.ts`）。**Claude など他社の AI には切り替えない**（PLAN.md「Gemini がつながらないときの方針」）
+- Gemini を呼ぶ API（Route Handler）は、Firebase の ID トークンを確かめ、ログインした人だけが使えるようにする
