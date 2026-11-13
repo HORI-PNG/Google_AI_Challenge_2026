@@ -52,7 +52,7 @@ AI エージェントがこのプロジェクトで開発するときの手順�
 ## 段階の一覧
 | 段階 | 内容 |
 |---|---|
-| 0 | 作業ルールの追加（`.rules/`、`next-plans/`、`logs/`） |
+| 0 | 作業ルールの追加（`.agents/rules/workflow.md`、`next-plans/`、`logs/`） |
 | 1 | Next.js の雛形（TypeScript / App Router / Tailwind）、`.env.example` |
 | 2 | Firebase ログイン（Google）＋ Firestore のセキュリティルール |
 | 3 | 文章の日記 ＋ Gemini で感情の点数化 ＋ 保存 |

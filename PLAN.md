@@ -178,7 +178,6 @@ AGENTS.md              ← 共通の指示書（本体）
   coding.md            ← コーディング規約
   gemini.md            ← Gemini API の使い方
   privacy.md           ← 個人情報とプライバシー
-.rules/
   workflow.md          ← 開発の進め方（段階ごとのブランチと PR、next-plans と logs）
 next-plans/            ← 各段階を始める前の予定
 logs/                  ← 各段階で実装したことの記録
