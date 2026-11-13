@@ -13,9 +13,12 @@ import {
 } from "firebase/firestore";
 import {
   diaryAnalysisSchema,
+  INPUT_TYPES,
   type AnalyzeRequest,
   type AnalyzeResponse,
   type DiaryAnalysis,
+  type InputType,
+  type TranscribeResponse,
 } from "@/lib/diaryAnalysis";
 import { getDb } from "@/lib/firebase";
 
@@ -26,11 +29,19 @@ export type AnalysisStatus = "pending" | "done" | "failed";
 export type Diary = {
   id: string;
   createdAt: Date | null;
-  inputType: "text";
+  inputType: InputType;
   rawText: string;
   analysisStatus: AnalysisStatus;
   analysis: DiaryAnalysis | null;
   analyzedModel: string | null;
+};
+
+/** 分析に必要な、保存済みの日記の情報 */
+export type SavedDiary = {
+  id: string;
+  rawText: string;
+  inputType: InputType;
+  writtenAt: Date;
 };
 
 function diariesRef(uid: string) {
@@ -38,10 +49,14 @@ function diariesRef(uid: string) {
 }
 
 /** 日記の本文を先に保存する（Gemini が失敗しても本文は必ず残す） */
-export async function createDiary(uid: string, rawText: string): Promise<string> {
+export async function createDiary(
+  uid: string,
+  rawText: string,
+  inputType: InputType,
+): Promise<string> {
   const ref = await addDoc(diariesRef(uid), {
     createdAt: serverTimestamp(),
-    inputType: "text",
+    inputType,
     rawText,
     analysisStatus: "pending" satisfies AnalysisStatus,
   });
@@ -95,10 +110,14 @@ function toDiary(snapshot: DocumentSnapshot): Diary {
         })
       : null;
 
+  const inputType: InputType = (INPUT_TYPES as readonly unknown[]).includes(data.inputType)
+    ? (data.inputType as InputType)
+    : "text";
+
   return {
     id: snapshot.id,
     createdAt: typeof data.createdAt?.toDate === "function" ? data.createdAt.toDate() : null,
-    inputType: "text",
+    inputType,
     rawText: typeof data.rawText === "string" ? data.rawText : "",
     analysisStatus: status,
     analysis: parsed?.success ? parsed.data : null,
@@ -129,55 +148,89 @@ export function formatDateTime(date: Date): { date: string; time: string } {
   };
 }
 
-export class AnalyzeRequestError extends Error {
-  constructor(
-    readonly code: string,
-    message: string,
-  ) {
+/** サーバー（/api/analyze、/api/transcribe）から返ったエラー */
+export class ApiRequestError extends Error {
+  readonly code: string;
+
+  constructor(code: string, message: string) {
     super(message);
-    this.name = "AnalyzeRequestError";
+    this.name = "ApiRequestError";
+    this.code = code;
   }
 }
 
-/** サーバー（/api/analyze）に分析を頼む。Gemini はサーバーからだけ呼ぶ */
+function field(json: unknown, key: string): unknown {
+  return json && typeof json === "object" && key in json
+    ? (json as Record<string, unknown>)[key]
+    : undefined;
+}
+
+/** ログインした本人として、サーバーの API を呼ぶ。Gemini はサーバーからだけ呼ぶ */
+async function callApi(
+  user: User,
+  path: string,
+  body: BodyInit,
+  fallbackMessage: string,
+  contentType?: string,
+): Promise<unknown> {
+  const token = await user.getIdToken();
+  const headers: Record<string, string> = { Authorization: `Bearer ${token}` };
+  if (contentType) {
+    headers["Content-Type"] = contentType;
+  }
+
+  let response: Response;
+  try {
+    response = await fetch(path, { method: "POST", headers, body });
+  } catch {
+    throw new ApiRequestError("network", "通信できませんでした。電波の状態を確認してください");
+  }
+
+  const json: unknown = await response.json().catch(() => null);
+  if (!response.ok) {
+    const message = field(json, "message");
+    const code = field(json, "error");
+    throw new ApiRequestError(
+      typeof code === "string" ? code : "unknown",
+      typeof message === "string" ? message : fallbackMessage,
+    );
+  }
+  return json;
+}
+
 export async function requestAnalysis(
   user: User,
   body: AnalyzeRequest,
 ): Promise<AnalyzeResponse> {
-  const token = await user.getIdToken();
-  const response = await fetch("/api/analyze", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
-    },
-    body: JSON.stringify(body),
-  });
-
-  const json: unknown = await response.json().catch(() => null);
-  if (!response.ok) {
-    const message =
-      json && typeof json === "object" && "message" in json && typeof json.message === "string"
-        ? json.message
-        : "分析できませんでした";
-    const code =
-      json && typeof json === "object" && "error" in json && typeof json.error === "string"
-        ? json.error
-        : "unknown";
-    throw new AnalyzeRequestError(code, message);
-  }
-
-  const parsed = diaryAnalysisSchema.safeParse(
-    json && typeof json === "object" && "analysis" in json ? json.analysis : null,
+  const json = await callApi(
+    user,
+    "/api/analyze",
+    JSON.stringify(body),
+    "分析できませんでした",
+    "application/json",
   );
-  const model =
-    json && typeof json === "object" && "model" in json && typeof json.model === "string"
-      ? json.model
-      : "unknown";
+  const parsed = diaryAnalysisSchema.safeParse(field(json, "analysis"));
   if (!parsed.success) {
-    throw new AnalyzeRequestError("invalid_response", "分析の結果が読めませんでした");
+    throw new ApiRequestError("invalid_response", "分析の結果が読めませんでした");
   }
-  return { analysis: parsed.data, model };
+  const model = field(json, "model");
+  return { analysis: parsed.data, model: typeof model === "string" ? model : "unknown" };
+}
+
+/** 録音を送り、Gemini に文章にしてもらう（音声はサーバーにも残らない） */
+export async function requestTranscription(
+  user: User,
+  audio: Blob,
+): Promise<TranscribeResponse> {
+  const form = new FormData();
+  form.append("audio", audio, "diary-audio");
+  const json = await callApi(user, "/api/transcribe", form, "文章にできませんでした");
+  const text = field(json, "text");
+  const model = field(json, "model");
+  if (typeof text !== "string" || !text.trim()) {
+    throw new ApiRequestError("invalid_response", "文章にできませんでした");
+  }
+  return { text: text.trim(), model: typeof model === "string" ? model : "unknown" };
 }
 
 /**
@@ -185,24 +238,22 @@ export async function requestAnalysis(
  */
 export async function analyzeAndSave(
   user: User,
-  diaryId: string,
-  rawText: string,
+  diary: SavedDiary,
   grade: string,
-  writtenAt: Date,
 ): Promise<DiaryAnalysis> {
-  const { date, time } = formatDateTime(writtenAt);
+  const { date, time } = formatDateTime(diary.writtenAt);
   try {
     const { analysis, model } = await requestAnalysis(user, {
-      text: rawText,
-      inputType: "text",
+      text: diary.rawText,
+      inputType: diary.inputType,
       grade,
       date,
       time,
     });
-    await saveAnalysis(user.uid, diaryId, analysis, model);
+    await saveAnalysis(user.uid, diary.id, analysis, model);
     return analysis;
   } catch (e) {
-    await markAnalysisFailed(user.uid, diaryId).catch(() => undefined);
+    await markAnalysisFailed(user.uid, diary.id).catch(() => undefined);
     throw e;
   }
 }

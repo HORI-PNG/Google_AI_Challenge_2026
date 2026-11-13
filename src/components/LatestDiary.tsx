@@ -3,7 +3,7 @@
 import type { User } from "firebase/auth";
 import { useEffect, useState } from "react";
 import { AnalysisResult } from "@/components/AnalysisResult";
-import { AnalyzeRequestError, analyzeAndSave, getLatestDiary, type Diary } from "@/lib/diaries";
+import { ApiRequestError, analyzeAndSave, getLatestDiary, type Diary } from "@/lib/diaries";
 import type { UserProfile } from "@/lib/userProfile";
 
 type LoadState =
@@ -61,17 +61,20 @@ export function LatestDiary({ user, profile }: { user: User; profile: UserProfil
     try {
       const analysis = await analyzeAndSave(
         user,
-        diary.id,
-        diary.rawText,
+        {
+          id: diary.id,
+          rawText: diary.rawText,
+          inputType: diary.inputType,
+          writtenAt: diary.createdAt ?? new Date(),
+        },
         profile.grade,
-        diary.createdAt ?? new Date(),
       );
       setLoad({
         status: "loaded",
         diary: { ...diary, analysisStatus: "done", analysis },
       });
     } catch (e) {
-      setRetryError(e instanceof AnalyzeRequestError ? e.message : "分析できませんでした");
+      setRetryError(e instanceof ApiRequestError ? e.message : "分析できませんでした");
     } finally {
       setRetrying(false);
     }

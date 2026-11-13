@@ -7,6 +7,7 @@ const nextConfig: NextConfig = {
   // Gemini のプロンプト（md）を実行時に読むので、本番の成果物にも含める
   outputFileTracingIncludes: {
     "/api/analyze": ["./src/prompts/**/*.md"],
+    "/api/transcribe": ["./src/prompts/**/*.md"],
   },
   turbopack: {
     rules: {

@@ -49,10 +49,14 @@ export type DiaryAnalysis = z.infer<typeof diaryAnalysisSchema>;
 export type Scores = DiaryAnalysis["scores"];
 export type ConcernLevel = DiaryAnalysis["concern_level"];
 
+/** 日記のつけ方（PLAN.md「データ構造」の inputType） */
+export const INPUT_TYPES = ["text", "voice", "select"] as const;
+export type InputType = (typeof INPUT_TYPES)[number];
+
 /** POST /api/analyze に送る内容 */
 export const analyzeRequestSchema = z.object({
   text: z.string().trim().min(1).max(4000),
-  inputType: z.literal("text"),
+  inputType: z.enum(INPUT_TYPES),
   grade: z.string().min(1).max(20),
   /** 例：2026-11-13（金） */
   date: z.string().min(1).max(30),
@@ -62,7 +66,35 @@ export const analyzeRequestSchema = z.object({
 
 export type AnalyzeRequest = z.infer<typeof analyzeRequestSchema>;
 
+/**
+ * src/prompts/01_diary_analysis.md の「入力の形」に合わせて、Gemini に渡す文を作る。
+ * 項目選択は `diary:` ではなく `selected:` のあとに、選んだ項目を字下げして並べる。
+ */
+export function buildAnalysisMessage(request: AnalyzeRequest): string {
+  const header = [
+    `date: ${request.date}`,
+    `time: ${request.time}`,
+    `grade: ${request.grade}`,
+    `input_type: ${request.inputType}`,
+  ];
+  const body =
+    request.inputType === "select"
+      ? ["selected:", ...request.text.split("\n").map((line) => `  ${line}`)]
+      : ["diary:", request.text];
+  return [...header, ...body].join("\n");
+}
+
 export type AnalyzeResponse = {
   analysis: DiaryAnalysis;
+  model: string;
+};
+
+/** src/prompts/04_voice_transcription.md の「出力スキーマ」と同じ形 */
+export const transcriptionSchema = z.object({
+  text: z.string().transform((t) => t.trim()),
+});
+
+export type TranscribeResponse = {
+  text: string;
   model: string;
 };

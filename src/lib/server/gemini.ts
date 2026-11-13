@@ -62,11 +62,20 @@ function classify(error: unknown): AttemptError {
   return new AttemptError("retryable", name);
 }
 
+/** 音声などのファイルを、そのまま Gemini に渡すとき */
+export type InlineFile = {
+  mimeType: string;
+  /** base64 */
+  data: string;
+};
+
 type GenerateJsonParams<T> = {
   systemInstruction: string;
   responseJsonSchema: unknown;
   temperature: number;
   userMessage: string;
+  /** 音声日記の録音など（userMessage より前に置く） */
+  file?: InlineFile;
   schema: z.ZodType<T, unknown>;
 };
 
@@ -79,6 +88,14 @@ export async function generateJson<T>(
 ): Promise<{ data: T; model: string }> {
   const ai = getClient();
   const models = getModels();
+  const contents = params.file
+    ? [
+        {
+          role: "user",
+          parts: [{ inlineData: params.file }, { text: params.userMessage }],
+        },
+      ]
+    : params.userMessage;
 
   const { result, model } = await runWithFallback(
     models,
@@ -86,7 +103,7 @@ export async function generateJson<T>(
       try {
         const response = await ai.models.generateContent({
           model,
-          contents: params.userMessage,
+          contents,
           config: {
             systemInstruction: params.systemInstruction,
             temperature: params.temperature,
