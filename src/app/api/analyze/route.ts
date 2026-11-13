@@ -1,4 +1,8 @@
-import { diaryAnalysisSchema, analyzeRequestSchema } from "@/lib/diaryAnalysis";
+import {
+  analyzeRequestSchema,
+  buildAnalysisMessage,
+  diaryAnalysisSchema,
+} from "@/lib/diaryAnalysis";
 import type { AnalyzeResponse } from "@/lib/diaryAnalysis";
 import { AllAttemptsFailedError, FatalAttemptError } from "@/lib/retry";
 import { GeminiConfigError, generateJson } from "@/lib/server/gemini";
@@ -35,17 +39,7 @@ export async function POST(request: Request) {
   if (!parsed.success) {
     return errorResponse(400, "bad_request", "日記の内容を確認してください");
   }
-  const { text, inputType, grade, date, time } = parsed.data;
-
-  // src/prompts/01_diary_analysis.md の「入力の形」に合わせる
-  const userMessage = [
-    `date: ${date}`,
-    `time: ${time}`,
-    `grade: ${grade}`,
-    `input_type: ${inputType}`,
-    "diary:",
-    text,
-  ].join("\n");
+  const userMessage = buildAnalysisMessage(parsed.data);
 
   try {
     const prompt = await getDiaryAnalysisPrompt();
