@@ -24,6 +24,7 @@
 - @.agents/rules/coding.md
 - @.agents/rules/gemini.md
 - @.agents/rules/privacy.md
+- @.agents/rules/workflow.md（開発の進め方：確認、段階ごとのブランチと PR、next-plans と logs の書き方）
 
 ## 作業の進め方
 - 返答、コメント、コミットメッセージは日本語で書く

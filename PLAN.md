@@ -178,6 +178,9 @@ AGENTS.md              ← 共通の指示書（本体）
   coding.md            ← コーディング規約
   gemini.md            ← Gemini API の使い方
   privacy.md           ← 個人情報とプライバシー
+  workflow.md          ← 開発の進め方（段階ごとのブランチと PR、next-plans と logs）
+next-plans/            ← 各段階を始める前の予定
+logs/                  ← 各段階で実装したことの記録
 CLAUDE.md              ← 「@AGENTS.md」の1行だけ（Claude Code に AGENTS.md を読ませるため）
 ```
 - ルールの本体は `AGENTS.md` と `.agents/` に一本化する。`CLAUDE.md` には何も書き足さない
