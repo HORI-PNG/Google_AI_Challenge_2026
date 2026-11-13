@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { DemoDataPanel } from "@/components/DemoDataPanel";
 import { MoodChart, SERIES } from "@/components/MoodChart";
+import { Card } from "@/components/ui/Ui";
 import { getDiariesSince } from "@/lib/diaries";
 import {
   averageScores,
@@ -76,7 +77,7 @@ export function MoodScreen({ user }: { user: User }) {
   return (
     <div className="flex flex-col gap-5">
       {/* 期間（グラフ全体にかかるフィルターは、上に1列で） */}
-      <div role="radiogroup" aria-label="期間" className="flex gap-2">
+      <div role="radiogroup" aria-label="期間" className="grid grid-cols-2 rounded-[var(--radius-control)] bg-subtle p-1">
         {PERIODS.map((p) => (
           <button
             key={p.days}
@@ -84,10 +85,8 @@ export function MoodScreen({ user }: { user: User }) {
             role="radio"
             aria-checked={days === p.days}
             onClick={() => setDays(p.days)}
-            className={`h-9 rounded-full px-4 text-sm ${
-              days === p.days
-                ? "bg-accent font-bold text-accent-foreground"
-                : "border border-black/10 bg-card text-muted"
+            className={`min-h-11 rounded-[calc(var(--radius-control)-4px)] font-bold ${
+              days === p.days ? "bg-card shadow-sm" : "text-muted"
             }`}
           >
             {p.label}
@@ -96,18 +95,18 @@ export function MoodScreen({ user }: { user: User }) {
       </div>
 
       {load.status === "error" && (
-        <p role="alert" className="text-sm text-accent">
+        <p role="alert" className="text-sm font-bold text-accent-strong">
           日記を読み込めませんでした。
         </p>
       )}
 
-      <section
+      <Card
         aria-label="感情の点数のグラフ"
-        className={`flex flex-col gap-3 rounded-2xl bg-card p-4 shadow-sm transition-opacity ${
+        className={`chart-surface flex flex-col gap-3 p-4 transition-opacity ${
           load.status === "loading" ? "opacity-50" : ""
         }`}
       >
-        <h2 className="text-sm font-medium">
+        <h2 className="font-display text-sm font-bold">
           感情の点数の移り変わり
           <span className="ml-2 text-xs font-normal text-muted">
             {periodLabel}・{recordedDays}日分の日記
@@ -122,8 +121,8 @@ export function MoodScreen({ user }: { user: User }) {
                 type="button"
                 aria-pressed={visible[k]}
                 onClick={() => setVisible((v) => ({ ...v, [k]: !v[k] }))}
-                className={`flex h-8 items-center gap-2 rounded-full border px-3 text-xs ${
-                  visible[k] ? "border-black/10" : "border-transparent text-muted line-through"
+                className={`flex min-h-10 items-center gap-2 rounded-full border border-border px-3 text-xs font-bold ${
+                  visible[k] ? "bg-subtle" : "text-muted line-through opacity-60"
                 }`}
               >
                 <span
@@ -141,21 +140,24 @@ export function MoodScreen({ user }: { user: User }) {
         {load.status === "ready" && recordedDays === 0 ? (
           <div className="flex flex-col items-center gap-3 py-8 text-center text-sm text-muted">
             <p>この期間の日記はまだありません。</p>
-            <Link href="/diary/new" className="text-accent underline underline-offset-4">
+            <Link href="/diary/new" className="font-bold text-accent-strong underline underline-offset-4">
               日記を書く
             </Link>
           </div>
         ) : (
-          <MoodChart points={points} visible={visible} />
+          <>
+            <MoodChart points={points} visible={visible} />
+            <p className="text-center text-xs text-muted">グラフに触れると、その日の記録が見られます</p>
+          </>
         )}
-      </section>
+      </Card>
 
       {/* 期間の平均 */}
       {average && (
         <section aria-label={`${periodLabel}の平均`} className="grid grid-cols-2 gap-3">
           {SCORE_KEYS.map((k) => (
-            <div key={k} className="flex flex-col gap-1 rounded-2xl bg-card p-4 shadow-sm">
-              <span className="flex items-center gap-2 text-xs text-muted">
+            <Card key={k} className="flex flex-col gap-1 p-4">
+              <span className="flex items-center gap-2 text-sm font-bold text-muted">
                 <span
                   aria-hidden
                   className="inline-block h-0.5 w-3 rounded-full"
@@ -163,20 +165,20 @@ export function MoodScreen({ user }: { user: User }) {
                 />
                 {SERIES[k].label}の平均
               </span>
-              <span className="text-2xl font-bold">
+              <span className="font-num text-3xl font-bold">
                 {average[k]}
                 <span className="ml-0.5 text-sm font-normal">点</span>
               </span>
               {SERIES[k].note && <span className="text-xs text-muted">{SERIES[k].note}</span>}
-            </div>
+            </Card>
           ))}
         </section>
       )}
 
       {/* 表で見る（色やグラフに頼らずに数値を確かめられる） */}
       {recordedDays > 0 && (
-        <details className="rounded-2xl bg-card p-4 text-sm shadow-sm">
-          <summary className="cursor-pointer">表で見る</summary>
+        <details className="rounded-[var(--radius)] border border-border bg-card p-4 text-sm shadow-[var(--card-shadow)]">
+          <summary className="flex min-h-8 cursor-pointer items-center font-bold">表で見る</summary>
           <table className="mt-3 w-full text-left text-xs">
             <thead className="text-muted">
               <tr>
@@ -190,7 +192,7 @@ export function MoodScreen({ user }: { user: User }) {
             </thead>
             <tbody>
               {[...points].reverse().map((p) => (
-                <tr key={p.date} className="border-t border-black/5">
+                <tr key={p.date} className="border-t border-border">
                   <td className="py-1">{formatDayLabel(p.date)}</td>
                   {SCORE_KEYS.map((k) => (
                     <td key={k} className="py-1 text-right tabular-nums">

@@ -1,6 +1,7 @@
 "use client";
 
 import { type FormEvent, useState } from "react";
+import { Button } from "@/components/ui/Ui";
 import {
   buildSelectText,
   CONDITION_OPTIONS,
@@ -11,53 +12,55 @@ import {
   type SelectDiaryInput,
 } from "@/lib/selectDiary";
 
-// 項目を選んでつける日記（書くのが面倒な日でも続けられるように）
+// 項目を選んでつける日記（書くのが面倒な日でも続けられるように）。見た目は Figma Make の ChoosePanel から移した
 
-function Chip({
-  label,
+function ChipGroup({
+  title,
+  subtitle,
+  items,
   selected,
-  onClick,
+  onSelect,
 }: {
-  label: string;
-  selected: boolean;
-  onClick: () => void;
+  title: string;
+  subtitle: string;
+  items: readonly string[];
+  selected: string[];
+  onSelect: (item: string) => void;
 }) {
   return (
-    <button
-      type="button"
-      aria-pressed={selected}
-      onClick={onClick}
-      className={`rounded-full border px-3 py-2 text-sm ${
-        selected
-          ? "border-accent bg-accent text-accent-foreground"
-          : "border-black/10 bg-card"
-      }`}
-    >
-      {label}
-    </button>
+    <fieldset>
+      <legend className="font-display text-lg font-bold">
+        {title} <span className="ml-1 text-xs font-normal text-muted">{subtitle}</span>
+      </legend>
+      <div className="mt-3 flex flex-wrap gap-2">
+        {items.map((item) => {
+          const active = selected.includes(item);
+          return (
+            <button
+              key={item}
+              type="button"
+              aria-pressed={active}
+              onClick={() => onSelect(item)}
+              className={`min-h-11 rounded-full border px-4 text-sm font-bold transition ${
+                active ? "border-accent bg-accent text-accent-foreground" : "border-border bg-card"
+              }`}
+            >
+              {item}
+            </button>
+          );
+        })}
+      </div>
+    </fieldset>
   );
 }
 
-export function SelectDiaryForm({
-  onSubmit,
-  saving,
-}: {
-  onSubmit: (text: string) => void;
-  saving: boolean;
-}) {
-  const [input, setInput] = useState<SelectDiaryInput>({
-    mood: "",
-    condition: "",
-    events: [],
-    note: "",
-  });
+export function SelectDiaryForm({ onSubmit, saving }: { onSubmit: (text: string) => void; saving: boolean }) {
+  const [input, setInput] = useState<SelectDiaryInput>({ mood: "", condition: "", events: [], note: "" });
 
   function toggleEvent(event: string) {
     setInput((prev) => ({
       ...prev,
-      events: prev.events.includes(event)
-        ? prev.events.filter((e) => e !== event)
-        : [...prev.events, event],
+      events: prev.events.includes(event) ? prev.events.filter((e) => e !== event) : [...prev.events, event],
     }));
   }
 
@@ -70,71 +73,44 @@ export function SelectDiaryForm({
   const complete = isSelectComplete(input);
 
   return (
-    <form onSubmit={handleSubmit} className="flex flex-1 flex-col gap-6">
-      <fieldset className="flex flex-col gap-2">
-        <legend className="mb-2 text-sm font-medium">気分</legend>
-        <div className="flex flex-wrap gap-2">
-          {MOOD_OPTIONS.map((o) => (
-            <Chip
-              key={o}
-              label={o}
-              selected={input.mood === o}
-              onClick={() => setInput((p) => ({ ...p, mood: o }))}
-            />
-          ))}
-        </div>
-      </fieldset>
-
-      <fieldset className="flex flex-col gap-2">
-        <legend className="mb-2 text-sm font-medium">体調</legend>
-        <div className="flex flex-wrap gap-2">
-          {CONDITION_OPTIONS.map((o) => (
-            <Chip
-              key={o}
-              label={o}
-              selected={input.condition === o}
-              onClick={() => setInput((p) => ({ ...p, condition: o }))}
-            />
-          ))}
-        </div>
-      </fieldset>
-
-      <fieldset className="flex flex-col gap-2">
-        <legend className="mb-2 text-sm font-medium">
-          今日あったこと<span className="ml-1 text-xs text-muted">（いくつでも）</span>
-        </legend>
-        <div className="flex flex-wrap gap-2">
-          {EVENT_OPTIONS.map((o) => (
-            <Chip
-              key={o}
-              label={o}
-              selected={input.events.includes(o)}
-              onClick={() => toggleEvent(o)}
-            />
-          ))}
-        </div>
-      </fieldset>
-
-      <label className="flex flex-col gap-2">
-        <span className="text-sm font-medium">
-          ひとこと<span className="ml-1 text-xs text-muted">（なくてもOK）</span>
-        </span>
-        <input
+    <form onSubmit={handleSubmit} className="mt-6 space-y-7">
+      <ChipGroup
+        title="気分"
+        subtitle="1つ選んでね"
+        items={MOOD_OPTIONS}
+        selected={[input.mood]}
+        onSelect={(o) => setInput((p) => ({ ...p, mood: o }))}
+      />
+      <ChipGroup
+        title="体調"
+        subtitle="1つ選んでね"
+        items={CONDITION_OPTIONS}
+        selected={[input.condition]}
+        onSelect={(o) => setInput((p) => ({ ...p, condition: o }))}
+      />
+      <ChipGroup
+        title="今日あったこと"
+        subtitle="いくつでも"
+        items={EVENT_OPTIONS}
+        selected={input.events}
+        onSelect={toggleEvent}
+      />
+      <label className="block font-bold">
+        ひとこと <span className="text-sm font-normal text-muted">（任意）</span>
+        <textarea
+          className="field mt-2 min-h-28 resize-none"
+          maxLength={NOTE_MAX_LENGTH}
           value={input.note}
           onChange={(e) => setInput((p) => ({ ...p, note: e.target.value }))}
-          maxLength={NOTE_MAX_LENGTH}
           placeholder="例：英単語あんまり覚えられなかった"
-          className="h-12 w-full rounded-xl border border-black/10 bg-card px-4 text-base outline-none focus:border-accent"
         />
+        <span className="mt-1 block text-right text-xs font-normal text-muted tabular-nums">
+          {input.note.length} / {NOTE_MAX_LENGTH}
+        </span>
       </label>
-
-      <button
-        type="submit"
-        disabled={!complete || saving}
-        className="mt-auto h-14 w-full rounded-full bg-accent text-base font-bold text-accent-foreground shadow-sm disabled:opacity-60"
-      >
+      <Button type="submit" className="w-full" disabled={!complete || saving}>
         {saving ? "保存中…" : complete ? "保存して分析する" : "気分と体調を選んでね"}
-      </button>
+      </Button>
     </form>
   );
 }

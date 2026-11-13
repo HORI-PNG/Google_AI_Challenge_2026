@@ -22,6 +22,7 @@ import {
   loadOrCreateUser,
   saveUserProfile,
   type UserProfile,
+  type UserSettings,
 } from "@/lib/userProfile";
 
 type AuthState =
@@ -40,6 +41,8 @@ export type ProfileState =
 type AuthContextValue = {
   state: AuthState;
   profile: ProfileState;
+  /** users/{uid}.settings（ログインして読み込むまでは null） */
+  settings: UserSettings | null;
   /** ログインやユーザー情報の準備で起きたエラー（画面に出す文） */
   error: string | null;
   signIn: () => Promise<void>;
@@ -77,6 +80,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     firebaseConfigError ? { status: "signedOut" } : { status: "loading" },
   );
   const [profile, setProfile] = useState<ProfileState>({ status: "loading" });
+  const [settings, setSettings] = useState<UserSettings | null>(null);
   const [error, setError] = useState<string | null>(firebaseConfigError);
 
   useEffect(() => {
@@ -90,14 +94,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (!user) {
         setState({ status: "signedOut" });
         setProfile({ status: "loading" });
+        setSettings(null);
         return;
       }
       setState({ status: "signedIn", user });
       setProfile({ status: "loading" });
       loadOrCreateUser(user.uid)
-        .then(({ profile }) => {
+        .then(({ profile, settings }) => {
           // 読み込み中に別のユーザーに切り替わっていたら、結果を捨てる
           if (currentUid !== user.uid) return;
+          setSettings(settings);
           setProfile(profile ? { status: "ready", profile } : { status: "missing" });
         })
         .catch((e: unknown) => {
@@ -141,8 +147,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   );
 
   const value = useMemo(
-    () => ({ state, profile, error, signIn, signOut, updateProfile }),
-    [state, profile, error, signIn, signOut, updateProfile],
+    () => ({ state, profile, settings, error, signIn, signOut, updateProfile }),
+    [state, profile, settings, error, signIn, signOut, updateProfile],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

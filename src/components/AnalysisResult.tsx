@@ -1,7 +1,9 @@
 import { ConcernNotice } from "@/components/ConcernNotice";
+import { Mascot } from "@/components/ui/Mascot";
+import { ButtonLink, Card, ScoreBar, SpeechBubble } from "@/components/ui/Ui";
 import type { DiaryAnalysis, Scores } from "@/lib/diaryAnalysis";
 
-// 分析の結果（最小限の表示。見た目は段階6・7 で作り直す）
+// 分析の結果。見た目は Figma Make の ResultScreen（SuccessResult／SupportResult）から移した
 
 const SCORE_ITEMS: { key: keyof Scores; label: string; note?: string }[] = [
   { key: "mood", label: "気分" },
@@ -10,105 +12,98 @@ const SCORE_ITEMS: { key: keyof Scores; label: string; note?: string }[] = [
   { key: "stress", label: "ストレス", note: "低いほど良い" },
 ];
 
+const WEEKDAYS = ["日", "月", "火", "水", "木", "金", "土"];
+
 export function AnalysisResult({
   analysis,
   nickname,
+  writtenAt,
 }: {
   analysis: DiaryAnalysis;
   nickname: string;
+  writtenAt: Date;
 }) {
   const isUrgent = analysis.concern_level === "urgent";
+  const dateLabel = `${writtenAt.getMonth() + 1}月${writtenAt.getDate()}日（${WEEKDAYS[writtenAt.getDay()]}）`;
 
   return (
-    <div className="flex flex-col gap-5">
-      <section aria-label="ハカドリのひとこと" className="flex items-start gap-3">
-        {/* キャラクターの画像は段階7 で差し替える */}
-        <div
-          aria-hidden
-          className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-card text-2xl shadow-sm"
-        >
-          🐦
+    <main className="min-h-dvh px-4 pb-8 pt-5">
+      <div className="mb-5 flex items-center justify-between">
+        <div>
+          <p className="text-sm font-bold text-muted">{dateLabel}</p>
+          <h1 className="font-display text-2xl font-bold">{isUrgent ? "日記を受け取りました" : "分析の結果"}</h1>
         </div>
-        <p className="rounded-2xl rounded-tl-sm bg-card px-4 py-3 text-base leading-relaxed shadow-sm">
-          <span className="block text-xs text-muted">ハカドリ → {nickname}</span>
+        <div className="rounded-full bg-soft-accent px-3 py-2 text-xs font-bold text-accent-strong">保存済み</div>
+      </div>
+
+      <div className="grid grid-cols-[76px_1fr] items-end gap-2">
+        <Mascot mood={isUrgent ? "worried" : "cheer"} size={82} />
+        <SpeechBubble>
+          <span className="mb-1 block text-xs font-normal text-muted">ハカドリ → {nickname}</span>
           {analysis.character_reply}
-        </p>
-      </section>
+        </SpeechBubble>
+      </div>
 
       {/* 自分を傷つける気持ちが書かれていたときは、点数を出さずに窓口を案内する */}
       {isUrgent ? (
-        <ConcernNotice level="urgent" />
+        <div className="mt-6">
+          <ConcernNotice level="urgent" />
+        </div>
       ) : (
-        <>
-          <section
-            aria-label="感情の点数"
-            className="flex flex-col gap-3 rounded-2xl bg-card p-5 shadow-sm"
-          >
-            <h2 className="text-sm font-medium text-muted">今日の気持ち</h2>
-            <ul className="flex flex-col gap-3">
-              {SCORE_ITEMS.map((item) => {
-                const value = analysis.scores[item.key];
-                return (
-                  <li key={item.key} className="flex flex-col gap-1">
-                    <div className="flex items-baseline justify-between text-sm">
-                      <span>
-                        {item.label}
-                        {item.note && (
-                          <span className="ml-1 text-xs text-muted">（{item.note}）</span>
-                        )}
-                      </span>
-                      <span className="font-bold tabular-nums">{value}点</span>
-                    </div>
-                    <div
-                      className="h-2 w-full overflow-hidden rounded-full bg-black/5"
-                      role="meter"
-                      aria-valuemin={0}
-                      aria-valuemax={100}
-                      aria-valuenow={value}
-                      aria-label={item.label}
-                    >
-                      <div className="h-full rounded-full bg-accent" style={{ width: `${value}%` }} />
-                    </div>
-                  </li>
-                );
-              })}
-            </ul>
+        <div className="mt-5 space-y-5">
+          <Card>
+            <p className="text-sm font-bold text-accent-strong">TODAY&apos;S FEELINGS</p>
+            <h2 className="mt-1 font-display text-xl font-bold">今日の気持ち</h2>
+            <div className="mt-6 space-y-5">
+              {SCORE_ITEMS.map((item) => (
+                <ScoreBar
+                  key={item.key}
+                  label={item.label}
+                  value={analysis.scores[item.key]}
+                  note={item.note}
+                  color={`--series-${item.key}`}
+                />
+              ))}
+            </div>
             {analysis.emotion_labels.length > 0 && (
-              <ul className="flex flex-wrap gap-2" aria-label="気持ちのラベル">
+              <ul className="mt-6 flex flex-wrap gap-2" aria-label="気持ちのラベル">
                 {analysis.emotion_labels.map((label) => (
-                  <li key={label} className="rounded-full bg-background px-3 py-1 text-xs">
+                  <li key={label} className="rounded-full bg-soft-accent px-4 py-2 text-sm font-bold text-accent-strong">
                     {label}
                   </li>
                 ))}
               </ul>
             )}
-            <p className="text-sm leading-relaxed text-muted">{analysis.reason}</p>
+          </Card>
+
+          <Card>
+            <h2 className="font-display text-lg font-bold">こんな一日だったみたい</h2>
+            <p className="mt-3 leading-relaxed text-muted">{analysis.reason}</p>
             {analysis.confidence === "low" && (
-              <p className="text-xs text-muted">
-                手がかりが少なかったので、点数はおおよその目安です。
-              </p>
+              <p className="mt-2 text-xs text-muted">手がかりが少なかったので、点数はおおよその目安です。</p>
             )}
-          </section>
+          </Card>
 
           {analysis.learnings.length > 0 && (
-            <section
-              aria-label="今日学んだこと"
-              className="flex flex-col gap-2 rounded-2xl bg-card p-5 shadow-sm"
-            >
-              <h2 className="text-sm font-medium text-muted">今日学んだこと</h2>
-              <ul className="flex flex-col gap-2">
+            <Card className="bg-learning">
+              <p className="text-sm font-bold text-accent-strong">今日学んだこと</p>
+              <ul className="mt-2 space-y-2">
                 {analysis.learnings.map((l) => (
-                  <li key={`${l.topic}-${l.point}`} className="text-sm leading-relaxed">
-                    <span className="font-bold">{l.topic}</span>：{l.point}
+                  <li key={`${l.topic}-${l.point}`} className="text-lg font-bold leading-relaxed">
+                    {l.topic}：{l.point}
                   </li>
                 ))}
               </ul>
-            </section>
+            </Card>
           )}
 
           <ConcernNotice level={analysis.concern_level} />
-        </>
+        </div>
       )}
-    </div>
+
+      <ButtonLink href="/" variant={isUrgent ? "secondary" : "primary"} className="mt-6 w-full">
+        ホームへ
+      </ButtonLink>
+    </main>
   );
 }

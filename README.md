@@ -48,6 +48,9 @@ src/components/ 画面の部品（ログイン状態の管理など）
 src/lib/        Firebase の初期化、Firestore の読み書き、Gemini の結果の形
 src/lib/server/ サーバーだけで使う処理（Gemini の呼び出し、ログインの確認）
 src/prompts/    Gemini へのプロンプト（Google AI Studio で試したもの）
+src/components/ui/   共通の部品（ボタン、カード、ハカドリ）
+src/components/home/ ホームの3つの構成（手帳・クリア・ビジネス）
+design/         Figma Make のデザイン（参考用。アプリのビルド対象外）
 tests/unit/     単体テスト
 tests/rules/    Firestore のセキュリティルールのテスト
 next-plans/     各段階を始める前の予定
