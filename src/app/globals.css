@@ -1,0 +1,29 @@
+@import "tailwindcss";
+
+/*
+ * テーマの色は CSS 変数で持つ。段階6 で data-theme ごとに値を切り替える。
+ */
+:root {
+  --background: #f6f3ee;
+  --foreground: #2b2a28;
+  --muted: #6f6a62;
+  --card: #ffffff;
+  --accent: #e2725b;
+  --accent-foreground: #ffffff;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-muted: var(--muted);
+  --color-card: var(--card);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --font-sans: var(--font-noto-sans-jp), "Hiragino Sans", "Yu Gothic", sans-serif;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans);
+}

@@ -12,6 +12,10 @@ build/
 *.tsbuildinfo
 next-env.d.ts
 npm-debug.log*
+.pnp
+.pnp.*
+coverage/
+*.pem
 
 # Vercel / Firebase
 .vercel/
