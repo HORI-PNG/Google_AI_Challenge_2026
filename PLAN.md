@@ -213,10 +213,14 @@ CLAUDE.md              ← 「@AGENTS.md」の1行だけ（Claude Code に AGENT
 users/{uid}
   settings
     themeId, characterId, locationEnabled
+  profile                      ← 初回に登録してもらう基本情報（Gemini には grade だけを渡す）
+    name, nickname, grade
   diaries/{diaryId}
     createdAt, inputType(voice|text|select), rawText,
     scores{mood, energy, focus, stress}, emotionLabels[],
     learnings[], characterReply,
+    reason, confidence(high|medium|low), concernLevel(none|watch|urgent),
+    analysisStatus(pending|done|failed), analyzedModel, analyzedAt,
     location{lat, lng, placeName}?
   feedback/{date}
     productivity(1|2|3)        ← 「昨日ははかどった？」の答え
@@ -225,6 +229,14 @@ users/{uid}
   learnings/{learningId}       ← 補助：忘却曲線
     diaryId, topic, point, reviewedAt[], strength
 ```
+
+### Gemini がつながらないときの方針
+無料版の Gemini API は、混雑（`503`）や回数制限（`429`）で失敗しやすい。**他社の AI には切り替えず、Gemini の中で粘る**（応募条件に合わせる）。
+1. 同じモデル（`GEMINI_MODEL`）で最大 3 回試す。間に 1 秒、2 秒待つ
+2. 3 回とも失敗したら、別の Gemini モデル（`GEMINI_FALLBACK_MODEL`、例：Flash-Lite 系）で最大 3 回試す
+3. それでも失敗したら、日記の本文だけ保存し（`analysisStatus: failed`）、「もう一度分析する」ボタンを出す
+- 回数は 1 回の呼び出しの中で数える（Vercel ではサーバーが呼び出しごとに変わることがあるため）
+- デモ動画を撮る期間だけ、Gemini を有料プランにすることも検討する
 
 ### はかどり予報の考え方
 1. 日記ごとに感情の点数（4項目）と、翌日の「はかどった？」（3段階）をペアで保存する

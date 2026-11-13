@@ -23,6 +23,7 @@ npm run dev                  # http://localhost:3000
 その他のコマンド：
 
 ```bash
+npm test              # 単体テスト（Gemini のやり直し、プロンプトとスキーマの一致）
 npm run lint          # ESLint
 npm run build         # 本番用のビルド
 npm run test:rules    # Firestore のセキュリティルールのテスト（エミュレータ。Java が必要）
@@ -33,13 +34,20 @@ npm run deploy:rules  # セキュリティルールを Firebase に反映（初�
 - Google ログイン（Firebase Authentication）と Cloud Firestore を使います
 - データは `users/{uid}` の下に保存し、本人だけが読み書きできます（[firestore.rules](firestore.rules)）
 
+## Gemini
+- 日記の分析は `POST /api/analyze`（サーバー側）で Gemini API を呼びます。ログインした人だけが使えます
+- プロンプトは [src/prompts/](src/prompts/) の md をそのまま読み込みます
+- つながらないときは、同じモデルで3回 → `GEMINI_FALLBACK_MODEL` で3回試し、それでもだめなら日記だけ保存して、あとから分析し直せます
+
 ## フォルダ構成
 ```
 src/app/        画面（App Router）
 src/components/ 画面の部品（ログイン状態の管理など）
-src/lib/        Firebase の初期化、Firestore の読み書き
+src/lib/        Firebase の初期化、Firestore の読み書き、Gemini の結果の形
+src/lib/server/ サーバーだけで使う処理（Gemini の呼び出し、ログインの確認）
 src/prompts/    Gemini へのプロンプト（Google AI Studio で試したもの）
-tests/          Firestore のセキュリティルールのテスト
+tests/unit/     単体テスト
+tests/rules/    Firestore のセキュリティルールのテスト
 next-plans/     各段階を始める前の予定
 logs/           各段階で実装したことの記録
 .agents/rules/  AI エージェント向けのルール
