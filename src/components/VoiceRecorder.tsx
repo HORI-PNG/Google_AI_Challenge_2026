@@ -8,6 +8,7 @@ import {
   RECORDING_BITS_PER_SECOND,
 } from "@/lib/audio";
 import { ApiRequestError, requestTranscription } from "@/lib/diaries";
+import { Button } from "@/components/ui/Ui";
 
 // 声の日記：録音 → Gemini が文章にする → 本人が確認・修正 → 保存して分析
 // 録音はブラウザのメモリにだけ置き、文章にしたら捨てる（どこにも保存しない）
@@ -164,111 +165,105 @@ export function VoiceRecorder({
     }
   }
 
-  const primaryButton =
-    "h-14 w-full rounded-full bg-accent text-base font-bold text-accent-foreground shadow-sm disabled:opacity-60";
-  const secondaryButton =
-    "h-12 w-full rounded-full border border-black/10 text-sm text-muted disabled:opacity-60";
-
+  // 見た目は Figma Make の SpeakPanel から移した
   if (state.step === "review") {
     return (
-      <div className="flex flex-1 flex-col gap-4">
-        <label className="flex flex-1 flex-col gap-2">
-          <span className="text-sm text-muted">
-            Gemini が文章にしました。聞き間違いがあれば直してね。
-          </span>
+      <div className="mt-6">
+        <h2 className="font-display text-xl font-bold">文章を確認してね</h2>
+        <p className="mt-2 text-sm text-muted">Gemini が文章にしました。聞き間違いがあれば、ここで直せます。</p>
+        <label>
+          <span className="sr-only">文章にした日記</span>
           <textarea
+            className="field mt-5 min-h-64 resize-none leading-relaxed"
             value={state.text}
             onChange={(e) => setState({ step: "review", text: e.target.value })}
             maxLength={4000}
-            rows={8}
-            className="min-h-48 w-full flex-1 resize-none rounded-2xl border border-black/10 bg-card p-4 text-base leading-relaxed outline-none focus:border-accent"
           />
         </label>
-        <button
-          type="button"
-          disabled={saving || !state.text.trim()}
-          onClick={() => onSubmit(state.text.trim())}
-          className={primaryButton}
-        >
+        <Button className="mt-5 w-full" disabled={saving || !state.text.trim()} onClick={() => onSubmit(state.text.trim())}>
           {saving ? "保存中…" : "保存して分析する"}
-        </button>
-        <button
-          type="button"
-          disabled={saving}
-          onClick={() => setState({ step: "idle" })}
-          className={secondaryButton}
-        >
+        </Button>
+        <Button variant="ghost" className="mt-2 w-full" disabled={saving} onClick={() => setState({ step: "idle" })}>
           録り直す
-        </button>
+        </Button>
+      </div>
+    );
+  }
+
+  if (state.step === "transcribing") {
+    return (
+      <div className="grid min-h-[480px] place-items-center text-center">
+        <div>
+          <div className="mx-auto mb-7 flex size-24 items-center justify-center rounded-full bg-soft-accent">
+            <div className="size-10 animate-pulse rounded-full border-4 border-accent border-t-transparent" />
+          </div>
+          <h2 className="font-display text-xl font-bold" role="status">
+            声を文章にしています
+          </h2>
+          <p className="mt-3 text-muted">
+            Gemini が声を文章にしています…
+            <br />
+            混み合っているときは、少し時間がかかります。
+          </p>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="flex flex-1 flex-col items-center justify-center gap-6 text-center">
-      {state.step === "idle" && (
+    <div className="flex min-h-[500px] flex-col items-center justify-center text-center">
+      {state.step === "recording" ? (
         <>
-          <p className="text-base leading-relaxed">
+          <div className="relative mb-7 grid size-32 place-items-center rounded-full bg-soft-accent">
+            <div className="absolute size-32 animate-ping rounded-full border border-recording opacity-30" />
+            <div className="size-5 animate-pulse rounded-full bg-recording" />
+          </div>
+          <h2 className="font-display text-2xl font-bold" role="status">
+            聞いているよ
+          </h2>
+          <p className="mt-3 font-num text-xl font-bold tabular-nums">
+            {formatSeconds(state.elapsed)} <span className="text-muted">/ {formatSeconds(MAX_RECORDING_SECONDS)}</span>
+          </p>
+          <Button onClick={stop} className="mt-10 w-full">
+            話し終わった
+          </Button>
+        </>
+      ) : (
+        <>
+          <div className="mb-7 grid size-32 place-items-center rounded-full bg-soft-accent text-4xl text-accent-strong" aria-hidden="true">
+            ◉
+          </div>
+          <h2 className="font-display text-xl font-bold">
             今日あったことや気持ちを、
             <br />
-            そのまま話してね（{MAX_RECORDING_SECONDS / 60}分まで）
-          </p>
-          <p className="text-xs leading-relaxed text-muted">
-            長く話すと、全部は文字にできないことがあるよ。
+            そのまま話してね
+          </h2>
+          <p className="mt-3 text-sm leading-relaxed text-muted">
+            {MAX_RECORDING_SECONDS / 60}分まで録音できます。長く話すと、
             <br />
-            伝えたいことを短めに話すと、早く文章になるよ。
+            全部は文字にできないことがあるよ。
           </p>
-          <button type="button" onClick={start} className={primaryButton}>
-            🎙️ 話しはじめる
-          </button>
-        </>
-      )}
 
-      {state.step === "starting" && <p className="text-sm text-muted">マイクを準備しています…</p>}
-
-      {state.step === "recording" && (
-        <>
-          <p className="flex items-center gap-2 text-base" role="status">
-            <span aria-hidden className="h-3 w-3 animate-pulse rounded-full bg-accent" />
-            聞いているよ
-          </p>
-          <p className="text-3xl font-bold tabular-nums">
-            {formatSeconds(state.elapsed)}
-            <span className="ml-2 text-sm font-normal text-muted">
-              / {formatSeconds(MAX_RECORDING_SECONDS)}
-            </span>
-          </p>
-          <button type="button" onClick={stop} className={primaryButton}>
-            話し終わった
-          </button>
-        </>
-      )}
-
-      {state.step === "transcribing" && (
-        <p className="text-sm leading-relaxed text-muted" role="status">
-          Gemini が声を文章にしています…
-          <br />
-          混み合っているときは、少し時間がかかります。
-        </p>
-      )}
-
-      {state.step === "error" && (
-        <>
-          <p role="alert" className="text-sm leading-relaxed text-accent">
-            {state.message}
-          </p>
-          {state.retryAudio && (
-            <button
-              type="button"
-              onClick={() => state.retryAudio && transcribe(state.retryAudio)}
-              className={primaryButton}
-            >
-              もう一度文章にする
-            </button>
+          {state.step === "error" && (
+            <p role="alert" className="mt-5 text-sm font-bold leading-relaxed text-accent-strong">
+              {state.message}
+            </p>
           )}
-          <button type="button" onClick={() => setState({ step: "idle" })} className={secondaryButton}>
-            録り直す
-          </button>
+
+          {state.step === "error" && state.retryAudio ? (
+            <>
+              <Button className="mt-8 w-full" onClick={() => state.retryAudio && transcribe(state.retryAudio)}>
+                もう一度文章にする
+              </Button>
+              <Button variant="ghost" className="mt-2 w-full" onClick={() => setState({ step: "idle" })}>
+                録り直す
+              </Button>
+            </>
+          ) : (
+            <Button className="mt-10 w-full" onClick={start} disabled={state.step === "starting"}>
+              {state.step === "starting" ? "マイクを準備しています…" : "話しはじめる"}
+            </Button>
+          )}
         </>
       )}
     </div>

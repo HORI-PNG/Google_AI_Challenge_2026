@@ -1,4 +1,4 @@
-import { doc, getDoc, serverTimestamp, setDoc } from "firebase/firestore";
+import { doc, getDoc, serverTimestamp, setDoc, updateDoc } from "firebase/firestore";
 import { z } from "zod";
 import { getDb } from "@/lib/firebase";
 
@@ -10,7 +10,8 @@ export type UserSettings = {
 };
 
 export const DEFAULT_SETTINGS: UserSettings = {
-  themeId: "default",
+  // src/lib/themes.ts の DEFAULT_THEME_ID と同じ
+  themeId: "kotori",
   characterId: "default",
   // 位置情報の記録は任意で、初期設定ではオフ（.agents/rules/privacy.md）
   locationEnabled: false,
@@ -45,13 +46,19 @@ export const userProfileSchema = z.object({
 
 export type UserProfile = z.infer<typeof userProfileSchema>;
 
+const userSettingsSchema = z.object({
+  themeId: z.string().catch(DEFAULT_SETTINGS.themeId),
+  characterId: z.string().catch(DEFAULT_SETTINGS.characterId),
+  locationEnabled: z.boolean().catch(DEFAULT_SETTINGS.locationEnabled),
+});
+
 /**
  * users/{uid} を読み、なければ設定の初期値で作る。
- * 基本情報（profile）がまだ登録されていなければ null を返す。
+ * 基本情報（profile）がまだ登録されていなければ profile は null。
  */
 export async function loadOrCreateUser(
   uid: string,
-): Promise<{ profile: UserProfile | null }> {
+): Promise<{ profile: UserProfile | null; settings: UserSettings }> {
   const ref = doc(getDb(), "users", uid);
   const snapshot = await getDoc(ref);
   if (!snapshot.exists()) {
@@ -59,10 +66,19 @@ export async function loadOrCreateUser(
       settings: DEFAULT_SETTINGS,
       createdAt: serverTimestamp(),
     });
-    return { profile: null };
+    return { profile: null, settings: DEFAULT_SETTINGS };
   }
-  const parsed = userProfileSchema.safeParse(snapshot.get("profile"));
-  return { profile: parsed.success ? parsed.data : null };
+  const profile = userProfileSchema.safeParse(snapshot.get("profile"));
+  const settings = userSettingsSchema.safeParse(snapshot.get("settings") ?? {});
+  return {
+    profile: profile.success ? profile.data : null,
+    settings: settings.success ? settings.data : DEFAULT_SETTINGS,
+  };
+}
+
+/** UI テーマを保存する（PLAN.md「データ構造」の settings.themeId） */
+export async function saveThemeId(uid: string, themeId: string): Promise<void> {
+  await updateDoc(doc(getDb(), "users", uid), { "settings.themeId": themeId });
 }
 
 export async function saveUserProfile(

@@ -28,6 +28,17 @@ ui-debug.log
 .venv/
 __pycache__/
 
+# Figma Make の書き出し：ソースだけをコミットし、Figma Make の動作用のファイルは入れない
+design/figma_make/.figma/
+design/figma_make/.mise.toml
+design/figma_make/.gitattributes
+design/figma_make/pnpm-lock.yaml
+design/figma_make/vite.config.ts
+design/figma_make/AGENTS.md
+design/figma_make/CLAUDE.md
+design/figma_make/public/.gitattributes
+design/figma_make/node_modules/
+
 # OS / エディタ
 .DS_Store
 Thumbs.db

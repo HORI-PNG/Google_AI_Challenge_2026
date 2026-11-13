@@ -31,7 +31,7 @@ export function DemoDataPanel({ uid, onChange }: { uid: string; onChange: () => 
   }
 
   return (
-    <section className="flex flex-col gap-2 rounded-2xl border border-dashed border-black/20 p-4 text-sm">
+    <section className="flex flex-col gap-2 rounded-[var(--radius)] border border-dashed border-border p-4 text-sm">
       <p className="font-bold">開発用：デモの日記</p>
       <p className="text-xs leading-relaxed text-muted">
         グラフの確認とデモ動画のために、{DEMO_DAYS} 日分の架空の日記を入れます（本番には表示されません）。
@@ -41,7 +41,7 @@ export function DemoDataPanel({ uid, onChange }: { uid: string; onChange: () => 
           type="button"
           disabled={busy}
           onClick={() => run("seed")}
-          className="h-10 flex-1 rounded-full border border-black/10 bg-card disabled:opacity-60"
+          className="min-h-11 flex-1 rounded-full border border-border bg-card font-bold disabled:opacity-60"
         >
           入れる
         </button>
@@ -49,7 +49,7 @@ export function DemoDataPanel({ uid, onChange }: { uid: string; onChange: () => 
           type="button"
           disabled={busy}
           onClick={() => run("delete")}
-          className="h-10 flex-1 rounded-full border border-black/10 bg-card disabled:opacity-60"
+          className="min-h-11 flex-1 rounded-full border border-border bg-card font-bold disabled:opacity-60"
         >
           消す
         </button>

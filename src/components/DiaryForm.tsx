@@ -1,11 +1,12 @@
 "use client";
 
 import type { User } from "firebase/auth";
-import Link from "next/link";
 import { type FormEvent, useState } from "react";
 import { AnalysisResult } from "@/components/AnalysisResult";
 import { toMessage } from "@/components/AuthProvider";
 import { SelectDiaryForm } from "@/components/SelectDiaryForm";
+import { Mascot } from "@/components/ui/Mascot";
+import { BackHeader, Button, ButtonLink } from "@/components/ui/Ui";
 import { VoiceRecorder } from "@/components/VoiceRecorder";
 import { ApiRequestError, analyzeAndSave, createDiary, type SavedDiary } from "@/lib/diaries";
 import type { DiaryAnalysis, InputType } from "@/lib/diaryAnalysis";
@@ -14,16 +15,16 @@ import type { UserProfile } from "@/lib/userProfile";
 const MAX_LENGTH = 4000;
 
 const MODES: { type: InputType; label: string }[] = [
-  { type: "text", label: "✏️ 書く" },
-  { type: "voice", label: "🎙️ 話す" },
-  { type: "select", label: "☑️ 選ぶ" },
+  { type: "text", label: "✎ 書く" },
+  { type: "voice", label: "◉ 話す" },
+  { type: "select", label: "✓ 選ぶ" },
 ];
 
 type Phase =
   | { step: "writing" }
   | { step: "saving" }
   | { step: "analyzing" }
-  | { step: "done"; analysis: DiaryAnalysis }
+  | { step: "done"; analysis: DiaryAnalysis; writtenAt: Date }
   /** 本文は保存できたが、分析に失敗した */
   | { step: "analysisFailed"; diary: SavedDiary; message: string };
 
@@ -37,7 +38,7 @@ export function DiaryForm({ user, profile }: { user: User; profile: UserProfile 
     setPhase({ step: "analyzing" });
     try {
       const analysis = await analyzeAndSave(user, diary, profile.grade);
-      setPhase({ step: "done", analysis });
+      setPhase({ step: "done", analysis, writtenAt: diary.writtenAt });
     } catch (e) {
       const message = e instanceof ApiRequestError ? e.message : "分析できませんでした";
       setPhase({ step: "analysisFailed", diary, message });
@@ -72,132 +73,127 @@ export function DiaryForm({ user, profile }: { user: User; profile: UserProfile 
   }
 
   if (phase.step === "done") {
-    return (
-      <div className="flex flex-1 flex-col gap-6">
-        <AnalysisResult analysis={phase.analysis} nickname={profile.nickname} />
-        <Link
-          href="/"
-          className="mt-auto flex h-14 w-full items-center justify-center rounded-full bg-accent text-base font-bold text-accent-foreground shadow-sm"
-        >
-          ホームへ
-        </Link>
-      </div>
-    );
+    return <AnalysisResult analysis={phase.analysis} nickname={profile.nickname} writtenAt={phase.writtenAt} />;
   }
 
   if (phase.step === "analyzing") {
-    return (
-      <div className="flex flex-1 flex-col items-center justify-center gap-3 text-center">
-        <p className="text-base">日記を保存しました。</p>
-        <p className="text-sm text-muted" role="status">
-          ハカドリが日記を読んでいます…
-          <br />
-          混み合っているときは、少し時間がかかります。
-        </p>
-      </div>
-    );
+    return <AnalyzingView />;
   }
 
   if (phase.step === "analysisFailed") {
     return (
-      <div className="flex flex-1 flex-col gap-4">
-        <section className="flex flex-col gap-2 rounded-2xl bg-card p-5 shadow-sm">
-          <p className="text-base">日記は保存しました。</p>
-          <p className="text-sm leading-relaxed text-muted">
-            {phase.message}。少し時間をおいて、もう一度分析できます（ホームからもやり直せます）。
-          </p>
-        </section>
-        <div className="mt-auto flex flex-col gap-3">
-          <button
-            type="button"
-            onClick={() => analyze(phase.diary)}
-            className="h-14 w-full rounded-full bg-accent text-base font-bold text-accent-foreground shadow-sm"
-          >
-            もう一度分析する
-          </button>
-          <Link
-            href="/"
-            className="flex h-12 w-full items-center justify-center text-sm text-muted"
-          >
-            あとで分析する（ホームへ）
-          </Link>
-        </div>
-      </div>
+      <main className="min-h-dvh px-4 pb-8 pt-14 text-center">
+        <Mascot mood="worried" size={146} className="mx-auto" />
+        <h1 className="mt-4 font-display text-2xl font-bold">日記は保存できたよ</h1>
+        <p className="mx-auto mt-4 max-w-sm leading-relaxed text-muted">
+          {phase.message}。少し時間をおいて、もう一度分析できます（ホームからもやり直せます）。
+        </p>
+        <Button onClick={() => analyze(phase.diary)} className="mt-9 w-full">
+          もう一度分析する
+        </Button>
+        <ButtonLink href="/" variant="ghost" className="mt-2 w-full">
+          あとで分析する
+        </ButtonLink>
+      </main>
     );
   }
 
   const saving = phase.step === "saving";
   return (
-    <div className="flex flex-1 flex-col gap-5">
-      <p className="text-base">{profile.nickname} さん、今日はどんな一日だった？</p>
+    <main className="min-h-dvh pb-8">
+      <BackHeader title="今日の日記" />
+      <div className="p-4">
+        <div role="tablist" aria-label="日記のつけ方" className="grid grid-cols-3 rounded-[var(--radius-control)] bg-subtle p-1">
+          {MODES.map((m) => (
+            <button
+              key={m.type}
+              type="button"
+              role="tab"
+              aria-selected={mode === m.type}
+              disabled={saving}
+              onClick={() => {
+                setMode(m.type);
+                setSaveError(null);
+              }}
+              className={`min-h-12 rounded-[calc(var(--radius-control)-4px)] font-bold transition ${
+                mode === m.type ? "bg-card text-accent-strong shadow-sm" : "text-muted"
+              }`}
+            >
+              {m.label}
+            </button>
+          ))}
+        </div>
 
-      <div role="tablist" aria-label="日記のつけ方" className="grid grid-cols-3 gap-1 rounded-full bg-card p-1 shadow-sm">
-        {MODES.map((m) => (
-          <button
-            key={m.type}
-            type="button"
-            role="tab"
-            aria-selected={mode === m.type}
-            disabled={saving}
-            onClick={() => {
-              setMode(m.type);
-              setSaveError(null);
-            }}
-            className={`h-10 rounded-full text-sm ${
-              mode === m.type ? "bg-accent font-bold text-accent-foreground" : "text-muted"
-            }`}
-          >
-            {m.label}
-          </button>
-        ))}
-      </div>
+        {saveError && (
+          <p role="alert" className="mt-4 text-sm font-bold text-accent-strong">
+            {saveError}
+          </p>
+        )}
 
-      {saveError && (
-        <p role="alert" className="text-sm text-accent">
-          {saveError}
-        </p>
-      )}
-
-      {mode === "text" && (
-        <form onSubmit={handleTextSubmit} className="flex flex-1 flex-col gap-4">
-          <label className="flex flex-1 flex-col gap-2">
-            <span className="sr-only">日記</span>
-            <textarea
-              value={text}
-              onChange={(e) => setText(e.target.value)}
-              maxLength={MAX_LENGTH}
-              rows={10}
-              placeholder="うれしかったこと、疲れたこと、分かったこと…思ったままに書いてね"
-              className="min-h-60 w-full flex-1 resize-none rounded-2xl border border-black/10 bg-card p-4 text-base leading-relaxed outline-none focus:border-accent"
-            />
-            <span className="self-end text-xs text-muted tabular-nums">
+        {mode === "text" && (
+          <form onSubmit={handleTextSubmit} className="mt-6">
+            <div className="mb-4">
+              <p className="font-display text-xl font-bold">{profile.nickname}さん、思ったまま書いてみよう</p>
+              <p className="mt-1 text-sm text-muted">うまくまとめなくて大丈夫です。</p>
+            </div>
+            <label>
+              <span className="sr-only">日記</span>
+              <textarea
+                className="field min-h-72 resize-none leading-relaxed"
+                maxLength={MAX_LENGTH}
+                value={text}
+                onChange={(e) => setText(e.target.value)}
+                placeholder="うれしかったこと、疲れたこと、分かったこと…思ったままに書いてね"
+              />
+            </label>
+            <p className="mt-2 text-right text-sm text-muted tabular-nums">
               {text.length} / {MAX_LENGTH}
-            </span>
-          </label>
-          <button
-            type="submit"
-            disabled={saving}
-            className="h-14 w-full rounded-full bg-accent text-base font-bold text-accent-foreground shadow-sm disabled:opacity-60"
-          >
-            {saving ? "保存中…" : "保存して分析する"}
-          </button>
-        </form>
-      )}
+            </p>
+            <Button type="submit" className="mt-5 w-full" disabled={saving || !text.trim()}>
+              {saving ? "保存中…" : "保存して分析する"}
+            </Button>
+          </form>
+        )}
 
-      {mode === "voice" && (
-        <VoiceRecorder
-          user={user}
-          saving={saving}
-          onSubmit={(transcript) => void submit(transcript, "voice")}
-        />
-      )}
+        {mode === "voice" && (
+          <VoiceRecorder user={user} saving={saving} onSubmit={(transcript) => void submit(transcript, "voice")} />
+        )}
 
-      {mode === "select" && (
-        <SelectDiaryForm
-          saving={saving}
-          onSubmit={(selected) => void submit(selected, "select")}
-        />
-      )}
-    </div>
+        {mode === "select" && (
+          <SelectDiaryForm saving={saving} onSubmit={(selected) => void submit(selected, "select")} />
+        )}
+      </div>
+    </main>
+  );
+}
+
+/** 分析中（Figma Make の AnalyzingScreen） */
+function AnalyzingView() {
+  return (
+    <main className="grid min-h-dvh place-items-center px-7 text-center">
+      <div>
+        <div className="relative mx-auto mb-8 grid size-56 place-items-center rounded-full bg-hero">
+          <span className="absolute left-5 top-10 size-3 animate-pulse rounded-full bg-decor" />
+          <span className="absolute right-8 top-5 size-4 animate-bounce rounded-full border-2 border-decor" />
+          <Mascot mood="normal" size={144} className="mascot-thinking" />
+        </div>
+        <p className="text-sm font-bold tracking-widest text-accent-strong">READING YOUR NOTE</p>
+        <h1 className="mt-3 font-display text-2xl font-bold leading-relaxed" role="status">
+          日記を保存しました。
+          <br />
+          ハカドリが日記を読んでいます…
+        </h1>
+        <div className="mx-auto mt-6 flex w-24 justify-center gap-2" aria-hidden="true">
+          {[0, 1, 2].map((i) => (
+            <span key={i} className="size-2 animate-bounce rounded-full bg-accent" style={{ animationDelay: `${i * 140}ms` }} />
+          ))}
+        </div>
+        <p className="mt-8 text-sm leading-relaxed text-muted">
+          混み合っているときは、
+          <br />
+          少し時間がかかります。
+        </p>
+      </div>
+    </main>
   );
 }

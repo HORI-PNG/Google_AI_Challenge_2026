@@ -4,6 +4,7 @@ import type { User } from "firebase/auth";
 import { useRouter } from "next/navigation";
 import { type ReactNode, useEffect } from "react";
 import { useAuth } from "@/components/AuthProvider";
+import { Loading } from "@/components/ui/Ui";
 import type { UserProfile } from "@/lib/userProfile";
 
 /**
@@ -31,10 +32,10 @@ export function RequireProfile({
   }
   if (profile.status === "error") {
     return (
-      <p role="alert" className="text-sm text-accent">
+      <p role="alert" className="p-6 text-sm text-accent-strong">
         ユーザー情報を読み込めませんでした。再読み込みしてください。
       </p>
     );
   }
-  return <p className="text-sm text-muted">読み込み中…</p>;
+  return <Loading />;
 }

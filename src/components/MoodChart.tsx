@@ -217,7 +217,7 @@ export function MoodChart({
       {activePoint && (
         <div
           role="status"
-          className="pointer-events-none absolute top-0 z-10 min-w-36 rounded-xl bg-card px-3 py-2 text-xs shadow-md ring-1 ring-black/10"
+          className="pointer-events-none absolute top-0 z-10 min-w-36 rounded-[var(--radius-small)] border border-border bg-background px-3 py-2 text-xs shadow-md"
           style={
             tooltipLeft > 55
               ? { right: `${100 - tooltipLeft + 2}%` }
