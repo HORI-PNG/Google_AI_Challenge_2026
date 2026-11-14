@@ -4,10 +4,31 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    // users/{uid} と、その下のすべて（diaries、feedback、forecasts、learnings）
-    // rules_version 2 では {document=**} が users/{uid} 自身にも当てはまる
-    match /users/{uid}/{document=**} {
-      allow read, write: if request.auth != null && request.auth.uid == uid;
+    function isOwner(uid) {
+      return request.auth != null && request.auth.uid == uid;
+    }
+
+    // users/{uid} 自身
+    match /users/{uid} {
+      allow read, write: if isOwner(uid);
+    }
+
+    // users/{uid} の下のすべて（diaries、feedback、forecasts、learnings）。usage だけは下で別に決める
+    match /users/{uid}/{collection}/{rest=**} {
+      allow read, write: if isOwner(uid) && collection != "usage";
+    }
+
+    // users/{uid}/usage/{date}：Gemini を使った回数（1 人 1 日の上限に使う。段階10）。
+    // サーバーが本人のログインで 1 ずつ増やす。減らす・消す・好きな数にすることはできない
+    match /users/{uid}/usage/{date} {
+      allow read: if isOwner(uid);
+      allow create: if isOwner(uid)
+        && request.resource.data.keys().hasOnly(["count"])
+        && request.resource.data.count == 1;
+      allow update: if isOwner(uid)
+        && request.resource.data.keys().hasOnly(["count"])
+        && request.resource.data.count == resource.data.count + 1;
+      allow delete: if false;
     }
 
     // ここに書いていない場所は、すべて拒否される

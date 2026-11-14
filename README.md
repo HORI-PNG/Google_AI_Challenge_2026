@@ -8,8 +8,13 @@ Google AI Challenge（Google Japan 25周年）② Work & Learning 部門への�
 ## 技術構成
 - Next.js 16（TypeScript、App Router）、Tailwind CSS 4
 - Firebase Authentication、Cloud Firestore
-- Gemini API、Places API
-- 公開先：Vercel
+- Gemini API（Places API は任意。初期は Google マップへのリンクだけ）
+- 公開先：Vercel（Vercel プロジェクト `renote`。`main` に merge すると自動で公開し直される）
+
+## 公開（Vercel）
+- 環境変数は Vercel のプロジェクト設定に入れる（`.env.example` と同じ項目。`GEMINI_API_KEY` は sensitive）
+- Firebase Authentication の「承認済みドメイン」に、公開した URL を足す（Google ログインに必要）
+- 誰でも Google ログインして使えるため、Gemini は 1 人 1 日 `GEMINI_DAILY_LIMIT` 回（初期 50）までにしている（`users/{uid}/usage/{日付}`）
 
 ## 起動のしかた
 Node.js（v20 以上）が必要です。開発では WSL（Ubuntu）の nvm で入れた Node を使っています。

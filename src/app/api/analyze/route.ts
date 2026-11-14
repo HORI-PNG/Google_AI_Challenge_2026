@@ -7,6 +7,7 @@ import type { AnalyzeResponse } from "@/lib/diaryAnalysis";
 import { AllAttemptsFailedError, FatalAttemptError } from "@/lib/retry";
 import { GeminiConfigError, generateJson } from "@/lib/server/gemini";
 import { getDiaryAnalysisPrompt } from "@/lib/server/prompts";
+import { consumeGeminiQuota, DailyLimitError } from "@/lib/server/usage";
 import { UnauthorizedError, verifyRequestUser } from "@/lib/server/verifyIdToken";
 
 // やり直しと切り替えを含めても終わるように、長めにとる（秒）
@@ -20,8 +21,9 @@ function errorResponse(status: number, error: string, message: string) {
 }
 
 export async function POST(request: Request) {
+  let uid: string;
   try {
-    await verifyRequestUser(request);
+    uid = await verifyRequestUser(request);
   } catch (e) {
     if (e instanceof UnauthorizedError) {
       return errorResponse(401, "unauthorized", e.message);
@@ -42,6 +44,7 @@ export async function POST(request: Request) {
   const userMessage = buildAnalysisMessage(parsed.data);
 
   try {
+    await consumeGeminiQuota(request, uid);
     const prompt = await getDiaryAnalysisPrompt();
     const { data, model } = await generateJson({
       systemInstruction: prompt.systemInstruction,
@@ -53,6 +56,7 @@ export async function POST(request: Request) {
     const response: AnalyzeResponse = { analysis: data, model };
     return Response.json(response);
   } catch (e) {
+    if (e instanceof DailyLimitError) return errorResponse(429, "daily_limit", e.message);
     if (e instanceof AllAttemptsFailedError) {
       return errorResponse(
         503,

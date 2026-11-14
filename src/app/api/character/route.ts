@@ -3,6 +3,7 @@ import { buildGreetingMessage, normalizeGreeting, RECENT_DIARY_COUNT } from "@/l
 import { AllAttemptsFailedError, FatalAttemptError } from "@/lib/retry";
 import { GeminiConfigError, generateText } from "@/lib/server/gemini";
 import { getCharacterPrompt } from "@/lib/server/prompts";
+import { consumeGeminiQuota, DailyLimitError } from "@/lib/server/usage";
 import { UnauthorizedError, verifyRequestUser } from "@/lib/server/verifyIdToken";
 
 // ハカドリの話しかけ（src/prompts/03_character_chat.md、mode: greeting）。
@@ -37,8 +38,9 @@ function errorResponse(status: number, error: string) {
 }
 
 export async function POST(request: Request) {
+  let uid: string;
   try {
-    await verifyRequestUser(request);
+    uid = await verifyRequestUser(request);
   } catch (e) {
     if (e instanceof UnauthorizedError) return errorResponse(401, "unauthorized");
     throw e;
@@ -51,6 +53,7 @@ export async function POST(request: Request) {
   const { now, grade, recent, forecast } = parsed.data;
 
   try {
+    await consumeGeminiQuota(request, uid);
     const prompt = await getCharacterPrompt();
     const { text, model } = await generateText({
       systemInstruction: prompt.systemInstruction,
@@ -61,6 +64,7 @@ export async function POST(request: Request) {
     });
     return Response.json({ text, model });
   } catch (e) {
+    if (e instanceof DailyLimitError) return errorResponse(429, "daily_limit");
     if (e instanceof AllAttemptsFailedError) return errorResponse(503, "unavailable");
     if (e instanceof GeminiConfigError || e instanceof FatalAttemptError) {
       console.error(`[character] 設定の誤り：${e.message}`);

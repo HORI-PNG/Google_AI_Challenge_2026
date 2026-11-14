@@ -2,6 +2,7 @@ import { buildForecastMessage, forecastRequestSchema, forecastSchema } from "@/l
 import { AllAttemptsFailedError, FatalAttemptError } from "@/lib/retry";
 import { GeminiConfigError, generateJson } from "@/lib/server/gemini";
 import { getForecastPrompt } from "@/lib/server/prompts";
+import { consumeGeminiQuota, DailyLimitError } from "@/lib/server/usage";
 import { UnauthorizedError, verifyRequestUser } from "@/lib/server/verifyIdToken";
 
 // 今日のはかどり予報（src/prompts/02_forecast.md）。
@@ -18,8 +19,9 @@ function errorResponse(status: number, error: string, message: string) {
 }
 
 export async function POST(request: Request) {
+  let uid: string;
   try {
-    await verifyRequestUser(request);
+    uid = await verifyRequestUser(request);
   } catch (e) {
     if (e instanceof UnauthorizedError) return errorResponse(401, "unauthorized", e.message);
     throw e;
@@ -31,6 +33,7 @@ export async function POST(request: Request) {
   }
 
   try {
+    await consumeGeminiQuota(request, uid);
     const prompt = await getForecastPrompt();
     const { data, model } = await generateJson({
       systemInstruction: prompt.systemInstruction,
@@ -41,6 +44,7 @@ export async function POST(request: Request) {
     });
     return Response.json({ forecast: data, model });
   } catch (e) {
+    if (e instanceof DailyLimitError) return errorResponse(429, "daily_limit", e.message);
     if (e instanceof AllAttemptsFailedError) {
       return errorResponse(503, "forecast_failed", "Gemini が混み合っていて、予報を作れませんでした");
     }
