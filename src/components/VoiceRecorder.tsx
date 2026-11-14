@@ -9,6 +9,7 @@ import {
 } from "@/lib/audio";
 import { ApiRequestError, requestTranscription } from "@/lib/diaries";
 import { Button } from "@/components/ui/Ui";
+import { WalkingMascot } from "@/components/ui/WalkingMascot";
 
 // 声の日記：録音 → Gemini が文章にする → 本人が確認・修正 → 保存して分析
 // 録音はブラウザのメモリにだけ置き、文章にしたら捨てる（どこにも保存しない）
@@ -193,9 +194,9 @@ export function VoiceRecorder({
   if (state.step === "transcribing") {
     return (
       <div className="grid min-h-[480px] place-items-center text-center">
-        <div>
-          <div className="mx-auto mb-7 flex size-24 items-center justify-center rounded-full bg-soft-accent">
-            <div className="size-10 animate-pulse rounded-full border-4 border-accent border-t-transparent" />
+        <div className="w-full">
+          <div className="mx-auto mb-7 rounded-[var(--radius)] bg-soft-accent px-2 pt-4">
+            <WalkingMascot label="ハカドリが声を文章にしながら歩いています" />
           </div>
           <h2 className="font-display text-xl font-bold" role="status">
             声を文章にしています

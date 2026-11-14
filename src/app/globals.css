@@ -603,6 +603,169 @@
   --swatch-muted: #73737d;
 }
 
+/*
+ * 待ち時間のアニメーション（src/components/ui/WalkingMascot.tsx）
+ * ハカドリが右から左へ歩く。1つ目の小石（左から62%）と2つ目（28%）をジャンプする周（hop・9秒）と、
+ * 2つ目でつまずいて転び、起き上がる周（trip・11秒）がある。歩く速さはどちらも同じ
+ */
+.walk-scene {
+  position: relative;
+  width: 100%;
+  max-width: 320px;
+  height: 120px;
+  margin: 0 auto;
+  overflow: hidden;
+}
+
+.walk-ground {
+  position: absolute;
+  right: 0;
+  bottom: 16px;
+  left: 0;
+  height: 2px;
+  border-radius: 999px;
+  background: var(--border);
+}
+
+.walk-stone {
+  position: absolute;
+  bottom: 17px;
+  width: 14px;
+  height: 9px;
+  border-radius: 50% 50% 40% 40%;
+  background: color-mix(in srgb, var(--muted) 55%, transparent);
+}
+
+.walk-stone-1 {
+  left: 62%;
+}
+
+.walk-stone-2 {
+  left: 28%;
+}
+
+.walk-walker {
+  position: absolute;
+  bottom: 12px;
+  width: 64px;
+  animation-timing-function: linear;
+  animation-fill-mode: both;
+}
+
+.walk-x-hop {
+  animation-name: walk-x-hop;
+  animation-duration: 9s;
+}
+
+.walk-x-trip {
+  animation-name: walk-x-trip;
+  animation-duration: 11s;
+}
+
+.walk-body {
+  transform-origin: 50% 90%;
+  animation-timing-function: ease-in-out;
+  animation-fill-mode: both;
+}
+
+.walk-y-hop {
+  animation-name: walk-y-hop;
+  animation-duration: 9s;
+}
+
+.walk-y-trip {
+  animation-name: walk-y-trip;
+  animation-duration: 11s;
+}
+
+/* 歩くときの小さな上下の揺れ */
+.walk-bob {
+  animation: walk-bob 0.45s ease-in-out infinite alternate;
+}
+
+@keyframes walk-x-hop {
+  from {
+    left: calc(100% + 8px);
+  }
+  to {
+    left: -72px;
+  }
+}
+
+@keyframes walk-y-hop {
+  0%,
+  34%,
+  44%,
+  61%,
+  71%,
+  100% {
+    transform: translateY(0) rotate(0);
+  }
+  39%,
+  66% {
+    transform: translateY(-30px) rotate(-8deg);
+  }
+}
+
+@keyframes walk-x-trip {
+  0% {
+    left: calc(100% + 8px);
+  }
+  49% {
+    left: calc(28% - 10px);
+  }
+  71% {
+    left: calc(28% - 14px);
+  }
+  100% {
+    left: -72px;
+  }
+}
+
+@keyframes walk-y-trip {
+  0%,
+  28%,
+  36%,
+  49%,
+  71%,
+  100% {
+    transform: translateY(0) rotate(0);
+  }
+  32% {
+    transform: translateY(-30px) rotate(-8deg);
+  }
+  /* つまずいて、前（左）に転ぶ */
+  54%,
+  63% {
+    transform: translateY(14px) rotate(-75deg);
+  }
+  /* 起き上がって、ぶるっと */
+  67% {
+    transform: translateY(-6px) rotate(8deg);
+  }
+}
+
+@keyframes walk-bob {
+  from {
+    transform: translateY(0) rotate(2deg);
+  }
+  to {
+    transform: translateY(-3px) rotate(-3deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .walk-walker {
+    left: calc(50% - 32px);
+    animation: none !important;
+  }
+
+  .walk-body,
+  .walk-bob {
+    animation: none !important;
+  }
+}
+
 /* ハカドリが考えている動き */
 .mascot-thinking {
   animation: think 2.4s ease-in-out infinite;

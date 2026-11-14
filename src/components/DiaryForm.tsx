@@ -9,6 +9,7 @@ import { Mascot } from "@/components/ui/Mascot";
 import { placeholderGreeting } from "@/components/home/HomeParts";
 import { BackHeader, Button, ButtonLink, SpeechBubble } from "@/components/ui/Ui";
 import { useGreeting } from "@/components/useGreeting";
+import { WalkingMascot } from "@/components/ui/WalkingMascot";
 import { VoiceRecorder } from "@/components/VoiceRecorder";
 import { ApiRequestError, analyzeAndSave, createDiary, type SavedDiary } from "@/lib/diaries";
 import type { DiaryAnalysis, InputType } from "@/lib/diaryAnalysis";
@@ -181,11 +182,9 @@ export function DiaryForm({ user, profile }: { user: User; profile: UserProfile 
 function AnalyzingView() {
   return (
     <main className="grid min-h-dvh place-items-center px-7 text-center">
-      <div>
-        <div className="relative mx-auto mb-8 grid size-56 place-items-center rounded-full bg-hero">
-          <span className="absolute left-5 top-10 size-3 animate-pulse rounded-full bg-decor" />
-          <span className="absolute right-8 top-5 size-4 animate-bounce rounded-full border-2 border-decor" />
-          <Mascot mood="normal" size={144} className="mascot-thinking" />
+      <div className="w-full">
+        <div className="mx-auto mb-8 rounded-[calc(var(--radius)*1.5)] bg-hero px-2 pt-6">
+          <WalkingMascot label="ハカドリが日記を読みながら歩いています" />
         </div>
         <p className="text-sm font-bold tracking-widest text-accent-strong">READING YOUR NOTE</p>
         <h1 className="mt-3 font-display text-2xl font-bold leading-relaxed" role="status">
