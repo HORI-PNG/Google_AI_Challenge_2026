@@ -12,9 +12,18 @@ type Variant = "hop" | "trip";
 /** つまずく周の割合 */
 const TRIP_RATE = 0.3;
 
+/**
+ * 最初の周だけ、途中（画面の右寄り）から始める。
+ * 右の外から歩いて入ってくると、分析が早く終わったときにハカドリがほとんど見えないため。
+ * 2.5 秒ぶん進めると、開いた直後から画面の中にいて、約 0.6 秒後に 1 つ目の小石を跳ぶ
+ */
+const FIRST_LAP_HEAD_START = "-2.5s";
+
 export function WalkingMascot({ label = "ハカドリが歩いています" }: { label?: string }) {
   const [lap, setLap] = useState(0);
   const [variant, setVariant] = useState<Variant>("hop");
+  // 歩く動きと跳ねる動きは、同じだけ進めないとずれる
+  const headStart = lap === 0 ? { animationDelay: FIRST_LAP_HEAD_START } : undefined;
 
   return (
     <div className="walk-scene" role="img" aria-label={label}>
@@ -24,6 +33,7 @@ export function WalkingMascot({ label = "ハカドリが歩いています" }: {
       <div
         key={lap}
         className={`walk-walker walk-x-${variant}`}
+        style={headStart}
         onAnimationEnd={(e) => {
           // 歩いて画面の左に消えたら（中の跳ねる動きの終わりは数えない）、次の周へ
           if (e.target !== e.currentTarget) return;
@@ -32,7 +42,7 @@ export function WalkingMascot({ label = "ハカドリが歩いています" }: {
         }}
         aria-hidden="true"
       >
-        <div className={`walk-body walk-y-${variant}`}>
+        <div className={`walk-body walk-y-${variant}`} style={headStart}>
           <div className="walk-bob">
             <Mascot mood="normal" size={64} />
           </div>
