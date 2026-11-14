@@ -139,6 +139,12 @@ export async function getDiariesSince(uid: string, since: Date): Promise<Diary[]
   return snapshot.docs.map(toDiary);
 }
 
+/** 最近の日記を新しい順に count 件読む（ハカドリの話しかけ用） */
+export async function getRecentDiaries(uid: string, count: number): Promise<Diary[]> {
+  const snapshot = await getDocs(query(diariesRef(uid), orderBy("createdAt", "desc"), limit(count)));
+  return snapshot.docs.map(toDiary);
+}
+
 export async function getLatestDiary(uid: string): Promise<Diary | null> {
   const snapshot = await getDocs(
     query(diariesRef(uid), orderBy("createdAt", "desc"), limit(1)),
@@ -245,6 +251,29 @@ export async function requestTranscription(
     throw new ApiRequestError("invalid_response", "文章にできませんでした");
   }
   return { text: text.trim(), model: typeof model === "string" ? model : "unknown" };
+}
+
+/** ハカドリの話しかけを頼む（src/app/api/character） */
+export async function requestGreeting(
+  user: User,
+  body: {
+    now: string;
+    grade: string;
+    recent: { date: string; text: string; scores: DiaryAnalysis["scores"] | null }[];
+  },
+): Promise<string> {
+  const json = await callApi(
+    user,
+    "/api/character",
+    JSON.stringify({ mode: "greeting", ...body }),
+    "話しかけを作れませんでした",
+    "application/json",
+  );
+  const text = field(json, "text");
+  if (typeof text !== "string" || !text) {
+    throw new ApiRequestError("invalid_response", "話しかけを作れませんでした");
+  }
+  return text;
 }
 
 /**

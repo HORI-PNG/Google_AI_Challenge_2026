@@ -8,6 +8,7 @@ import { HomeGlass, HomeNotebook, HomeOffice } from "@/components/home/HomeViews
 import type { HomeViewProps, LatestDiaryState } from "@/components/home/homeTypes";
 import { LoginView } from "@/components/home/LoginView";
 import { useTheme } from "@/components/ThemeProvider";
+import { useGreeting } from "@/components/useGreeting";
 import { Loading } from "@/components/ui/Ui";
 import { ApiRequestError, analyzeAndSave, getLatestDiary } from "@/lib/diaries";
 import type { UserProfile } from "@/lib/userProfile";
@@ -48,6 +49,7 @@ export function HomeScreen() {
 /** ログイン後のホーム。データを読み込み、テーマの系統に合った見た目で表示する */
 function SignedInHome({ user, profile }: { user: User; profile: UserProfile }) {
   const { theme } = useTheme();
+  const greeting = useGreeting(user, profile);
   const [today] = useState(() => new Date());
   const [latest, setLatest] = useState<LatestDiaryState>({ status: "loading" });
   const [retrying, setRetrying] = useState(false);
@@ -93,6 +95,7 @@ function SignedInHome({ user, profile }: { user: User; profile: UserProfile }) {
     grade: profile.grade,
     email: user.email,
     latest,
+    greeting,
     onRetry: () => void retry(),
     retrying,
     retryError,

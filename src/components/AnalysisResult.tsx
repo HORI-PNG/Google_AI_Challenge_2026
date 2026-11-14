@@ -2,6 +2,7 @@ import { ConcernNotice } from "@/components/ConcernNotice";
 import { Mascot } from "@/components/ui/Mascot";
 import { ButtonLink, Card, ScoreBar, SpeechBubble } from "@/components/ui/Ui";
 import type { DiaryAnalysis, Scores } from "@/lib/diaryAnalysis";
+import { mascotMoodFromScores } from "@/lib/mascotMood";
 
 // 分析の結果。見た目は Figma Make の ResultScreen（SuccessResult／SupportResult）から移した
 
@@ -37,7 +38,7 @@ export function AnalysisResult({
       </div>
 
       <div className="grid grid-cols-[76px_1fr] items-end gap-2">
-        <Mascot mood={isUrgent ? "worried" : "cheer"} size={82} />
+        <Mascot mood={mascotMoodFromScores(analysis)} size={82} />
         <SpeechBubble>
           <span className="mb-1 block text-xs font-normal text-muted">ハカドリ → {nickname}</span>
           {analysis.character_reply}

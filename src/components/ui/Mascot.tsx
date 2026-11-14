@@ -3,7 +3,9 @@
 // 表情を点数で切り替える仕組みと、絵の仕上げは段階7 で行う。
 // SVG の属性では CSS 変数が効かないので、色は style で指定する。
 
-export type MascotMood = "happy" | "normal" | "worried" | "sleepy" | "cheer";
+import type { MascotMood } from "@/lib/mascotMood";
+
+export type { MascotMood };
 
 const MOOD_LABEL: Record<MascotMood, string> = {
   happy: "にっこり",

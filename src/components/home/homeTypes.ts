@@ -1,3 +1,4 @@
+import type { GreetingState } from "@/components/useGreeting";
 import type { Diary } from "@/lib/diaries";
 
 /** 最新の日記の読み込み状態 */
@@ -19,6 +20,8 @@ export type HomeViewProps = {
   grade: string;
   email: string | null;
   latest: LatestDiaryState;
+  /** ハカドリの話しかけと表情（段階7） */
+  greeting: GreetingState;
   /** 最新の日記の分析をやり直す */
   onRetry: () => void;
   retrying: boolean;

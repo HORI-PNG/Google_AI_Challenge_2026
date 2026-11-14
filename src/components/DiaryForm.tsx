@@ -6,7 +6,10 @@ import { AnalysisResult } from "@/components/AnalysisResult";
 import { toMessage } from "@/components/AuthProvider";
 import { SelectDiaryForm } from "@/components/SelectDiaryForm";
 import { Mascot } from "@/components/ui/Mascot";
-import { BackHeader, Button, ButtonLink } from "@/components/ui/Ui";
+import { placeholderGreeting } from "@/components/home/HomeParts";
+import { BackHeader, Button, ButtonLink, SpeechBubble } from "@/components/ui/Ui";
+import { useGreeting } from "@/components/useGreeting";
+import { WalkingMascot } from "@/components/ui/WalkingMascot";
 import { VoiceRecorder } from "@/components/VoiceRecorder";
 import { ApiRequestError, analyzeAndSave, createDiary, type SavedDiary } from "@/lib/diaries";
 import type { DiaryAnalysis, InputType } from "@/lib/diaryAnalysis";
@@ -33,6 +36,7 @@ export function DiaryForm({ user, profile }: { user: User; profile: UserProfile 
   const [text, setText] = useState("");
   const [phase, setPhase] = useState<Phase>({ step: "writing" });
   const [saveError, setSaveError] = useState<string | null>(null);
+  const greeting = useGreeting(user, profile);
 
   async function analyze(diary: SavedDiary) {
     setPhase({ step: "analyzing" });
@@ -103,6 +107,13 @@ export function DiaryForm({ user, profile }: { user: User; profile: UserProfile 
     <main className="min-h-dvh pb-8">
       <BackHeader title="今日の日記" />
       <div className="p-4">
+        {/* ハカドリが最近の日記をふまえて話しかける（書くきっかけ） */}
+        <div className="mb-5 grid grid-cols-[56px_1fr] items-end gap-2">
+          <Mascot mood={greeting.mood} size={60} />
+          <SpeechBubble className="text-sm">
+            <span aria-live="polite">{greeting.text ?? placeholderGreeting(profile.nickname)}</span>
+          </SpeechBubble>
+        </div>
         <div role="tablist" aria-label="日記のつけ方" className="grid grid-cols-3 rounded-[var(--radius-control)] bg-subtle p-1">
           {MODES.map((m) => (
             <button
@@ -133,7 +144,7 @@ export function DiaryForm({ user, profile }: { user: User; profile: UserProfile 
         {mode === "text" && (
           <form onSubmit={handleTextSubmit} className="mt-6">
             <div className="mb-4">
-              <p className="font-display text-xl font-bold">{profile.nickname}さん、思ったまま書いてみよう</p>
+              <p className="font-display text-xl font-bold">思ったまま、書いてみよう</p>
               <p className="mt-1 text-sm text-muted">うまくまとめなくて大丈夫です。</p>
             </div>
             <label>
@@ -171,11 +182,9 @@ export function DiaryForm({ user, profile }: { user: User; profile: UserProfile 
 function AnalyzingView() {
   return (
     <main className="grid min-h-dvh place-items-center px-7 text-center">
-      <div>
-        <div className="relative mx-auto mb-8 grid size-56 place-items-center rounded-full bg-hero">
-          <span className="absolute left-5 top-10 size-3 animate-pulse rounded-full bg-decor" />
-          <span className="absolute right-8 top-5 size-4 animate-bounce rounded-full border-2 border-decor" />
-          <Mascot mood="normal" size={144} className="mascot-thinking" />
+      <div className="w-full">
+        <div className="mx-auto mb-8 rounded-[calc(var(--radius)*1.5)] bg-hero px-2 pt-6">
+          <WalkingMascot label="ハカドリが日記を読みながら歩いています" />
         </div>
         <p className="text-sm font-bold tracking-widest text-accent-strong">READING YOUR NOTE</p>
         <h1 className="mt-3 font-display text-2xl font-bold leading-relaxed" role="status">
