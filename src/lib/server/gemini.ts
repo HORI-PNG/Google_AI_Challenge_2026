@@ -158,6 +158,8 @@ type GenerateTextParams = {
   normalize: (text: string | undefined) => string | null;
   /** 同じモデルで試す回数（待たせたくない呼び出しでは少なくする） */
   attemptsPerModel?: number;
+  /** true なら GEMINI_FALLBACK_MODEL（回数に余裕のある軽いモデル）を先に使う */
+  preferFallback?: boolean;
 };
 
 /**
@@ -166,7 +168,7 @@ type GenerateTextParams = {
  */
 export async function generateText(params: GenerateTextParams): Promise<{ text: string; model: string }> {
   const ai = getClient();
-  const models = getModels();
+  const models = params.preferFallback ? [...getModels()].reverse() : getModels();
 
   const { result, model } = await runWithFallback(
     models,

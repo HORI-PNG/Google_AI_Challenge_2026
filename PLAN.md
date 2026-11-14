@@ -234,6 +234,8 @@ users/{uid}
     basedOnDiaryId, model, createdAt
   usage/{date}                 ← Gemini を使った回数（1 人 1 日の上限。日本時間の日付）。1 から 1 ずつしか増やせない
     count
+  usage/{date}_ask             ← 「ハカドリに聞く」の質問の回数（1 日 10 回まで。段階12）。会話そのものは保存しない
+    count
   learnings/{learningId}       ← 補助：忘却曲線
     diaryId, topic, point, reviewedAt[], strength
 ```
