@@ -4,6 +4,7 @@ import Link from "next/link";
 import { Card } from "@/components/ui/Ui";
 import { Mascot } from "@/components/ui/Mascot";
 import { FeedbackCard } from "@/components/home/FeedbackCard";
+import { NearbyPlaces } from "@/components/home/NearbyPlaces";
 import {
   ForecastCard,
   ForecastEvidence,
@@ -111,6 +112,11 @@ export function HomeGlass(props: HomeViewProps) {
             </section>
           ))}
         </div>
+        {view.places.length > 0 && (
+          <section className="liquid-card rounded-[var(--radius)] px-4 pb-4 pt-0.5">
+            <NearbyPlaces places={view.places} />
+          </section>
+        )}
 
         <section className="liquid-card rounded-[var(--radius)] p-5">
           <p className="mb-3 text-xs font-medium text-muted">{latestTitle(props.latest)}</p>
@@ -214,6 +220,7 @@ export function HomeOffice(props: HomeViewProps) {
             </div>
           ))}
         </div>
+        <NearbyPlaces places={view.places} />
 
         <div className="mb-3 mt-7 flex items-center justify-between">
           <h3 className="text-sm font-bold">最新のコンディション</h3>

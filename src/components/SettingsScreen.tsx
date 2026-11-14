@@ -7,6 +7,7 @@ import { useEffect, useState, useSyncExternalStore } from "react";
 import { toMessage, useAuth } from "@/components/AuthProvider";
 import { useTheme } from "@/components/ThemeProvider";
 import { Mascot } from "@/components/ui/Mascot";
+import { PLACES_API_ENABLED } from "@/components/home/NearbyPlaces";
 import { WAIT_ANIMATION_INFO } from "@/components/ui/WaitAnimation";
 import { WAIT_ANIMATIONS, type WaitAnimation } from "@/lib/userProfile";
 import { getLatestDiary } from "@/lib/diaries";
@@ -146,6 +147,9 @@ export function SettingsScreen({ user }: { user: User }) {
         </div>
       </section>
 
+      {/* Places API を使わないときは位置情報も使わないので、設定を出さない */}
+      {PLACES_API_ENABLED && <LocationSetting />}
+
       <section className="space-y-3 border-t border-border pt-6">
         <Link
           href="/welcome"
@@ -166,6 +170,57 @@ export function SettingsScreen({ user }: { user: User }) {
         </button>
       </section>
     </div>
+  );
+}
+
+/** 近くの場所を探すときに位置情報を使うか（初期設定はオフ。.agents/rules/privacy.md） */
+function LocationSetting() {
+  const { settings, setLocationEnabled } = useAuth();
+  const [error, setError] = useState<string | null>(null);
+  const enabled = settings?.locationEnabled ?? false;
+
+  async function toggle() {
+    setError(null);
+    try {
+      await setLocationEnabled(!enabled);
+    } catch (e) {
+      setError(toMessage(e, "位置情報の設定を保存できませんでした"));
+    }
+  }
+
+  return (
+    <section aria-labelledby="location-title">
+      <h2 id="location-title" className="font-display text-xl font-bold">
+        位置情報
+      </h2>
+      <button
+        type="button"
+        role="switch"
+        aria-checked={enabled}
+        onClick={toggle}
+        className="mt-3 flex min-h-16 w-full items-center justify-between gap-3 rounded-[var(--radius-control)] border border-border bg-card px-4 py-3 text-left"
+      >
+        <span>
+          <strong className="block text-sm">近くの場所を探すのに使う</strong>
+          <span className="text-xs leading-relaxed text-muted">
+            予報のおすすめ場所（図書館・カフェ・公園）を、近くの実際の場所で探します。探すときだけ使い、保存しません。
+          </span>
+        </span>
+        <span
+          aria-hidden="true"
+          className={`relative h-7 w-12 shrink-0 rounded-full transition ${enabled ? "bg-accent" : "bg-track"}`}
+        >
+          <span
+            className={`absolute top-1 size-5 rounded-full bg-card shadow transition-[left] ${enabled ? "left-6" : "left-1"}`}
+          />
+        </span>
+      </button>
+      {error && (
+        <p role="alert" className="mt-2 text-sm font-bold text-accent-strong">
+          {error}
+        </p>
+      )}
+    </section>
   );
 }
 

@@ -20,6 +20,7 @@ import {
 import { firebaseConfigError, getFirebaseAuth } from "@/lib/firebase";
 import {
   loadOrCreateUser,
+  saveLocationEnabled,
   saveUserProfile,
   saveWaitAnimation,
   type UserProfile,
@@ -52,6 +53,8 @@ type AuthContextValue = {
   updateProfile: (profile: UserProfile) => Promise<void>;
   /** 分析中のアニメーションを切り替えて保存する */
   setWaitAnimation: (id: WaitAnimation) => Promise<void>;
+  /** 近くの場所を探すのに位置情報を使うかを切り替えて保存する */
+  setLocationEnabled: (enabled: boolean) => Promise<void>;
 };
 
 const AuthContext = createContext<AuthContextValue | null>(null);
@@ -160,9 +163,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     [state],
   );
 
+  const setLocationEnabled = useCallback(
+    async (enabled: boolean) => {
+      if (state.status !== "signedIn") return;
+      setSettings((prev) => (prev ? { ...prev, locationEnabled: enabled } : prev));
+      await saveLocationEnabled(state.user.uid, enabled);
+    },
+    [state],
+  );
+
   const value = useMemo(
-    () => ({ state, profile, settings, error, signIn, signOut, updateProfile, setWaitAnimation }),
-    [state, profile, settings, error, signIn, signOut, updateProfile, setWaitAnimation],
+    () => ({ state, profile, settings, error, signIn, signOut, updateProfile, setWaitAnimation, setLocationEnabled }),
+    [state, profile, settings, error, signIn, signOut, updateProfile, setWaitAnimation, setLocationEnabled],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
