@@ -7,7 +7,7 @@ import {
   assertSucceeds,
   initializeTestEnvironment,
 } from "@firebase/rules-unit-testing";
-import { doc, getDoc, setDoc } from "firebase/firestore";
+import { deleteDoc, doc, getDoc, setDoc } from "firebase/firestore";
 
 let testEnv;
 
@@ -62,6 +62,26 @@ describe("users/{uid}", () => {
     const db = testEnv.unauthenticatedContext().firestore();
     await assertFails(getDoc(doc(db, "users/alice")));
     await assertFails(setDoc(doc(db, "users/alice"), { settings: {} }));
+  });
+
+  test("本人は usage を 1 から始めて、1 ずつしか増やせない", async () => {
+    const db = testEnv.authenticatedContext("alice").firestore();
+    const ref = doc(db, "users/alice/usage/2026-11-14");
+    await assertFails(setDoc(ref, { count: 0 }));
+    await assertSucceeds(setDoc(ref, { count: 1 }));
+    await assertSucceeds(getDoc(ref));
+    await assertSucceeds(setDoc(ref, { count: 2 }));
+    await assertFails(setDoc(ref, { count: 1 }));
+    await assertFails(setDoc(ref, { count: 5 }));
+    await assertFails(setDoc(ref, { count: 3, extra: true }));
+    await assertFails(deleteDoc(ref));
+  });
+
+  test("他人の usage は読めない・増やせない", async () => {
+    const db = testEnv.authenticatedContext("bob").firestore();
+    const ref = doc(db, "users/alice/usage/2026-11-14");
+    await assertFails(setDoc(ref, { count: 1 }));
+    await assertFails(getDoc(ref));
   });
 
   test("users 以外の場所は、ログインしていても拒否される", async () => {

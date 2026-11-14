@@ -3,6 +3,7 @@ import { transcriptionSchema, type TranscribeResponse } from "@/lib/diaryAnalysi
 import { AllAttemptsFailedError, FatalAttemptError } from "@/lib/retry";
 import { GeminiConfigError, generateJson } from "@/lib/server/gemini";
 import { getVoiceTranscriptionPrompt } from "@/lib/server/prompts";
+import { consumeGeminiQuota, DailyLimitError } from "@/lib/server/usage";
 import { UnauthorizedError, verifyRequestUser } from "@/lib/server/verifyIdToken";
 
 // 声の日記を、Gemini に音声のまま渡して文章にする（.agents/rules/gemini.md）。
@@ -20,8 +21,9 @@ function errorResponse(status: number, error: string, message: string) {
 }
 
 export async function POST(request: Request) {
+  let uid: string;
   try {
-    await verifyRequestUser(request);
+    uid = await verifyRequestUser(request);
   } catch (e) {
     if (e instanceof UnauthorizedError) {
       return errorResponse(401, "unauthorized", e.message);
@@ -59,6 +61,7 @@ export async function POST(request: Request) {
   }
 
   try {
+    await consumeGeminiQuota(request, uid);
     const prompt = await getVoiceTranscriptionPrompt();
     const data = Buffer.from(await audio.arrayBuffer()).toString("base64");
     const result = await generateJson({
@@ -80,6 +83,7 @@ export async function POST(request: Request) {
     const response: TranscribeResponse = { text: result.data.text, model: result.model };
     return Response.json(response);
   } catch (e) {
+    if (e instanceof DailyLimitError) return errorResponse(429, "daily_limit", e.message);
     if (e instanceof AllAttemptsFailedError) {
       return errorResponse(
         503,
