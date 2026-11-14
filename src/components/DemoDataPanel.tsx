@@ -34,7 +34,7 @@ export function DemoDataPanel({ uid, onChange }: { uid: string; onChange: () => 
     <section className="flex flex-col gap-2 rounded-[var(--radius)] border border-dashed border-border p-4 text-sm">
       <p className="font-bold">開発用：デモの日記</p>
       <p className="text-xs leading-relaxed text-muted">
-        グラフの確認とデモ動画のために、{DEMO_DAYS} 日分の架空の日記を入れます（本番には表示されません）。
+        グラフ・予報の確認とデモ動画のために、{DEMO_DAYS} 日分の架空の日記と「はかどった？」の答えを入れます（昨日の分は答えずに残します。本番には表示されません）。
       </p>
       <div className="flex gap-2">
         <button

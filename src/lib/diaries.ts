@@ -23,6 +23,7 @@ import {
   type TranscribeResponse,
 } from "@/lib/diaryAnalysis";
 import { getDb } from "@/lib/firebase";
+import { forecastSchema, type Forecast, type ForecastRequest } from "@/lib/forecast";
 
 // users/{uid}/diaries/{diaryId} の読み書き（PLAN.md「データ構造」）
 
@@ -260,6 +261,8 @@ export async function requestGreeting(
     now: string;
     grade: string;
     recent: { date: string; text: string; scores: DiaryAnalysis["scores"] | null }[];
+    /** 今日のはかどり予報の短い説明（まだなければ null） */
+    forecast: string | null;
   },
 ): Promise<string> {
   const json = await callApi(
@@ -274,6 +277,26 @@ export async function requestGreeting(
     throw new ApiRequestError("invalid_response", "話しかけを作れませんでした");
   }
   return text;
+}
+
+/** 今日のはかどり予報を頼む（src/app/api/forecast）。日記の本文は送らない */
+export async function requestForecast(
+  user: User,
+  body: ForecastRequest,
+): Promise<{ forecast: Forecast; model: string }> {
+  const json = await callApi(
+    user,
+    "/api/forecast",
+    JSON.stringify(body),
+    "予報を作れませんでした",
+    "application/json",
+  );
+  const parsed = forecastSchema.safeParse(field(json, "forecast"));
+  if (!parsed.success) {
+    throw new ApiRequestError("invalid_response", "予報の結果が読めませんでした");
+  }
+  const model = field(json, "model");
+  return { forecast: parsed.data, model: typeof model === "string" ? model : "unknown" };
 }
 
 /**

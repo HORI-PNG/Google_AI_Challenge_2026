@@ -9,7 +9,7 @@ import { Mascot } from "@/components/ui/Mascot";
 import { placeholderGreeting } from "@/components/home/HomeParts";
 import { BackHeader, Button, ButtonLink, SpeechBubble } from "@/components/ui/Ui";
 import { useGreeting } from "@/components/useGreeting";
-import { WalkingMascot } from "@/components/ui/WalkingMascot";
+import { WaitAnimation } from "@/components/ui/WaitAnimation";
 import { VoiceRecorder } from "@/components/VoiceRecorder";
 import { ApiRequestError, analyzeAndSave, createDiary, type SavedDiary } from "@/lib/diaries";
 import type { DiaryAnalysis, InputType } from "@/lib/diaryAnalysis";
@@ -36,7 +36,7 @@ export function DiaryForm({ user, profile }: { user: User; profile: UserProfile 
   const [text, setText] = useState("");
   const [phase, setPhase] = useState<Phase>({ step: "writing" });
   const [saveError, setSaveError] = useState<string | null>(null);
-  const greeting = useGreeting(user, profile);
+  const greeting = useGreeting(user, profile, null);
 
   async function analyze(diary: SavedDiary) {
     setPhase({ step: "analyzing" });
@@ -184,7 +184,7 @@ function AnalyzingView() {
     <main className="grid min-h-dvh place-items-center px-7 text-center">
       <div className="w-full">
         <div className="mx-auto mb-8 rounded-[calc(var(--radius)*1.5)] bg-hero px-2 pt-6">
-          <WalkingMascot label="ハカドリが日記を読みながら歩いています" />
+          <WaitAnimation label="日記を分析しています" />
         </div>
         <p className="text-sm font-bold tracking-widest text-accent-strong">READING YOUR NOTE</p>
         <h1 className="mt-3 font-display text-2xl font-bold leading-relaxed" role="status">

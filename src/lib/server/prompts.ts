@@ -43,6 +43,11 @@ export function getDiaryAnalysisPrompt(): Promise<PromptDefinition> {
   return loadPrompt("01_diary_analysis.md");
 }
 
+/** プロンプト②：今日のはかどり予報 */
+export function getForecastPrompt(): Promise<PromptDefinition> {
+  return loadPrompt("02_forecast.md");
+}
+
 /** プロンプト④：声の日記の書き起こし（音声といっしょに送る文も md から読む） */
 export async function getVoiceTranscriptionPrompt(): Promise<
   PromptDefinition & { userMessage: string }

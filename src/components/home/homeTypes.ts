@@ -1,3 +1,4 @@
+import type { FeedbackState, ForecastState } from "@/components/useForecast";
 import type { GreetingState } from "@/components/useGreeting";
 import type { Diary } from "@/lib/diaries";
 
@@ -22,6 +23,10 @@ export type HomeViewProps = {
   latest: LatestDiaryState;
   /** ハカドリの話しかけと表情（段階7） */
   greeting: GreetingState;
+  /** 「昨日ははかどった？」（段階8） */
+  feedback: FeedbackState;
+  /** 今日のはかどり予報（段階8） */
+  forecast: ForecastState;
   /** 最新の日記の分析をやり直す */
   onRetry: () => void;
   retrying: boolean;

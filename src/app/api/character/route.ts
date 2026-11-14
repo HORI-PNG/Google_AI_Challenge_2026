@@ -28,6 +28,8 @@ const requestSchema = z.object({
       }),
     )
     .max(RECENT_DIARY_COUNT),
+  /** 今日のはかどり予報の短い説明（段階8） */
+  forecast: z.string().max(120).nullable().optional(),
 });
 
 function errorResponse(status: number, error: string) {
@@ -46,14 +48,14 @@ export async function POST(request: Request) {
   if (!parsed.success) {
     return errorResponse(400, "bad_request");
   }
-  const { now, grade, recent } = parsed.data;
+  const { now, grade, recent, forecast } = parsed.data;
 
   try {
     const prompt = await getCharacterPrompt();
     const { text, model } = await generateText({
       systemInstruction: prompt.systemInstruction,
       temperature: TEMPERATURE,
-      userMessage: buildGreetingMessage({ now, grade, recent, forecast: null }),
+      userMessage: buildGreetingMessage({ now, grade, recent, forecast: forecast ?? null }),
       normalize: normalizeGreeting,
       attemptsPerModel: ATTEMPTS_PER_MODEL,
     });

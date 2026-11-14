@@ -21,8 +21,10 @@ import { firebaseConfigError, getFirebaseAuth } from "@/lib/firebase";
 import {
   loadOrCreateUser,
   saveUserProfile,
+  saveWaitAnimation,
   type UserProfile,
   type UserSettings,
+  type WaitAnimation,
 } from "@/lib/userProfile";
 
 type AuthState =
@@ -48,6 +50,8 @@ type AuthContextValue = {
   signIn: () => Promise<void>;
   signOut: () => Promise<void>;
   updateProfile: (profile: UserProfile) => Promise<void>;
+  /** 分析中のアニメーションを切り替えて保存する */
+  setWaitAnimation: (id: WaitAnimation) => Promise<void>;
 };
 
 const AuthContext = createContext<AuthContextValue | null>(null);
@@ -146,9 +150,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     [state],
   );
 
+  const setWaitAnimation = useCallback(
+    async (id: WaitAnimation) => {
+      if (state.status !== "signedIn") return;
+      // 画面はすぐ切り替え、保存に失敗したら呼んだ側にエラーを返す
+      setSettings((prev) => (prev ? { ...prev, waitAnimation: id } : prev));
+      await saveWaitAnimation(state.user.uid, id);
+    },
+    [state],
+  );
+
   const value = useMemo(
-    () => ({ state, profile, settings, error, signIn, signOut, updateProfile }),
-    [state, profile, settings, error, signIn, signOut, updateProfile],
+    () => ({ state, profile, settings, error, signIn, signOut, updateProfile, setWaitAnimation }),
+    [state, profile, settings, error, signIn, signOut, updateProfile, setWaitAnimation],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

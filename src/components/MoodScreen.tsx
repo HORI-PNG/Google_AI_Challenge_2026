@@ -7,9 +7,12 @@ import { DemoDataPanel } from "@/components/DemoDataPanel";
 import { MoodChart, SERIES } from "@/components/MoodChart";
 import { Card } from "@/components/ui/Ui";
 import { getDiariesSince } from "@/lib/diaries";
+import { getFeedbackSince } from "@/lib/feedback";
+import { PRODUCTIVITY_LABELS, type Productivity } from "@/lib/forecast";
 import {
   averageScores,
   buildDailySeries,
+  dateKey,
   formatDayLabel,
   periodStart,
   SCORE_KEYS,
@@ -25,7 +28,7 @@ const MAX_DAYS = 30;
 
 type Load =
   | { status: "loading" }
-  | { status: "ready"; entries: ScoredEntry[] }
+  | { status: "ready"; entries: ScoredEntry[]; productivity: Record<string, Productivity> }
   | { status: "error" };
 
 export function MoodScreen({ user }: { user: User }) {
@@ -44,8 +47,13 @@ export function MoodScreen({ user }: { user: User }) {
   // 1か月分をまとめて読み、1週間はその中から切り出す
   useEffect(() => {
     let active = true;
-    getDiariesSince(user.uid, periodStart(today, MAX_DAYS))
-      .then((diaries) => {
+    const since = periodStart(today, MAX_DAYS);
+    Promise.all([
+      getDiariesSince(user.uid, since),
+      // 「はかどった？」の答えが読めなくても、グラフは出す
+      getFeedbackSince(user.uid, dateKey(since)).catch(() => []),
+    ])
+      .then(([diaries, feedback]) => {
         if (!active) return;
         const entries: ScoredEntry[] = diaries.flatMap((d) =>
           d.analysisStatus === "done" && d.analysis && d.createdAt
@@ -58,7 +66,8 @@ export function MoodScreen({ user }: { user: User }) {
               ]
             : [],
         );
-        setLoad({ status: "ready", entries });
+        const productivity = Object.fromEntries(feedback.map((f) => [f.date, f.productivity]));
+        setLoad({ status: "ready", entries, productivity });
       })
       .catch(() => {
         if (active) setLoad({ status: "error" });
@@ -69,9 +78,11 @@ export function MoodScreen({ user }: { user: User }) {
   }, [user.uid, today, reloadKey]);
 
   const entries = load.status === "ready" ? load.entries : [];
+  const productivity = load.status === "ready" ? load.productivity : {};
   const points = buildDailySeries(entries, today, days);
   const average = averageScores(points);
   const recordedDays = points.filter((p) => p.scores).length;
+  const productiveDays = points.filter((p) => productivity[p.date] === 3).length;
   const periodLabel = PERIODS.find((p) => p.days === days)?.label ?? "";
 
   return (
@@ -146,8 +157,10 @@ export function MoodScreen({ user }: { user: User }) {
           </div>
         ) : (
           <>
-            <MoodChart points={points} visible={visible} />
-            <p className="text-center text-xs text-muted">グラフに触れると、その日の記録が見られます</p>
+            <MoodChart points={points} visible={visible} productivity={productivity} />
+            <p className="text-center text-xs text-muted">
+              <span className="font-bold text-accent-strong">★</span> と色の帯は「{PRODUCTIVITY_LABELS[3]}」と答えた日（{productiveDays}日）。グラフに触れると、その日の記録が見られます
+            </p>
           </>
         )}
       </Card>
