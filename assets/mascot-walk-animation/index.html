@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Moonwalker SVG ビューアー (Ver.1 & Ver.2)</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;700;900&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'M PLUS Rounded 1c', sans-serif;
+    }
+  </style>
+</head>
+<body class="bg-slate-900 text-slate-100 antialiased min-h-screen py-8 px-4">
+  <div class="max-w-5xl mx-auto space-y-6">
+
+    <!-- タイトルカード -->
+    <header class="bg-slate-800 rounded-3xl p-6 shadow-xl border border-slate-700 flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div>
+        <div class="flex items-center gap-2">
+          <span class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-amber-500 text-slate-950 font-bold text-sm shadow-md">🕺</span>
+          <h1 class="text-2xl font-black text-white tracking-tight">Moonwalker SVG Animation Studio</h1>
+          <span class="text-xs px-2.5 py-1 rounded-full bg-amber-500/20 text-amber-400 font-bold border border-amber-500/30">Ver.1 & Ver.2 搭載</span>
+        </div>
+        <p class="text-slate-400 text-sm mt-1">
+          ハカドリが歩くVer.1と、本格ゲーム演出（完全な後ろ歩き物理・ゼログラビティ・ハット投げ）のVer.2を切り替えて鑑賞できます
+        </p>
+      </div>
+
+      <div class="flex items-center gap-2">
+        <a href="moonwalker_ver2.svg" download class="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 text-xs font-black transition shadow-lg">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+          Ver.2 (Moonwalker) をDL
+        </a>
+        <a href="walking_mascot_ver1.svg" download class="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-slate-700 hover:bg-slate-600 text-slate-200 text-xs font-bold transition">
+          Ver.1 (ハカドリ) をDL
+        </a>
+      </div>
+    </header>
+
+    <!-- バージョン切り替え＆コントロール -->
+    <div class="flex flex-wrap items-center justify-between gap-3 bg-slate-800/80 p-3 rounded-2xl border border-slate-700">
+      <div class="inline-flex p-1 rounded-xl bg-slate-900 border border-slate-700">
+        <button id="btn-show-v2" class="px-5 py-2 rounded-lg text-xs font-black transition bg-amber-500 text-slate-950 shadow-md flex items-center gap-1.5">
+          <span>🔥 Ver.2 Michael Jackson's Moonwalker版</span>
+        </button>
+        <button id="btn-show-v3" class="px-5 py-2 rounded-lg text-xs font-bold transition text-slate-400 hover:text-white flex items-center gap-1.5">
+          <span>🤖 Ver.3 メガシティ・バトル</span>
+        </button>
+        <button id="btn-show-v1" class="px-5 py-2 rounded-lg text-xs font-bold transition text-slate-400 hover:text-white flex items-center gap-1.5">
+          <span>🐤 Ver.1 ハカドリ（マスコット版）</span>
+        </button>
+      </div>
+
+      <div class="text-xs text-slate-400 font-medium">
+        ※Ver.2は「左から右へ流れる地面」により、<b class="text-amber-400">右を向いて左へ滑る真のムーンウォーク</b>を完全再現！
+      </div>
+    </div>
+
+    <!-- メインスクリーン（SVG表示） -->
+    <main class="bg-slate-800 rounded-3xl p-6 shadow-2xl border border-slate-700 space-y-6">
+      
+      <!-- Ver.2 ステージ（デフォルト表示） -->
+      <div id="container-v2" class="space-y-6">
+        <div class="flex justify-center py-2">
+          <div class="relative w-80 h-80 md:w-96 md:h-96 rounded-full overflow-hidden shadow-2xl border-2 border-amber-500/30">
+            <object type="image/svg+xml" data="moonwalker_ver2.svg" class="w-full h-full block"></object>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-3 pt-2 text-xs">
+          <div class="p-3.5 rounded-2xl bg-slate-900/80 border border-slate-700 space-y-1">
+            <span class="font-black text-amber-400 block text-sm">① 真のムーンウォーク物理</span>
+            <span class="text-slate-300">床が左から右へ流れることで、右向きマイケルがスーッと左（後ろ）へ滑る後ろ歩きイリュージョン！足元からスターダストが舞います。</span>
+          </div>
+          <div class="p-3.5 rounded-2xl bg-slate-900/80 border border-slate-700 space-y-1">
+            <span class="font-black text-amber-400 block text-sm">② 25%: ハイキックまたぎ</span>
+            <span class="text-slate-300">背後から迫るゴールドコインを、振り返りざまに切れ味鋭いハイキックステップで華麗にまたぎ越します。</span>
+          </div>
+          <div class="p-3.5 rounded-2xl bg-slate-900/80 border border-slate-700 space-y-1">
+            <span class="font-black text-amber-400 block text-sm">③ 36%〜46%: ゼログラビティ</span>
+            <span class="text-slate-300">伝説の45度前傾姿勢（Smooth Criminal Lean）！「Hee-Hee!」シャウトと共に空中360度スーパースピンでアンプを飛び越えます。</span>
+          </div>
+          <div class="p-3.5 rounded-2xl bg-slate-900/80 border border-slate-700 space-y-1">
+            <span class="font-black text-amber-400 block text-sm">④ 54%: リアルなつまずき＆ハットキャッチ</span>
+            <span class="text-slate-300">小石に足を取られ「Aaow!」とガクッと前のめりにつんのめり、腕を突き出して踏ん張る！浮き上がった帽子を空中でキャッチし、よろめきながら体勢を立て直してクールにムーンウォークへ復帰します。</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Ver.3 ステージ（3D。開いたときに読み込む） -->
+      <div id="container-v3" class="hidden space-y-4">
+        <div class="relative w-full aspect-video rounded-2xl overflow-hidden shadow-2xl border-2 border-rose-500/30 bg-black">
+          <iframe id="frame-v3" title="Ver.3 メガシティ・バトル" class="w-full h-full block" allow="fullscreen"></iframe>
+        </div>
+        <div class="p-4 rounded-2xl bg-slate-900/80 border border-slate-700 text-xs text-slate-300">
+          <b class="text-rose-400 text-sm block mb-1">🤖 Ver.3 メガシティ・バトル（Three.js の 3D）：</b>
+          夕暮れの架空の大都市。川から現れた大怪獣と、空から降りてきた巨大ロボットが、ビルを壊しながら戦います（約 48 秒でくり返し）。
+          <a href="ver3_megacity_battle.html" target="_blank" class="text-rose-300 underline">全画面で開く</a>
+        </div>
+      </div>
+
+      <!-- Ver.1 ステージ（切り替え用） -->
+      <div id="container-v1" class="hidden space-y-6">
+        <div class="flex justify-center py-2">
+          <div class="relative w-80 h-80 md:w-96 md:h-96 rounded-full overflow-hidden shadow-2xl border-2 border-indigo-500/30">
+            <object type="image/svg+xml" data="walking_mascot_ver1.svg" class="w-full h-full block"></object>
+          </div>
+        </div>
+        <div class="p-4 rounded-2xl bg-slate-900/80 border border-slate-700 text-xs text-slate-300">
+          <b class="text-amber-400 text-sm block mb-1">🐤 Ver.1 ハカドリ（マスコット版）の特徴：</b>
+          アプリのキャラクター「ハカドリ」が、前を向いてよちよち歩きます。小石は羽をぱたぱたさせてふわっと跳び越え、たまにつまずいて顔から転び、星をくるくるさせたあと、ぷるぷるっと起き上がって「♪」とぴょん。日記を分析している間の待ち時間に使う案です。
+        </div>
+      </div>
+
+    </main>
+
+  </div>
+
+  <script>
+    const btnV1 = document.getElementById('btn-show-v1');
+    const btnV2 = document.getElementById('btn-show-v2');
+    const conV1 = document.getElementById('container-v1');
+    const conV2 = document.getElementById('container-v2');
+
+    const btnV3 = document.getElementById('btn-show-v3');
+    const conV3 = document.getElementById('container-v3');
+    const OFF = 'px-5 py-2 rounded-lg text-xs font-bold transition text-slate-400 hover:text-white flex items-center gap-1.5';
+    btnV3.addEventListener('click', () => {
+      conV3.classList.remove('hidden');
+      conV1.classList.add('hidden');
+      conV2.classList.add('hidden');
+      const f = document.getElementById('frame-v3');
+      if (!f.src) f.src = 'ver3_megacity_battle.html';
+      btnV3.className = 'px-5 py-2 rounded-lg text-xs font-black transition bg-rose-500 text-white shadow-md flex items-center gap-1.5';
+      btnV1.className = OFF;
+      btnV2.className = OFF;
+    });
+
+    btnV2.addEventListener('click', () => {
+      conV2.classList.remove('hidden');
+      conV1.classList.add('hidden');
+      conV3.classList.add('hidden');
+      btnV3.className = OFF;
+      btnV2.className = 'px-5 py-2 rounded-lg text-xs font-black transition bg-amber-500 text-slate-950 shadow-md flex items-center gap-1.5';
+      btnV1.className = 'px-5 py-2 rounded-lg text-xs font-bold transition text-slate-400 hover:text-white flex items-center gap-1.5';
+    });
+
+    btnV1.addEventListener('click', () => {
+      conV1.classList.remove('hidden');
+      conV2.classList.add('hidden');
+      conV3.classList.add('hidden');
+      btnV3.className = OFF;
+      btnV1.className = 'px-5 py-2 rounded-lg text-xs font-black transition bg-indigo-500 text-white shadow-md flex items-center gap-1.5';
+      btnV2.className = 'px-5 py-2 rounded-lg text-xs font-bold transition text-slate-400 hover:text-white flex items-center gap-1.5';
+    });
+  </script>
+</body>
+</html>
