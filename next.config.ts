@@ -8,6 +8,7 @@ const nextConfig: NextConfig = {
   outputFileTracingIncludes: {
     "/api/analyze": ["./src/prompts/**/*.md"],
     "/api/transcribe": ["./src/prompts/**/*.md"],
+    "/api/character": ["./src/prompts/**/*.md"],
   },
   turbopack: {
     rules: {

@@ -32,6 +32,12 @@ async function loadPrompt(fileName: string): Promise<PromptDefinition> {
   };
 }
 
+/** プロンプト③：キャラクター（ハカドリ）。文章で返すので、システム指示だけを使う */
+export async function getCharacterPrompt(): Promise<{ systemInstruction: string }> {
+  const markdown = await readPromptFile("03_character_chat.md");
+  return { systemInstruction: extractCodeBlock(markdown, "システム指示") };
+}
+
 /** プロンプト①：日記の分析 */
 export function getDiaryAnalysisPrompt(): Promise<PromptDefinition> {
   return loadPrompt("01_diary_analysis.md");

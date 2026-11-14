@@ -6,7 +6,9 @@ import { AnalysisResult } from "@/components/AnalysisResult";
 import { toMessage } from "@/components/AuthProvider";
 import { SelectDiaryForm } from "@/components/SelectDiaryForm";
 import { Mascot } from "@/components/ui/Mascot";
-import { BackHeader, Button, ButtonLink } from "@/components/ui/Ui";
+import { placeholderGreeting } from "@/components/home/HomeParts";
+import { BackHeader, Button, ButtonLink, SpeechBubble } from "@/components/ui/Ui";
+import { useGreeting } from "@/components/useGreeting";
 import { VoiceRecorder } from "@/components/VoiceRecorder";
 import { ApiRequestError, analyzeAndSave, createDiary, type SavedDiary } from "@/lib/diaries";
 import type { DiaryAnalysis, InputType } from "@/lib/diaryAnalysis";
@@ -33,6 +35,7 @@ export function DiaryForm({ user, profile }: { user: User; profile: UserProfile 
   const [text, setText] = useState("");
   const [phase, setPhase] = useState<Phase>({ step: "writing" });
   const [saveError, setSaveError] = useState<string | null>(null);
+  const greeting = useGreeting(user, profile);
 
   async function analyze(diary: SavedDiary) {
     setPhase({ step: "analyzing" });
@@ -103,6 +106,13 @@ export function DiaryForm({ user, profile }: { user: User; profile: UserProfile 
     <main className="min-h-dvh pb-8">
       <BackHeader title="今日の日記" />
       <div className="p-4">
+        {/* ハカドリが最近の日記をふまえて話しかける（書くきっかけ） */}
+        <div className="mb-5 grid grid-cols-[56px_1fr] items-end gap-2">
+          <Mascot mood={greeting.mood} size={60} />
+          <SpeechBubble className="text-sm">
+            <span aria-live="polite">{greeting.text ?? placeholderGreeting(profile.nickname)}</span>
+          </SpeechBubble>
+        </div>
         <div role="tablist" aria-label="日記のつけ方" className="grid grid-cols-3 rounded-[var(--radius-control)] bg-subtle p-1">
           {MODES.map((m) => (
             <button
@@ -133,7 +143,7 @@ export function DiaryForm({ user, profile }: { user: User; profile: UserProfile 
         {mode === "text" && (
           <form onSubmit={handleTextSubmit} className="mt-6">
             <div className="mb-4">
-              <p className="font-display text-xl font-bold">{profile.nickname}さん、思ったまま書いてみよう</p>
+              <p className="font-display text-xl font-bold">思ったまま、書いてみよう</p>
               <p className="mt-1 text-sm text-muted">うまくまとめなくて大丈夫です。</p>
             </div>
             <label>

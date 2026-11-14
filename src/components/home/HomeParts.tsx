@@ -5,6 +5,8 @@ import { useState } from "react";
 import { Button, Card, SpeechBubble } from "@/components/ui/Ui";
 import { Mascot } from "@/components/ui/Mascot";
 import type { HomeViewProps, LatestDiaryState } from "@/components/home/homeTypes";
+import type { GreetingState } from "@/components/useGreeting";
+import { mascotMoodFromScores } from "@/lib/mascotMood";
 
 // ホームの3つの系統で共有する部品
 
@@ -93,15 +95,18 @@ function AccountMenu({ props }: { props: HomeViewProps }) {
   );
 }
 
-/** ハカドリの話しかけ */
-export function Greeting({ nickname }: { nickname: string }) {
+/** 話しかけを読み込んでいる間に出す、仮の話しかけ */
+export function placeholderGreeting(nickname: string) {
+  return `${nickname}さん、今日はどんな一日だった？`;
+}
+
+/** ハカドリの話しかけ（Gemini が最近の日記をふまえて話しかける） */
+export function Greeting({ nickname, greeting }: { nickname: string; greeting: GreetingState }) {
   return (
     <div className="grid grid-cols-[72px_1fr] items-end gap-2">
-      <Mascot mood="happy" size={78} />
+      <Mascot mood={greeting.mood} size={78} />
       <SpeechBubble>
-        {nickname}さん、今日は
-        <br />
-        どんな一日だった？
+        <span aria-live="polite">{greeting.text ?? placeholderGreeting(nickname)}</span>
       </SpeechBubble>
     </div>
   );
@@ -189,7 +194,7 @@ export function ReflectionContent({
     return (
       <>
         <div className="flex items-center gap-3">
-          <Mascot mood={isUrgent ? "worried" : "cheer"} size={66} />
+          <Mascot mood={mascotMoodFromScores(analysis)} size={66} />
           <p className="font-bold leading-relaxed">{analysis.character_reply}</p>
         </div>
         {!isUrgent && (

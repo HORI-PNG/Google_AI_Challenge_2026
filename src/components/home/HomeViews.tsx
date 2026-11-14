@@ -12,10 +12,12 @@ import {
   HomeHeader,
   latestTitle,
   MiniChart,
+  placeholderGreeting,
   ReflectionContent,
   SCORE_LABELS,
 } from "@/components/home/HomeParts";
 import type { HomeViewProps } from "@/components/home/homeTypes";
+import { mascotMoodFromScores } from "@/lib/mascotMood";
 
 // ホームの3つの系統（Figma Make のデザインの HomeNotebook／HomeGlass／HomeOffice）。
 // どれも同じ HomeViewProps を受け取り、並べ方だけが違う
@@ -26,7 +28,7 @@ export function HomeNotebook(props: HomeViewProps) {
     <main className="min-h-dvh pb-10">
       <HomeHeader props={props} />
       <div className="space-y-5 px-4 pt-4">
-        <Greeting nickname={props.nickname} />
+        <Greeting nickname={props.nickname} greeting={props.greeting} />
         <ForecastCard />
         <Card>
           <p className="mb-3 text-sm font-bold text-muted">{latestTitle(props.latest)}</p>
@@ -54,6 +56,9 @@ export function HomeGlass(props: HomeViewProps) {
     <main className="min-h-dvh pb-28">
       <HomeHeader props={props} />
       <div className="relative z-10 space-y-4 px-4 pt-5">
+        <p className="liquid-card rounded-[var(--radius-control)] px-5 py-4 font-bold leading-relaxed" aria-live="polite">
+          {props.greeting.text ?? placeholderGreeting(props.nickname)}
+        </p>
         <section className="liquid-card material-hero relative overflow-hidden rounded-[var(--radius)] p-6">
           <div className="flex items-start justify-between">
             <div>
@@ -61,7 +66,7 @@ export function HomeGlass(props: HomeViewProps) {
               <h2 className="mt-3 font-display text-2xl font-bold">今日のはかどり</h2>
             </div>
             <div className="grid size-14 place-items-center rounded-full bg-soft-accent">
-              <Mascot mood="happy" size={52} />
+              <Mascot mood={props.greeting.mood} size={52} />
             </div>
           </div>
           <div className="my-6 flex items-end justify-between">
@@ -144,6 +149,12 @@ export function HomeOffice(props: HomeViewProps) {
         <div className="mb-7">
           <p className="text-xs font-medium text-muted">Overview / {props.dateLabel}</p>
           <h2 className="mt-1 font-display text-2xl font-bold">本日のレポート</h2>
+          <div className="mt-3 flex items-center gap-2">
+            <Mascot mood={props.greeting.mood} size={32} />
+            <p className="text-sm leading-relaxed text-muted" aria-live="polite">
+              {props.greeting.text ?? placeholderGreeting(props.nickname)}
+            </p>
+          </div>
         </div>
 
         <section className="office-surface">
@@ -197,7 +208,7 @@ export function HomeOffice(props: HomeViewProps) {
         )}
         {showScores && (
           <div className="mt-4 flex items-start gap-3">
-            <Mascot mood="cheer" size={40} />
+            <Mascot mood={mascotMoodFromScores(analysis)} size={40} />
             <p className="text-sm leading-relaxed text-muted">{analysis.character_reply}</p>
           </div>
         )}

@@ -149,3 +149,59 @@ export async function generateJson<T>(
 
   return { data: result, model };
 }
+
+type GenerateTextParams = {
+  systemInstruction: string;
+  temperature: number;
+  userMessage: string;
+  /** 返事を整える。使えない返事なら null を返す（やり直しの対象になる） */
+  normalize: (text: string | undefined) => string | null;
+  /** 同じモデルで試す回数（待たせたくない呼び出しでは少なくする） */
+  attemptsPerModel?: number;
+};
+
+/**
+ * ふつうの文章で Gemini を呼ぶ（キャラクターの話しかけなど）。
+ * やり直しと Gemini モデルの切り替えは generateJson と同じ仕組み。
+ */
+export async function generateText(params: GenerateTextParams): Promise<{ text: string; model: string }> {
+  const ai = getClient();
+  const models = getModels();
+
+  const { result, model } = await runWithFallback(
+    models,
+    async (model) => {
+      try {
+        const response = await ai.models.generateContent({
+          model,
+          contents: params.userMessage,
+          config: {
+            systemInstruction: params.systemInstruction,
+            temperature: params.temperature,
+            httpOptions: {
+              timeout: REQUEST_TIMEOUT_MS,
+              retryOptions: { attempts: 1 },
+            },
+          },
+        });
+        const text = params.normalize(response.text);
+        if (!text) {
+          throw new AttemptError("retryable", "使えない返事（空・長すぎる）");
+        }
+        return text;
+      } catch (error) {
+        throw classify(error);
+      }
+    },
+    {
+      attemptsPerModel: params.attemptsPerModel ?? ATTEMPTS_PER_MODEL,
+      delaysMs: RETRY_DELAYS_MS,
+      onFailure: (log) =>
+        console.warn(
+          `[gemini] model=${log.model} attempt=${log.attempt} kind=${log.kind} detail=${log.detail}`,
+        ),
+    },
+  );
+
+  return { text: result, model };
+}
