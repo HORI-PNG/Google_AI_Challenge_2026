@@ -4,6 +4,7 @@ import Link from "next/link";
 import { Card } from "@/components/ui/Ui";
 import { Mascot } from "@/components/ui/Mascot";
 import { FeedbackCard } from "@/components/home/FeedbackCard";
+import { CalendarButton } from "@/components/home/CalendarButton";
 import { NearbyPlaces } from "@/components/home/NearbyPlaces";
 import {
   ForecastCard,
@@ -112,8 +113,9 @@ export function HomeGlass(props: HomeViewProps) {
             </section>
           ))}
         </div>
-        {view.places.length > 0 && (
+        {view.ready && (
           <section className="liquid-card rounded-[var(--radius)] px-4 pb-4 pt-0.5">
+            <CalendarButton event={view.calendar} />
             <NearbyPlaces places={view.places} />
           </section>
         )}
@@ -220,6 +222,7 @@ export function HomeOffice(props: HomeViewProps) {
             </div>
           ))}
         </div>
+        <CalendarButton event={view.calendar} />
         <NearbyPlaces places={view.places} />
 
         <div className="mb-3 mt-7 flex items-center justify-between">

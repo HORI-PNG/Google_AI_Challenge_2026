@@ -7,7 +7,9 @@ import { Mascot } from "@/components/ui/Mascot";
 import type { HomeViewProps, LatestDiaryState } from "@/components/home/homeTypes";
 import type { ForecastState } from "@/components/useForecast";
 import type { GreetingState } from "@/components/useGreeting";
+import { CalendarButton } from "@/components/home/CalendarButton";
 import { NearbyPlaces } from "@/components/home/NearbyPlaces";
+import type { CalendarEvent } from "@/lib/calendar";
 import { FORECAST_DISCLAIMER, PLACE_LABELS, WEATHER_LABELS, type Place } from "@/lib/forecast";
 import { mascotMoodFromScores } from "@/lib/mascotMood";
 
@@ -135,6 +137,8 @@ export type ForecastView = {
   evidence: string[];
   /** おすすめ場所（近くの実際の場所を探すのに使う） */
   places: Place[];
+  /** おすすめ時間をカレンダーに入れるときの予定 */
+  calendar: CalendarEvent | null;
   /** 記録が少ないときの注意 */
   note: string | null;
   onRetry: (() => void) | null;
@@ -167,6 +171,19 @@ export function forecastView(state: ForecastState): ForecastView {
       rest: f.rest_advice,
       evidence: f.evidence,
       places: f.places,
+      calendar: {
+        title: `勉強（はかどり予報 ${f.percent}%）`,
+        date: state.saved.date,
+        range: f.best_time.range,
+        location: f.places.map((p) => PLACE_LABELS[p]).join("・") || undefined,
+        details: [
+          `おすすめの理由：${f.best_time.reason}`,
+          `向いていること：${f.study_style}`,
+          `ラッキーアイテム：${f.lucky_item.name}`,
+          "",
+          `Re:Note のはかどり予報から追加しました。${FORECAST_DISCLAIMER}`,
+        ].join("\n"),
+      },
       note: f.data_sufficiency === "few" ? "記録がたまるほど、予報があなたに合っていくよ" : null,
       onRetry: null,
     };
@@ -184,6 +201,7 @@ export function forecastView(state: ForecastState): ForecastView {
     rest: null,
     evidence: [],
     places: [],
+    calendar: null,
     note: null,
     onRetry: state.status === "error" ? state.onRetry : null,
   };
@@ -256,6 +274,7 @@ export function ForecastCard({ state }: { state: ForecastState }) {
             </div>
           ))}
         </div>
+        <CalendarButton event={view.calendar} />
         <NearbyPlaces places={view.places} />
         <p className="mt-4 rounded-[var(--radius-control)] bg-soft-accent p-4 text-sm font-bold leading-relaxed" aria-live="polite">
           {view.message}
