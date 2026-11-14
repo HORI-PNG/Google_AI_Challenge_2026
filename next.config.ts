@@ -15,6 +15,7 @@ const nextConfig: NextConfig = {
     "/api/analyze": ["./src/prompts/**/*.md"],
     "/api/transcribe": ["./src/prompts/**/*.md"],
     "/api/character": ["./src/prompts/**/*.md"],
+    "/api/forecast": ["./src/prompts/**/*.md"],
   },
   turbopack: {
     rules: {

@@ -5,7 +5,9 @@ import { useState } from "react";
 import { Button, Card, SpeechBubble } from "@/components/ui/Ui";
 import { Mascot } from "@/components/ui/Mascot";
 import type { HomeViewProps, LatestDiaryState } from "@/components/home/homeTypes";
+import type { ForecastState } from "@/components/useForecast";
 import type { GreetingState } from "@/components/useGreeting";
+import { FORECAST_DISCLAIMER, PLACE_LABELS, WEATHER_LABELS } from "@/lib/forecast";
 import { mascotMoodFromScores } from "@/lib/mascotMood";
 
 // ホームの3つの系統で共有する部品
@@ -112,47 +114,149 @@ export function Greeting({ nickname, greeting }: { nickname: string; greeting: G
   );
 }
 
-/**
- * 今日のはかどり予報（段階8・9 で中身を出す）。
- * この段階では、予報の項目の並びだけを見せて「日記がたまると出る」と伝える
- */
+/** 今日のはかどり予報の項目（3 つの系統で同じ並び） */
 export const FORECAST_ITEMS = ["おすすめ時間", "おすすめ場所", "ラッキーアイテム", "向いていること"] as const;
-export const FORECAST_PENDING_MESSAGE = "日記がたまると、ここに今日のはかどり予報が出ます。";
 /** 予報がまだないときの数字の代わり（「—」は丸ゴシックで長い棒に見え、メーターと間違えやすい） */
 export const FORECAST_PLACEHOLDER = "--";
 
-export function ForecastCard() {
+export type ForecastView = {
+  ready: boolean;
+  percent: string;
+  /** 0〜100（メーターの長さ）。予報がないときは 0 */
+  value: number;
+  icon: string;
+  /** 天気、または「作っています」などの状態 */
+  status: string;
+  items: { label: (typeof FORECAST_ITEMS)[number]; value: string; sub: string | null }[];
+  /** ハカドリのひとこと、または予報がない理由 */
+  message: string;
+  rest: string | null;
+  evidence: string[];
+  /** 記録が少ないときの注意 */
+  note: string | null;
+  onRetry: (() => void) | null;
+};
+
+const NOT_READY_MESSAGE: Record<Exclude<ForecastState["status"], "ready" | "error">, [string, string]> = {
+  loading: ["予報中…", "Gemini が今日のはかどりを予報しています…"],
+  waiting: ["もうすぐ", "昨日のはかどりを答えると、今日の予報が出るよ。"],
+  noDiary: ["まだなし", "日記を書くと、次の日からはかどり予報が出るよ。"],
+};
+
+/** 予報の状態を、画面に出す文字に直す（3 つの系統で共有する） */
+export function forecastView(state: ForecastState): ForecastView {
+  if (state.status === "ready") {
+    const f = state.saved.forecast;
+    const w = WEATHER_LABELS[f.weather];
+    return {
+      ready: true,
+      percent: String(f.percent),
+      value: f.percent,
+      icon: w.icon,
+      status: w.label,
+      items: [
+        { label: "おすすめ時間", value: f.best_time.range, sub: f.best_time.reason },
+        { label: "おすすめ場所", value: f.places.map((p) => PLACE_LABELS[p]).join("・") || "どこでも", sub: null },
+        { label: "ラッキーアイテム", value: f.lucky_item.name, sub: f.lucky_item.reason },
+        { label: "向いていること", value: f.study_style, sub: null },
+      ],
+      message: f.message,
+      rest: f.rest_advice,
+      evidence: f.evidence,
+      note: f.data_sufficiency === "few" ? "記録がたまるほど、予報があなたに合っていくよ" : null,
+      onRetry: null,
+    };
+  }
+  const [status, message] =
+    state.status === "error" ? ["作れませんでした", state.message] : NOT_READY_MESSAGE[state.status];
+  return {
+    ready: false,
+    percent: FORECAST_PLACEHOLDER,
+    value: 0,
+    icon: "🌤️",
+    status,
+    items: FORECAST_ITEMS.map((label) => ({ label, value: "—", sub: null })),
+    message,
+    rest: null,
+    evidence: [],
+    note: null,
+    onRetry: state.status === "error" ? state.onRetry : null,
+  };
+}
+
+/** 予報の根拠と注意書き（「根拠がない」と思われないよう、小さく出す） */
+export function ForecastEvidence({ view }: { view: ForecastView }) {
+  if (!view.ready) return null;
   return (
-    <Card className="overflow-hidden p-0">
+    <div className="mt-3 text-xs leading-relaxed text-muted">
+      {view.evidence.length > 0 && (
+        <>
+          <p className="font-bold">予報の根拠</p>
+          <ul className="mt-1 list-disc pl-5">
+            {view.evidence.map((e) => (
+              <li key={e}>{e}</li>
+            ))}
+          </ul>
+        </>
+      )}
+      {view.note && <p className="mt-1">※ {view.note}</p>}
+      <p className="mt-1">※ {FORECAST_DISCLAIMER}</p>
+    </div>
+  );
+}
+
+export function ForecastRetry({ view }: { view: ForecastView }) {
+  if (!view.onRetry) return null;
+  return (
+    <Button variant="secondary" onClick={view.onRetry} className="mt-3 w-full">
+      もう一度予報する
+    </Button>
+  );
+}
+
+/** 手帳の系統の予報カード */
+export function ForecastCard({ state }: { state: ForecastState }) {
+  const view = forecastView(state);
+  return (
+    <Card className="overflow-hidden p-0" aria-busy={state.status === "loading"}>
       <div className="flex items-start justify-between border-b border-border p-5">
         <div>
           <p className="text-sm font-bold text-accent-strong">TODAY&apos;S FORECAST</p>
           <h2 className="mt-1 font-display text-xl font-bold">今日のはかどり予報</h2>
         </div>
         <div className="text-right text-3xl" aria-hidden="true">
-          🌤️
+          {view.icon}
         </div>
       </div>
       <div className="p-5">
         <div className="flex items-end gap-3">
-          <strong className="font-num text-6xl leading-none text-muted" aria-label="まだ予報はありません">
-            {FORECAST_PLACEHOLDER}
+          <strong
+            className={`font-num text-6xl leading-none ${view.ready ? "" : "text-muted"}`}
+            aria-label={view.ready ? `はかどり度 ${view.percent}%` : "まだ予報はありません"}
+          >
+            {view.percent}
             <span className="text-2xl">%</span>
           </strong>
-          <p className="pb-1 text-sm leading-relaxed text-muted">準備中</p>
+          <p className={`pb-1 text-sm font-bold leading-relaxed ${view.ready ? "text-accent-strong" : "text-muted"}`}>
+            {view.status}
+          </p>
         </div>
         <div className="my-5 h-px bg-border" />
-        <div className="grid grid-cols-2 gap-3">
-          {FORECAST_ITEMS.map((label) => (
-            <div key={label}>
-              <p className="text-xs font-bold text-muted">{label}</p>
-              <p className="mt-1 text-sm font-bold leading-snug text-muted">—</p>
+        <div className="grid grid-cols-2 gap-4">
+          {view.items.map((item) => (
+            <div key={item.label}>
+              <p className="text-xs font-bold text-muted">{item.label}</p>
+              <p className={`mt-1 text-sm font-bold leading-snug ${view.ready ? "" : "text-muted"}`}>{item.value}</p>
+              {item.sub && <p className="mt-1 text-xs leading-relaxed text-muted">{item.sub}</p>}
             </div>
           ))}
         </div>
-        <p className="mt-4 rounded-[var(--radius-control)] bg-soft-accent p-4 text-sm font-bold leading-relaxed">
-          {FORECAST_PENDING_MESSAGE}
+        <p className="mt-4 rounded-[var(--radius-control)] bg-soft-accent p-4 text-sm font-bold leading-relaxed" aria-live="polite">
+          {view.message}
+          {view.rest && <span className="mt-2 block font-normal">{view.rest}</span>}
         </p>
+        <ForecastRetry view={view} />
+        <ForecastEvidence view={view} />
       </div>
     </Card>
   );

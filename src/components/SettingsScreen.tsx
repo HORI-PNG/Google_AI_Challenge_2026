@@ -7,6 +7,8 @@ import { useEffect, useState, useSyncExternalStore } from "react";
 import { toMessage, useAuth } from "@/components/AuthProvider";
 import { useTheme } from "@/components/ThemeProvider";
 import { Mascot } from "@/components/ui/Mascot";
+import { WAIT_ANIMATION_INFO } from "@/components/ui/WaitAnimation";
+import { WAIT_ANIMATIONS, type WaitAnimation } from "@/lib/userProfile";
 import { getLatestDiary } from "@/lib/diaries";
 import {
   getTheme,
@@ -23,7 +25,7 @@ const currentHour = () => new Date().getHours();
 // テーマ・設定（Figma Make の SettingsScreen から移した）
 export function SettingsScreen({ user }: { user: User }) {
   const { theme, setTheme } = useTheme();
-  const { signOut } = useAuth();
+  const { signOut, settings, setWaitAnimation } = useAuth();
   const router = useRouter();
   const [scores, setScores] = useState<RecommendInput["scores"]>(null);
   // 今の時刻はブラウザで描くときだけ読む（サーバーでの事前描画では昼の扱い）
@@ -49,6 +51,15 @@ export function SettingsScreen({ user }: { user: User }) {
       await setTheme(id);
     } catch (e) {
       setError(toMessage(e, "テーマを保存できませんでした（この端末では切り替わっています）"));
+    }
+  }
+
+  async function chooseAnimation(id: WaitAnimation) {
+    setError(null);
+    try {
+      await setWaitAnimation(id);
+    } catch (e) {
+      setError(toMessage(e, "アニメーションの設定を保存できませんでした"));
     }
   }
 
@@ -99,6 +110,40 @@ export function SettingsScreen({ user }: { user: User }) {
           selected={theme?.id ?? null}
           onChoose={choose}
         />
+      </section>
+
+      <section aria-labelledby="wait-animation-title">
+        <h2 id="wait-animation-title" className="font-display text-xl font-bold">
+          分析中のアニメーション
+        </h2>
+        <p className="mt-1 text-sm text-muted">日記を分析している間に流れるアニメーションを選べます。</p>
+        <div role="radiogroup" aria-labelledby="wait-animation-title" className="mt-3 flex flex-col gap-2">
+          {WAIT_ANIMATIONS.map((id) => {
+            const active = (settings?.waitAnimation ?? "hakadori") === id;
+            return (
+              <button
+                key={id}
+                type="button"
+                role="radio"
+                aria-checked={active}
+                onClick={() => chooseAnimation(id)}
+                className={`flex min-h-16 items-center justify-between gap-3 rounded-[var(--radius-control)] border-2 bg-card px-4 py-3 text-left transition ${
+                  active ? "border-accent shadow-[var(--card-shadow)]" : "border-border"
+                }`}
+              >
+                <span>
+                  <strong className="block text-sm">{WAIT_ANIMATION_INFO[id].name}</strong>
+                  <span className="text-xs text-muted">{WAIT_ANIMATION_INFO[id].description}</span>
+                </span>
+                {active && (
+                  <span className="text-accent" aria-hidden="true">
+                    ●
+                  </span>
+                )}
+              </button>
+            );
+          })}
+        </div>
       </section>
 
       <section className="space-y-3 border-t border-border pt-6">

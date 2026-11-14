@@ -212,7 +212,8 @@ CLAUDE.md              ← 「@AGENTS.md」の1行だけ（Claude Code に AGENT
 ```
 users/{uid}
   settings
-    themeId, characterId, locationEnabled
+    themeId, characterId, locationEnabled,
+    waitAnimation(hakadori|moonwalk|battle)   ← 分析中のアニメーション（標準は hakadori）
   profile                      ← 初回に登録してもらう基本情報（Gemini には grade だけを渡す）
     name, nickname, grade
   diaries/{diaryId}
@@ -222,10 +223,14 @@ users/{uid}
     reason, confidence(high|medium|low), concernLevel(none|watch|urgent),
     analysisStatus(pending|done|failed), analyzedModel, analyzedAt,
     location{lat, lng, placeName}?
-  feedback/{date}
-    productivity(1|2|3)        ← 「昨日ははかどった？」の答え
-  forecasts/{date}
-    percent, weather, bestTime, places[], luckyItem, studyStyle, message
+  feedback/{date}              ← date は「はかどったか」を答えた対象の日（＝昨日）。YYYY-MM-DD
+    productivity(1|2|3),       ← 「昨日ははかどった？」の答え
+    studyTime(morning|noon|evening|night)?, place(home|library|cafe|school|park)?,  ← 任意
+    answeredAt
+  forecasts/{date}             ← 1 日 1 回作り、その日に新しい日記を書いたときだけ作り直す
+    percent, weather, dataSufficiency(few|enough), bestTime{range, reason}, places[],
+    luckyItem{name, reason}, studyStyle, restAdvice, message, evidence[],
+    basedOnDiaryId, model, createdAt
   learnings/{learningId}       ← 補助：忘却曲線
     diaryId, topic, point, reviewedAt[], strength
 ```

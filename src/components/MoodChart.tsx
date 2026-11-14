@@ -9,6 +9,7 @@ import {
   type DayPoint,
   type ScoreKey,
 } from "@/lib/moodSeries";
+import { PRODUCTIVITY_LABELS, type Productivity } from "@/lib/forecast";
 
 // 気分のグラフ（SVG で自作）。4 つの点数を折れ線で表示する。
 // 色は categorical の順番を固定（globals.css の --series-*）。日記のない日は線を途切れさせる。
@@ -30,12 +31,18 @@ const Y_TICKS = [0, 25, 50, 75, 100];
 /** 線の端の名前どうしが、これより近いときは名前を出さない（凡例とツールチップに任せる） */
 const MIN_LABEL_GAP = 12;
 
+/** はかどった日の印（背景の帯と★）。色は線と重ならないよう、テーマの薄い色を使う */
+const PRODUCTIVE_STAR = "★";
+
 export function MoodChart({
   points,
   visible,
+  productivity = {},
 }: {
   points: DayPoint[];
   visible: Record<ScoreKey, boolean>;
+  /** 日付（YYYY-MM-DD）ごとの「はかどった？」の答え（段階8） */
+  productivity?: Record<string, Productivity>;
 }) {
   const [active, setActive] = useState<number | null>(null);
   const svgRef = useRef<SVGSVGElement | null>(null);
@@ -124,6 +131,25 @@ export function MoodChart({
             )}
           </g>
         ))}
+
+        {/* はかどった日（「昨日ははかどった？」で「はかどった」と答えた日）の帯と★ */}
+        {points.map((p, i) =>
+          productivity[p.date] === 3 ? (
+            <g key={`productive-${p.date}`}>
+              <rect
+                x={x(i) - Math.max(4, PLOT_W / Math.max(n - 1, 1) / 2)}
+                y={M.top}
+                width={Math.max(8, PLOT_W / Math.max(n - 1, 1))}
+                height={PLOT_H}
+                style={{ fill: "var(--soft-accent)" }}
+                opacity={0.55}
+              />
+              <text x={x(i)} y={M.top + 9} textAnchor="middle" className="fill-accent-strong text-[10px]">
+                {PRODUCTIVE_STAR}
+              </text>
+            </g>
+          ) : null,
+        )}
 
         {xTicks.map(({ p, i }) => (
           <text
@@ -225,6 +251,12 @@ export function MoodChart({
           }
         >
           <p className="mb-1 text-muted">{formatDayLabel(activePoint.date)}</p>
+          {productivity[activePoint.date] && (
+            <p className="mb-1 font-bold">
+              {productivity[activePoint.date] === 3 && `${PRODUCTIVE_STAR} `}
+              {PRODUCTIVITY_LABELS[productivity[activePoint.date]]}
+            </p>
+          )}
           {activePoint.scores ? (
             <>
               <ul className="flex flex-col gap-1">

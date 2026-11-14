@@ -10,6 +10,7 @@ import {
   writeBatch,
 } from "firebase/firestore";
 import { getDb } from "@/lib/firebase";
+import { dateKey, type Place, type Productivity, type StudyTime } from "@/lib/forecast";
 import type { ScoreSet } from "@/lib/moodSeries";
 
 export const DEMO_DAYS = 30;
@@ -92,7 +93,28 @@ function demoScores(dayIndex: number, rand: () => number): ScoreSet {
   };
 }
 
-/** 今日までの DEMO_DAYS 日分のうち、ところどころ休んだ日を空けて、架空の日記を入れる */
+/**
+ * 架空の「はかどった？」の答え。集中・元気が高く、ストレスが低い日ほど、はかどったことにする。
+ * はかどった日は朝の図書館やカフェ、はかどらなかった日は夜の家、という傾向をつける（予報の根拠を見せるため）
+ */
+function demoFeedback(scores: ScoreSet, rand: () => number): { productivity: Productivity; studyTime: StudyTime; place: Place } {
+  const index = scores.focus * 0.4 + scores.energy * 0.3 + (100 - scores.stress) * 0.3 + (rand() - 0.5) * 10;
+  const productivity: Productivity = index >= 60 ? 3 : index >= 45 ? 2 : 1;
+  const r = rand();
+  if (productivity === 3) {
+    return { productivity, studyTime: r < 0.7 ? "morning" : "noon", place: r < 0.55 ? "library" : r < 0.8 ? "cafe" : "home" };
+  }
+  if (productivity === 1) {
+    return { productivity, studyTime: r < 0.7 ? "night" : "evening", place: r < 0.75 ? "home" : "school" };
+  }
+  return { productivity, studyTime: r < 0.5 ? "evening" : "noon", place: r < 0.5 ? "school" : "home" };
+}
+
+/**
+ * 今日までの DEMO_DAYS 日分のうち、ところどころ休んだ日を空けて、架空の日記を入れる。
+ * 「はかどった？」の答えも入れる（予報が「記録が十分」の状態になる）。
+ * ただし昨日の分は答えずに残す（デモで「昨日ははかどった？」に答える場面を撮るため）
+ */
 export async function seedDemoDiaries(uid: string, today = new Date()): Promise<number> {
   const db = getDb();
   const batch = writeBatch(db);
@@ -100,13 +122,22 @@ export async function seedDemoDiaries(uid: string, today = new Date()): Promise<
   let count = 0;
 
   for (let i = 0; i < DEMO_DAYS; i++) {
-    // 日記をつけなかった日も作る（グラフの線が途切れる様子を見せるため）
-    if (rand() < 0.15) continue;
+    const daysAgo = DEMO_DAYS - 1 - i;
+    // 日記をつけなかった日も作る（グラフの線が途切れる様子を見せるため）。昨日と今日は必ず書いたことにする
+    if (rand() < 0.15 && daysAgo > 1) continue;
     const day = new Date(today.getFullYear(), today.getMonth(), today.getDate() - (DEMO_DAYS - 1 - i), 22, 0);
     const scores = demoScores(i, rand);
     const band = scores.mood >= 65 ? "high" : scores.mood >= 45 ? "mid" : "low";
     const options = TEMPLATES[band];
     const t = options[Math.floor(rand() * options.length)];
+
+    if (daysAgo >= 2) {
+      batch.set(doc(db, "users", uid, "feedback", dateKey(day)), {
+        ...demoFeedback(scores, rand),
+        answeredAt: Timestamp.fromDate(new Date(day.getTime() + 11 * 60 * 60 * 1000)),
+        isDemo: true,
+      });
+    }
 
     batch.set(doc(collection(db, "users", uid, "diaries")), {
       createdAt: Timestamp.fromDate(day),
@@ -129,14 +160,16 @@ export async function seedDemoDiaries(uid: string, today = new Date()): Promise<
   return count;
 }
 
-/** デモ用の日記をすべて消す（isDemo が付いたものだけ） */
+/** デモ用の日記と「はかどった？」の答えをすべて消す（isDemo が付いたものだけ） */
 export async function deleteDemoDiaries(uid: string): Promise<number> {
   const db = getDb();
-  const snapshot = await getDocs(
-    query(collection(db, "users", uid, "diaries"), where("isDemo", "==", true)),
+  const [diaries, feedback] = await Promise.all(
+    ["diaries", "feedback"].map((name) =>
+      getDocs(query(collection(db, "users", uid, name), where("isDemo", "==", true))),
+    ),
   );
   const batch = writeBatch(db);
-  snapshot.docs.forEach((d) => batch.delete(d.ref));
+  [...diaries.docs, ...feedback.docs].forEach((d) => batch.delete(d.ref));
   await batch.commit();
-  return snapshot.size;
+  return diaries.size;
 }

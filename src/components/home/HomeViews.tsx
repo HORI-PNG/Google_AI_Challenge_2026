@@ -3,11 +3,12 @@
 import Link from "next/link";
 import { Card } from "@/components/ui/Ui";
 import { Mascot } from "@/components/ui/Mascot";
+import { FeedbackCard } from "@/components/home/FeedbackCard";
 import {
-  FORECAST_ITEMS,
-  FORECAST_PENDING_MESSAGE,
-  FORECAST_PLACEHOLDER,
   ForecastCard,
+  ForecastEvidence,
+  ForecastRetry,
+  forecastView,
   Greeting,
   HomeHeader,
   latestTitle,
@@ -29,7 +30,8 @@ export function HomeNotebook(props: HomeViewProps) {
       <HomeHeader props={props} />
       <div className="space-y-5 px-4 pt-4">
         <Greeting nickname={props.nickname} greeting={props.greeting} />
-        <ForecastCard />
+        <FeedbackCard state={props.feedback} />
+        <ForecastCard state={props.forecast} />
         <Card>
           <p className="mb-3 text-sm font-bold text-muted">{latestTitle(props.latest)}</p>
           <ReflectionContent {...props} />
@@ -52,6 +54,7 @@ export function HomeNotebook(props: HomeViewProps) {
 
 /** クリア（すりガラス）。予報を上に大きく、下にタイル、画面の下に固定のナビゲーション */
 export function HomeGlass(props: HomeViewProps) {
+  const view = forecastView(props.forecast);
   return (
     <main className="min-h-dvh pb-28">
       <HomeHeader props={props} />
@@ -59,6 +62,7 @@ export function HomeGlass(props: HomeViewProps) {
         <p className="liquid-card rounded-[var(--radius-control)] px-5 py-4 font-bold leading-relaxed" aria-live="polite">
           {props.greeting.text ?? placeholderGreeting(props.nickname)}
         </p>
+        <FeedbackCard state={props.feedback} />
         <section className="liquid-card material-hero relative overflow-hidden rounded-[var(--radius)] p-6">
           <div className="flex items-start justify-between">
             <div>
@@ -71,25 +75,39 @@ export function HomeGlass(props: HomeViewProps) {
           </div>
           <div className="my-6 flex items-end justify-between">
             <div>
-              <strong className="font-num text-7xl leading-none tracking-[-.06em] text-muted" aria-label="まだ予報はありません">
-                {FORECAST_PLACEHOLDER}
+              <strong
+                className={`font-num text-7xl leading-none tracking-[-.06em] ${view.ready ? "" : "text-muted"}`}
+                aria-label={view.ready ? `はかどり度 ${view.percent}%` : "まだ予報はありません"}
+              >
+                {view.percent}
                 <span className="ml-1 text-2xl">%</span>
               </strong>
-              <p className="mt-2 text-sm font-medium text-muted">準備中</p>
+              <p className="mt-2 text-sm font-medium text-muted">{view.status}</p>
             </div>
+            <span className="text-5xl" aria-hidden="true">
+              {view.icon}
+            </span>
           </div>
-          <div className="mb-5 h-2 overflow-hidden rounded-full bg-track" />
-          <p className="max-w-sm font-medium leading-relaxed">{FORECAST_PENDING_MESSAGE}</p>
+          <div className="mb-5 h-2 overflow-hidden rounded-full bg-track">
+            <div className="h-full rounded-full bg-accent transition-[width] duration-700" style={{ width: `${view.value}%` }} />
+          </div>
+          <p className="max-w-sm font-medium leading-relaxed" aria-live="polite">
+            {view.message}
+          </p>
+          {view.rest && <p className="mt-2 max-w-sm text-sm leading-relaxed text-muted">{view.rest}</p>}
+          <ForecastRetry view={view} />
+          <ForecastEvidence view={view} />
         </section>
 
         <div className="grid grid-cols-2 gap-3">
-          {FORECAST_ITEMS.map((label, index) => (
-            <section key={label} className="liquid-card min-h-28 rounded-[var(--radius-control)] p-4">
+          {view.items.map((item, index) => (
+            <section key={item.label} className="liquid-card min-h-28 rounded-[var(--radius-control)] p-4">
               <div className="mb-4 grid size-9 place-items-center rounded-full bg-soft-accent text-accent-strong">
                 <MaterialGlyph index={index} />
               </div>
-              <p className="text-xs font-medium text-muted">{label}</p>
-              <p className="mt-1 text-sm font-bold leading-relaxed text-muted">—</p>
+              <p className="text-xs font-medium text-muted">{item.label}</p>
+              <p className={`mt-1 text-sm font-bold leading-relaxed ${view.ready ? "" : "text-muted"}`}>{item.value}</p>
+              {item.sub && <p className="mt-1 text-xs leading-relaxed text-muted">{item.sub}</p>}
             </section>
           ))}
         </div>
@@ -141,6 +159,7 @@ export function HomeOffice(props: HomeViewProps) {
   const { latest } = props;
   const analysis = latest.status === "loaded" && latest.diary.analysisStatus === "done" ? latest.diary.analysis : null;
   const showScores = analysis && analysis.concern_level !== "urgent";
+  const view = forecastView(props.forecast);
 
   return (
     <main className="min-h-dvh pb-10">
@@ -157,25 +176,41 @@ export function HomeOffice(props: HomeViewProps) {
           </div>
         </div>
 
+        <div className="mb-4">
+          <FeedbackCard state={props.feedback} />
+        </div>
+
         <section className="office-surface">
           <div className="flex items-start justify-between">
             <div>
               <p className="text-xs font-medium text-muted">本日のコンディション予測</p>
-              <strong className="mt-2 block font-num text-4xl tracking-tight text-muted" aria-label="まだ予報はありません">
-                {FORECAST_PLACEHOLDER}
+              <strong
+                className={`mt-2 block font-num text-4xl tracking-tight ${view.ready ? "" : "text-muted"}`}
+                aria-label={view.ready ? `はかどり度 ${view.percent}%` : "まだ予報はありません"}
+              >
+                {view.percent}
                 <span className="text-base font-medium">%</span>
               </strong>
             </div>
-            <span className="office-pill">準備中</span>
+            <span className="office-pill">
+              {view.ready && <span aria-hidden="true">{view.icon} </span>}
+              {view.status}
+            </span>
           </div>
-          <p className="mt-4 text-sm leading-relaxed text-muted">{FORECAST_PENDING_MESSAGE}</p>
+          <p className="mt-4 text-sm leading-relaxed text-muted" aria-live="polite">
+            {view.message}
+          </p>
+          {view.rest && <p className="mt-2 text-sm leading-relaxed text-muted">{view.rest}</p>}
+          <ForecastRetry view={view} />
+          <ForecastEvidence view={view} />
         </section>
 
         <div className="mt-4 grid grid-cols-2 gap-3">
-          {FORECAST_ITEMS.map((label) => (
-            <div key={label} className="office-surface min-h-24">
-              <span className="block text-xs text-muted">{label}</span>
-              <strong className="mt-3 block text-sm leading-relaxed text-muted">—</strong>
+          {view.items.map((item) => (
+            <div key={item.label} className="office-surface min-h-24">
+              <span className="block text-xs text-muted">{item.label}</span>
+              <strong className={`mt-3 block text-sm leading-relaxed ${view.ready ? "" : "text-muted"}`}>{item.value}</strong>
+              {item.sub && <span className="mt-1 block text-xs leading-relaxed text-muted">{item.sub}</span>}
             </div>
           ))}
         </div>

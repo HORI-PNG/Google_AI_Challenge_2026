@@ -2,11 +2,19 @@ import { doc, getDoc, serverTimestamp, setDoc, updateDoc } from "firebase/firest
 import { z } from "zod";
 import { getDb } from "@/lib/firebase";
 
+/**
+ * 日記を分析している間のアニメーション（public/animations/）。
+ * hakadori：ハカドリが歩く（標準）／moonwalk：ムーンウォーク／battle：メガシティ・バトル（3D）
+ */
+export const WAIT_ANIMATIONS = ["hakadori", "moonwalk", "battle"] as const;
+export type WaitAnimation = (typeof WAIT_ANIMATIONS)[number];
+
 /** PLAN.md「データ構造」の users/{uid}.settings */
 export type UserSettings = {
   themeId: string;
   characterId: string;
   locationEnabled: boolean;
+  waitAnimation: WaitAnimation;
 };
 
 export const DEFAULT_SETTINGS: UserSettings = {
@@ -15,6 +23,7 @@ export const DEFAULT_SETTINGS: UserSettings = {
   characterId: "default",
   // 位置情報の記録は任意で、初期設定ではオフ（.agents/rules/privacy.md）
   locationEnabled: false,
+  waitAnimation: "hakadori",
 };
 
 export const GRADES = [
@@ -50,6 +59,7 @@ const userSettingsSchema = z.object({
   themeId: z.string().catch(DEFAULT_SETTINGS.themeId),
   characterId: z.string().catch(DEFAULT_SETTINGS.characterId),
   locationEnabled: z.boolean().catch(DEFAULT_SETTINGS.locationEnabled),
+  waitAnimation: z.enum(WAIT_ANIMATIONS).catch(DEFAULT_SETTINGS.waitAnimation),
 });
 
 /**
@@ -79,6 +89,11 @@ export async function loadOrCreateUser(
 /** UI テーマを保存する（PLAN.md「データ構造」の settings.themeId） */
 export async function saveThemeId(uid: string, themeId: string): Promise<void> {
   await updateDoc(doc(getDb(), "users", uid), { "settings.themeId": themeId });
+}
+
+/** 分析中のアニメーションを保存する（settings.waitAnimation） */
+export async function saveWaitAnimation(uid: string, id: WaitAnimation): Promise<void> {
+  await updateDoc(doc(getDb(), "users", uid), { "settings.waitAnimation": id });
 }
 
 export async function saveUserProfile(

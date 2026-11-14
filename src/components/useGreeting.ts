@@ -1,7 +1,7 @@
 "use client";
 
 import type { User } from "firebase/auth";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { fallbackGreeting, RECENT_DIARY_COUNT } from "@/lib/characterMessage";
 import { formatDateTime, getRecentDiaries, requestGreeting } from "@/lib/diaries";
 import { mascotMoodFromScores, type MascotMood } from "@/lib/mascotMood";
@@ -34,12 +34,17 @@ function writeCache(key: string, text: string) {
 
 /**
  * ハカドリの話しかけと表情。
- * Gemini の回数を節約するため、同じ日・同じ最新の日記なら、ブラウザのタブを閉じるまで使い回す
+ * Gemini の回数を節約するため、同じ日・同じ最新の日記なら、ブラウザのタブを閉じるまで使い回す。
+ * forecast（今日のはかどり予報の説明）が決まるまでは待つ（undefined の間は頼まない）。
+ * 頼むのはホームを開いたときに 1 回だけ（予報があとから変わっても、話しかけは作り直さない）
  */
-export function useGreeting(user: User, profile: UserProfile): GreetingState {
+export function useGreeting(user: User, profile: UserProfile, forecast: string | null | undefined): GreetingState {
   const [state, setState] = useState<GreetingState>({ text: null, mood: "normal" });
+  // 話しかけが出たら true（React の開発モードで effect が 2 回動いても、1 回目の途中で止めたものは数えない）
+  const done = useRef(false);
 
   useEffect(() => {
+    if (forecast === undefined || done.current) return;
     let active = true;
     const now = new Date();
     const { date, time } = formatDateTime(now);
@@ -53,11 +58,14 @@ export function useGreeting(user: User, profile: UserProfile): GreetingState {
       }
       const latest = diaries[0];
       const mood = mascotMoodFromScores(latest?.analysis ?? null);
-      const cacheKey = `${CACHE_PREFIX}:${user.uid}:${date}:${latest?.id ?? "none"}`;
+      const cacheKey = `${CACHE_PREFIX}:${user.uid}:${date}:${latest?.id ?? "none"}:${forecast ? "f" : "-"}`;
 
       const cached = readCache(cacheKey);
       if (cached) {
-        if (active) setState({ text: cached, mood });
+        if (active) {
+          done.current = true;
+          setState({ text: cached, mood });
+        }
         return;
       }
       if (active) setState((prev) => ({ ...prev, mood }));
@@ -72,18 +80,22 @@ export function useGreeting(user: User, profile: UserProfile): GreetingState {
             text: d.rawText,
             scores: d.analysis?.scores ?? null,
           })),
+          forecast,
         });
         writeCache(cacheKey, text);
       } catch {
         text = fallbackGreeting(date);
       }
-      if (active) setState({ text, mood });
+      if (active) {
+        done.current = true;
+        setState({ text, mood });
+      }
     })();
 
     return () => {
       active = false;
     };
-  }, [user, profile.grade]);
+  }, [user, profile.grade, forecast]);
 
   return state;
 }
