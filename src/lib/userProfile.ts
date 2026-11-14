@@ -96,6 +96,11 @@ export async function saveWaitAnimation(uid: string, id: WaitAnimation): Promise
   await updateDoc(doc(getDb(), "users", uid), { "settings.waitAnimation": id });
 }
 
+/** 近くの場所を探すのに位置情報を使うか（settings.locationEnabled。初期設定はオフ） */
+export async function saveLocationEnabled(uid: string, enabled: boolean): Promise<void> {
+  await updateDoc(doc(getDb(), "users", uid), { "settings.locationEnabled": enabled });
+}
+
 export async function saveUserProfile(
   uid: string,
   profile: UserProfile,

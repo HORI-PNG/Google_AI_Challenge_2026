@@ -24,6 +24,8 @@ import {
 } from "@/lib/diaryAnalysis";
 import { getDb } from "@/lib/firebase";
 import { forecastSchema, type Forecast, type ForecastRequest } from "@/lib/forecast";
+import { nearbyPlaceSchema, roundCoord, type NearbyPlace, type PlacesRequest } from "@/lib/places";
+import { z } from "zod";
 
 // users/{uid}/diaries/{diaryId} の読み書き（PLAN.md「データ構造」）
 
@@ -297,6 +299,23 @@ export async function requestForecast(
   }
   const model = field(json, "model");
   return { forecast: parsed.data, model: typeof model === "string" ? model : "unknown" };
+}
+
+/** 近くの実際の場所を探す（src/app/api/places）。緯度・経度は約 100m に丸めて送る */
+export async function requestNearbyPlaces(user: User, body: PlacesRequest): Promise<NearbyPlace[]> {
+  const rounded = { ...body, lat: roundCoord(body.lat), lng: roundCoord(body.lng) };
+  const json = await callApi(
+    user,
+    "/api/places",
+    JSON.stringify(rounded),
+    "近くの場所を探せませんでした",
+    "application/json",
+  );
+  const parsed = z.array(nearbyPlaceSchema).safeParse(field(json, "places"));
+  if (!parsed.success) {
+    throw new ApiRequestError("invalid_response", "近くの場所の結果が読めませんでした");
+  }
+  return parsed.data;
 }
 
 /**

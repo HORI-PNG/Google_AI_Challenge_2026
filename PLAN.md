@@ -198,7 +198,7 @@ CLAUDE.md              ← 「@AGENTS.md」の1行だけ（Claude Code に AGENT
 | ログイン | Firebase Authentication（Google ログイン） |
 | データ保存 | Cloud Firestore |
 | AI | Gemini API（音声入力、構造化出力）。サーバー側から呼び出し、API キーをブラウザに出さない |
-| 場所の提案 | Places API（近くの静かなカフェ、図書館など）、ブラウザの位置情報 |
+| 場所の提案 | Places API (New) の Nearby Search（予報のおすすめ場所の近くにある図書館・カフェ・公園）、ブラウザの位置情報（押したときだけ。約 100m に丸めて送り、保存しない） |
 | 地図（補助） | Google Maps JavaScript API |
 | カレンダー（補助） | Google Calendar API（予定の作成。権限は `calendar.events`） |
 | **公開** | **Vercel**（環境変数に Gemini と Google Maps の API キーを設定） |
@@ -212,7 +212,8 @@ CLAUDE.md              ← 「@AGENTS.md」の1行だけ（Claude Code に AGENT
 ```
 users/{uid}
   settings
-    themeId, characterId, locationEnabled,
+    themeId, characterId,
+    locationEnabled            ← 近くの場所を探すのに位置情報を使うか（初期はオフ。位置そのものは保存しない）
     waitAnimation(hakadori|moonwalk|battle)   ← 分析中のアニメーション（標準は hakadori）
   profile                      ← 初回に登録してもらう基本情報（Gemini には grade だけを渡す）
     name, nickname, grade

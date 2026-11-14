@@ -7,7 +7,8 @@ import { Mascot } from "@/components/ui/Mascot";
 import type { HomeViewProps, LatestDiaryState } from "@/components/home/homeTypes";
 import type { ForecastState } from "@/components/useForecast";
 import type { GreetingState } from "@/components/useGreeting";
-import { FORECAST_DISCLAIMER, PLACE_LABELS, WEATHER_LABELS } from "@/lib/forecast";
+import { NearbyPlaces } from "@/components/home/NearbyPlaces";
+import { FORECAST_DISCLAIMER, PLACE_LABELS, WEATHER_LABELS, type Place } from "@/lib/forecast";
 import { mascotMoodFromScores } from "@/lib/mascotMood";
 
 // ホームの3つの系統で共有する部品
@@ -132,6 +133,8 @@ export type ForecastView = {
   message: string;
   rest: string | null;
   evidence: string[];
+  /** おすすめ場所（近くの実際の場所を探すのに使う） */
+  places: Place[];
   /** 記録が少ないときの注意 */
   note: string | null;
   onRetry: (() => void) | null;
@@ -163,6 +166,7 @@ export function forecastView(state: ForecastState): ForecastView {
       message: f.message,
       rest: f.rest_advice,
       evidence: f.evidence,
+      places: f.places,
       note: f.data_sufficiency === "few" ? "記録がたまるほど、予報があなたに合っていくよ" : null,
       onRetry: null,
     };
@@ -179,6 +183,7 @@ export function forecastView(state: ForecastState): ForecastView {
     message,
     rest: null,
     evidence: [],
+    places: [],
     note: null,
     onRetry: state.status === "error" ? state.onRetry : null,
   };
@@ -251,6 +256,7 @@ export function ForecastCard({ state }: { state: ForecastState }) {
             </div>
           ))}
         </div>
+        <NearbyPlaces places={view.places} />
         <p className="mt-4 rounded-[var(--radius-control)] bg-soft-accent p-4 text-sm font-bold leading-relaxed" aria-live="polite">
           {view.message}
           {view.rest && <span className="mt-2 block font-normal">{view.rest}</span>}
