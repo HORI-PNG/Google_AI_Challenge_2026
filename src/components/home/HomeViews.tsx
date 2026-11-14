@@ -49,8 +49,24 @@ export function HomeNotebook(props: HomeViewProps) {
           <MiniChart />
           <span aria-hidden="true">→</span>
         </Link>
+        <AskLink className="rounded-[var(--radius)] border border-border bg-card p-5 shadow-[var(--card-shadow)]" />
       </div>
     </main>
+  );
+}
+
+/** 「ハカドリに聞く」（段階12）への入り口。3 つの系統で、外側の見た目だけ変える */
+function AskLink({ className }: { className: string }) {
+  return (
+    <Link href="/ask" className={`flex min-h-20 w-full items-center gap-3 ${className}`}>
+      <Mascot mood="normal" size={48} />
+      <span className="flex-1">
+        <span className="block text-xs font-bold text-accent-strong">ASK HAKADORI</span>
+        <strong className="mt-1 block">ハカドリに聞く</strong>
+        <span className="block text-xs text-muted">「先週の自分はどうだった？」に日記から答えるよ</span>
+      </span>
+      <span aria-hidden="true">→</span>
+    </Link>
   );
 }
 
@@ -132,6 +148,7 @@ export function HomeGlass(props: HomeViewProps) {
           </span>
           <MiniChart />
         </Link>
+        <AskLink className="liquid-card rounded-[var(--radius)] px-5 py-4" />
       </div>
 
       <nav
@@ -224,6 +241,9 @@ export function HomeOffice(props: HomeViewProps) {
         </div>
         <CalendarButton event={view.calendar} />
         <NearbyPlaces places={view.places} />
+        <div className="mt-4">
+          <AskLink className="office-surface" />
+        </div>
 
         <div className="mb-3 mt-7 flex items-center justify-between">
           <h3 className="text-sm font-bold">最新のコンディション</h3>

@@ -22,6 +22,7 @@ import {
   type InputType,
   type TranscribeResponse,
 } from "@/lib/diaryAnalysis";
+import type { AskRequest } from "@/lib/ask";
 import { getDb } from "@/lib/firebase";
 import { forecastSchema, type Forecast, type ForecastRequest } from "@/lib/forecast";
 import { nearbyPlaceSchema, roundCoord, type NearbyPlace, type PlacesRequest } from "@/lib/places";
@@ -299,6 +300,16 @@ export async function requestForecast(
   }
   const model = field(json, "model");
   return { forecast: parsed.data, model: typeof model === "string" ? model : "unknown" };
+}
+
+/** ハカドリに質問する（src/app/api/ask）。日記の本文は要点だけ送る */
+export async function requestAsk(user: User, body: AskRequest): Promise<string> {
+  const json = await callApi(user, "/api/ask", JSON.stringify(body), "答えられませんでした", "application/json");
+  const answer = field(json, "answer");
+  if (typeof answer !== "string" || answer.length === 0) {
+    throw new ApiRequestError("invalid_response", "答えが読めませんでした");
+  }
+  return answer;
 }
 
 /** 近くの実際の場所を探す（src/app/api/places）。緯度・経度は約 100m に丸めて送る */

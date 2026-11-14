@@ -25,3 +25,4 @@ export function readUsageDocument(json: unknown): { count: number; updateTime: s
 }
 
 export const DAILY_LIMIT_MESSAGE = "今日 Gemini を使える回数の上限に達しました。明日また使えます。";
+export const ASK_LIMIT_MESSAGE = "今日ハカドリに聞ける回数（10 回）を使い切ったよ。また明日聞いてね。";
