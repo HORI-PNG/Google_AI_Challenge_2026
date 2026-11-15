@@ -48,12 +48,12 @@ export function HomeNotebook(props: HomeViewProps) {
   );
 }
 
-/** クリア（すりガラス）。予報を上に大きく、下にタイル、画面の下に固定のナビゲーション */
+/** クリア（すりガラス）。予報を上に大きく、下にタイル。画面の下のメニューは GlassNav（全画面で共通） */
 export function HomeGlass(props: HomeViewProps) {
   const view = forecastView(props.forecast);
   return (
-    <main className="min-h-dvh pb-28">
-      <HomeHeader props={props} />
+    <main className="min-h-dvh pb-6">
+      <HomeHeader props={props} actions={false} />
       <div className="relative z-10 space-y-4 px-4 pt-5">
         <div className="flex items-center gap-3 px-1">
           <Mascot mood={props.greeting.mood} size={48} />
@@ -103,33 +103,8 @@ export function HomeGlass(props: HomeViewProps) {
           <ReflectionContent {...props} />
         </section>
 
-        <EntryRow className="liquid-card rounded-[var(--radius)] p-2" />
       </div>
-
-      <nav
-        aria-label="メニュー"
-        className="material-nav fixed inset-x-4 bottom-3 z-30 mx-auto flex min-h-[72px] max-w-[416px] items-center justify-around rounded-[var(--radius)] px-3"
-      >
-        <Link href="/" aria-current="page" className="grid min-h-12 min-w-14 place-items-center text-xs font-bold">
-          <Icon name="home" size={21} />
-          <span>ホーム</span>
-        </Link>
-        <Link
-          href="/diary/new"
-          className="material-fab -mt-7 grid size-16 place-items-center rounded-[var(--radius)] text-accent-foreground"
-          aria-label="日記を書く"
-        >
-          <Icon name="edit" size={22} />
-        </Link>
-        <Link href="/mood" className="grid min-h-12 min-w-14 place-items-center text-xs font-bold">
-          <Icon name="chart" size={21} />
-          <span>グラフ</span>
-        </Link>
-        <Link href="/settings" className="grid min-h-12 min-w-14 place-items-center text-xs font-bold">
-          <Icon name="palette" size={21} />
-          <span>テーマ</span>
-        </Link>
-      </nav>
+      {/* ほかの画面への入り口・日記を書く・ユーザー情報は、どの画面にも出る下のメニュー（GlassNav）にある */}
     </main>
   );
 }

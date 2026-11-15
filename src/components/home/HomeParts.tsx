@@ -5,6 +5,7 @@ import { useState } from "react";
 import { Button, SpeechBubble } from "@/components/ui/Ui";
 import { Icon, WeatherIcon, type IconName } from "@/components/ui/Icon";
 import { Mascot } from "@/components/ui/Mascot";
+import { useTheme } from "@/components/ThemeProvider";
 import type { HomeViewProps, LatestDiaryState } from "@/components/home/homeTypes";
 import type { ForecastState } from "@/components/useForecast";
 import type { GreetingState } from "@/components/useGreeting";
@@ -26,14 +27,17 @@ export const SCORE_LABELS = [
 export function HomeHeader({
   props,
   compact = false,
+  actions = true,
 }: {
   props: HomeViewProps;
   compact?: boolean;
+  /** 「日記を書く」とユーザー情報を出すか（クリアは下のメニュー GlassNav に入っているので出さない） */
+  actions?: boolean;
 }) {
   return (
-    <header className="home-header sticky top-0 z-30 flex items-center justify-between border-b border-border bg-[color-mix(in_srgb,var(--background)_88%,transparent)] px-4 py-3 backdrop-blur-[var(--card-blur)]">
+    <header className="home-header sticky top-0 z-30 flex min-h-[68px] items-center justify-between border-b border-border bg-[color-mix(in_srgb,var(--background)_88%,transparent)] px-4 py-3 backdrop-blur-[var(--card-blur)]">
       <h1 className={`font-display ${compact ? "text-base" : "text-xl"}`}>{props.dateLabel}</h1>
-      <div className="flex items-center gap-2">
+      {actions && <div className="flex items-center gap-2">
         <Link
           href="/diary/new"
           className="header-diary-button inline-flex min-h-11 items-center gap-1.5 rounded-[var(--radius-control)] bg-accent px-4 text-sm font-bold text-accent-foreground shadow-[var(--button-shadow)] transition active:scale-[.98]"
@@ -42,7 +46,7 @@ export function HomeHeader({
           日記を書く
         </Link>
         <AccountMenu props={props} />
-      </div>
+      </div>}
     </header>
   );
 }
@@ -66,33 +70,62 @@ function AccountMenu({ props }: { props: HomeViewProps }) {
           id="account-panel"
           className="account-panel absolute right-0 top-[calc(100%+12px)] z-40 w-[min(310px,calc(100vw-32px))] rounded-[var(--radius)] border border-border p-4 shadow-[0_18px_55px_color-mix(in_srgb,var(--foreground)_16%,transparent)]"
         >
-          <div className="flex items-center gap-3 border-b border-border pb-4">
-            <div className="grid size-12 shrink-0 place-items-center rounded-full bg-soft-accent text-accent-strong">
-              <Icon name="user" size={22} />
-            </div>
-            <div className="min-w-0">
-              <p className="font-bold">{props.nickname} さん</p>
-              {props.email && <p className="truncate text-xs text-muted">{props.email}</p>}
-            </div>
-          </div>
-          <dl className="grid grid-cols-[80px_1fr] gap-y-2 py-4 text-sm">
-            <dt className="text-muted">名前</dt>
-            <dd className="font-bold">{props.name}</dd>
-            <dt className="text-muted">学年</dt>
-            <dd className="font-bold">{props.grade}</dd>
-            <dt className="text-muted">ログイン</dt>
-            <dd className="font-bold">Google</dd>
-          </dl>
-          <Link
-            href="/settings"
-            className="flex min-h-11 w-full items-center justify-between rounded-[var(--radius-control)] bg-subtle px-4 text-sm font-bold"
-          >
-            テーマ・アカウント設定
-            <Icon name="next" size={16} />
-          </Link>
+          <AccountDetails nickname={props.nickname} name={props.name} grade={props.grade} email={props.email} />
         </div>
       )}
     </div>
+  );
+}
+
+/** ユーザー情報のパネルの中身（ヘッダーのメニューと、クリアの下のメニューで共有する） */
+export function AccountDetails({
+  nickname,
+  name,
+  grade,
+  email,
+}: {
+  nickname: string;
+  name: string;
+  grade: string;
+  email: string | null;
+}) {
+  const { theme } = useTheme();
+  return (
+    <>
+      <div className="flex items-center gap-3 border-b border-border pb-4">
+        <div className="grid size-12 shrink-0 place-items-center rounded-full bg-soft-accent text-accent-strong">
+          <Icon name="user" size={22} />
+        </div>
+        <div className="min-w-0">
+          <p className="font-bold">{nickname} さん</p>
+          {email && <p className="truncate text-xs text-muted">{email}</p>}
+        </div>
+      </div>
+      <dl className="grid grid-cols-[80px_1fr] gap-y-2 py-4 text-sm">
+        <dt className="text-muted">名前</dt>
+        <dd className="font-bold">{name}</dd>
+        <dt className="text-muted">学年</dt>
+        <dd className="font-bold">{grade}</dd>
+        <dt className="text-muted">ログイン</dt>
+        <dd className="font-bold">Google</dd>
+        {theme && (
+          <>
+            <dt className="text-muted">テーマ</dt>
+            <dd>
+              <span className="font-bold">{theme.name}</span>
+              <span className="ml-2 text-xs text-muted">{theme.description}</span>
+            </dd>
+          </>
+        )}
+      </dl>
+      <Link
+        href="/settings"
+        className="flex min-h-11 w-full items-center justify-between rounded-[var(--radius-control)] bg-subtle px-4 text-sm font-bold"
+      >
+        テーマ・アカウント設定
+        <Icon name="next" size={16} />
+      </Link>
+    </>
   );
 }
 
