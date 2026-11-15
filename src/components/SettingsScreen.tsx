@@ -147,8 +147,8 @@ export function SettingsScreen({ user }: { user: User }) {
         </div>
       </section>
 
-      {/* Places API を使わないときは位置情報も使わないので、設定を出さない */}
-      {PLACES_API_ENABLED && <LocationSetting />}
+      <LocationSetting />
+
 
       <section className="space-y-3 border-t border-border pt-6">
         <Link
@@ -181,6 +181,14 @@ function LocationSetting() {
 
   async function toggle() {
     setError(null);
+    // オンにしたときに、ブラウザの位置情報の許可を先に聞いておく（日記を保存するときに待たせないため）
+    if (!enabled && "geolocation" in navigator) {
+      navigator.geolocation.getCurrentPosition(
+        () => undefined,
+        () => setError("ブラウザで位置情報が許可されていません。許可すると、日記の場所を記録できます"),
+        { enableHighAccuracy: false, timeout: 15000 },
+      );
+    }
     try {
       await setLocationEnabled(!enabled);
     } catch (e) {
@@ -201,9 +209,10 @@ function LocationSetting() {
         className="mt-3 flex min-h-16 w-full items-center justify-between gap-3 rounded-[var(--radius-control)] border border-border bg-card px-4 py-3 text-left"
       >
         <span>
-          <strong className="block text-sm">近くの場所を探すのに使う</strong>
+          <strong className="block text-sm">日記に場所を記録する</strong>
           <span className="text-xs leading-relaxed text-muted">
-            予報のおすすめ場所（図書館・カフェ・公園）を、近くの実際の場所で探します。探すときだけ使い、保存しません。
+            日記を保存したときの場所を、約 100m の粗さで記録し、「はかどり場所マップ」に出します。記録した場所は本人しか見られません。
+            {PLACES_API_ENABLED && "予報のおすすめ場所の近くを探すときにも使います。"}
           </span>
         </span>
         <span

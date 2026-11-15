@@ -3,7 +3,8 @@
 import type { User } from "firebase/auth";
 import { type FormEvent, useState } from "react";
 import { AnalysisResult } from "@/components/AnalysisResult";
-import { toMessage } from "@/components/AuthProvider";
+import Link from "next/link";
+import { toMessage, useAuth } from "@/components/AuthProvider";
 import { SelectDiaryForm } from "@/components/SelectDiaryForm";
 import { Mascot } from "@/components/ui/Mascot";
 import { placeholderGreeting } from "@/components/home/HomeParts";
@@ -11,7 +12,7 @@ import { BackHeader, Button, ButtonLink, SpeechBubble } from "@/components/ui/Ui
 import { useGreeting } from "@/components/useGreeting";
 import { WaitAnimation } from "@/components/ui/WaitAnimation";
 import { VoiceRecorder } from "@/components/VoiceRecorder";
-import { ApiRequestError, analyzeAndSave, createDiary, type SavedDiary } from "@/lib/diaries";
+import { ApiRequestError, analyzeAndSave, createDiary, saveDiaryLocation, type SavedDiary } from "@/lib/diaries";
 import type { DiaryAnalysis, InputType } from "@/lib/diaryAnalysis";
 import type { UserProfile } from "@/lib/userProfile";
 
@@ -37,6 +38,7 @@ export function DiaryForm({ user, profile }: { user: User; profile: UserProfile 
   const [phase, setPhase] = useState<Phase>({ step: "writing" });
   const [saveError, setSaveError] = useState<string | null>(null);
   const greeting = useGreeting(user, profile, null);
+  const { settings } = useAuth();
 
   async function analyze(diary: SavedDiary) {
     setPhase({ step: "analyzing" });
@@ -68,6 +70,8 @@ export function DiaryForm({ user, profile }: { user: User; profile: UserProfile 
       setPhase({ step: "writing" });
       return;
     }
+    // 場所の記録は、設定でオンにした人だけ。分析は待たせない（位置が読めなくても日記はもう保存されている）
+    if (settings?.locationEnabled) void recordLocation(user.uid, id);
     await analyze({ id, rawText: trimmed, inputType, writtenAt });
   }
 
@@ -135,6 +139,20 @@ export function DiaryForm({ user, profile }: { user: User; profile: UserProfile 
           ))}
         </div>
 
+        <p className="mt-3 text-xs text-muted">
+          {settings?.locationEnabled ? (
+            <>📍 この日記の場所も記録して、はかどり場所マップに出します（設定で変えられます）</>
+          ) : (
+            <>
+              場所を記録すると、はかどる場所が地図で分かります（
+              <Link href="/settings" className="font-bold text-accent-strong underline">
+                設定
+              </Link>
+              ）
+            </>
+          )}
+        </p>
+
         {saveError && (
           <p role="alert" className="mt-4 text-sm font-bold text-accent-strong">
             {saveError}
@@ -176,6 +194,25 @@ export function DiaryForm({ user, profile }: { user: User; profile: UserProfile 
       </div>
     </main>
   );
+}
+
+/** 今いる場所を読み、日記に保存する（失敗しても何もしない。位置はログに出さない） */
+function recordLocation(uid: string, diaryId: string): Promise<void> {
+  return new Promise((resolve) => {
+    if (!("geolocation" in navigator)) {
+      resolve();
+      return;
+    }
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        saveDiaryLocation(uid, diaryId, pos.coords.latitude, pos.coords.longitude)
+          .catch(() => undefined)
+          .finally(resolve);
+      },
+      () => resolve(),
+      { enableHighAccuracy: false, timeout: 15000, maximumAge: 10 * 60 * 1000 },
+    );
+  });
 }
 
 /** 分析中（Figma Make の AnalyzingScreen） */

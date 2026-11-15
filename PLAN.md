@@ -100,7 +100,7 @@
 | 機能 | 内容 | Google 製品 |
 |---|---|---|
 | 忘却曲線の見える化 | 日記に書いた「学んだこと」が、忘却曲線のどこにいるかをグラフで表示。復習するとグラフが戻る | Gemini API（学びの抽出） |
-| はかどり場所マップ | 日記を書いた場所を地図に記録し、はかどった場所を色で表示 | Google Maps JavaScript API |
+| はかどり場所マップ | 日記を書いた場所を地図に記録し、はかどった場所を色で表示 | OpenStreetMap ＋ Leaflet |
 | 「自分専用AI」への質問 | 「先週の自分はどうだった？」「今日は何をするのがおすすめ？」に日記をもとに答える | Gemini API |
 | カレンダーに入れる | おすすめの時間帯や復習の予定を、ボタン1つで Google カレンダーに追加 | Google カレンダー（予定を追加する画面へのリンク。API は使わない） |
 
@@ -199,7 +199,7 @@ CLAUDE.md              ← 「@AGENTS.md」の1行だけ（Claude Code に AGENT
 | データ保存 | Cloud Firestore |
 | AI | Gemini API（音声入力、構造化出力）。サーバー側から呼び出し、API キーをブラウザに出さない |
 | 場所の提案 | Places API (New) の Nearby Search（予報のおすすめ場所の近くにある図書館・カフェ・公園）、ブラウザの位置情報（押したときだけ。約 100m に丸めて送り、保存しない） |
-| 地図（補助） | Google Maps JavaScript API |
+| 地図（補助） | OpenStreetMap ＋ Leaflet（段階14。無料・キー不要。Google Maps JavaScript API は請求先の登録が要るため使わない） |
 | カレンダー（補助） | Google カレンダーの「予定を追加」画面を開くリンク（段階11。API・権限・審査が要らず無料。保存は本人が画面で確かめてする） |
 | **公開** | **Vercel**（環境変数に Gemini と Google Maps の API キーを設定） |
 
@@ -223,7 +223,7 @@ users/{uid}
     learnings[], characterReply,
     reason, confidence(high|medium|low), concernLevel(none|watch|urgent),
     analysisStatus(pending|done|failed), analyzedModel, analyzedAt,
-    location{lat, lng, placeName}?
+    location{lat, lng}?          ← 設定でオンにした人だけ。約 100m に丸める（段階14、はかどり場所マップ）
   feedback/{date}              ← date は「はかどったか」を答えた対象の日（＝昨日）。YYYY-MM-DD
     productivity(1|2|3),       ← 「昨日ははかどった？」の答え
     studyTime(morning|noon|evening|night)?, place(home|library|cafe|school|park)?,  ← 任意

@@ -113,6 +113,18 @@ const DEMO_LEARNINGS: {
   },
 ];
 
+/**
+ * 架空の場所（段階14 のはかどり場所マップを見せるため）。東京駅の近くの、実在の住所ではない適当な点。
+ * 「はかどった？」の答えの場所（library・cafe・home・school・park）に合わせて、日記の場所を決める
+ */
+const DEMO_PLACES: Record<Place, { lat: number; lng: number }> = {
+  library: { lat: 35.684, lng: 139.761 },
+  cafe: { lat: 35.678, lng: 139.772 },
+  home: { lat: 35.672, lng: 139.758 },
+  school: { lat: 35.69, lng: 139.775 },
+  park: { lat: 35.681, lng: 139.752 },
+};
+
 /** 毎回同じ並びになる乱数（デモの見た目を固定するため） */
 function seededRandom(seed: number) {
   let s = seed;
@@ -177,13 +189,17 @@ export async function seedDemoDiaries(uid: string, today = new Date()): Promise<
     const options = TEMPLATES[band];
     const t = options[Math.floor(rand() * options.length)];
 
+    // 「はかどった？」の答えは毎日作り（乱数の並びを変えないため）、昨日・今日の分は保存しない
+    const fb = demoFeedback(scores, rand);
     if (daysAgo >= 2) {
       batch.set(doc(db, "users", uid, "feedback", dateKey(day)), {
-        ...demoFeedback(scores, rand),
+        ...fb,
         answeredAt: Timestamp.fromDate(new Date(day.getTime() + 11 * 60 * 60 * 1000)),
         isDemo: true,
       });
     }
+    // 日記の場所：その日に勉強した場所（同じ場所の日記は、地図で 1 つの丸にまとまる）
+    const location = DEMO_PLACES[fb.place];
 
     const diaryRef = doc(collection(db, "users", uid, "diaries"));
     if (demoLearning) {
@@ -208,6 +224,7 @@ export async function seedDemoDiaries(uid: string, today = new Date()): Promise<
       scores,
       emotionLabels: t.labels,
       learnings: demoLearning ? [demoLearning.learning] : [],
+      location,
       characterReply: t.reply,
       reason: t.reason,
       confidence: "high",
