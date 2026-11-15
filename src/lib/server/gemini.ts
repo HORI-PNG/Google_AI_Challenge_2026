@@ -77,6 +77,10 @@ type GenerateJsonParams<T> = {
   /** 音声日記の録音など（userMessage より前に置く） */
   file?: InlineFile;
   schema: z.ZodType<T, unknown>;
+  /** true なら GEMINI_FALLBACK_MODEL（回数に余裕のある軽いモデル）を先に使う */
+  preferFallback?: boolean;
+  /** 同じモデルで試す回数（待たせたくない呼び出しでは少なくする） */
+  attemptsPerModel?: number;
 };
 
 /**
@@ -87,7 +91,7 @@ export async function generateJson<T>(
   params: GenerateJsonParams<T>,
 ): Promise<{ data: T; model: string }> {
   const ai = getClient();
-  const models = getModels();
+  const models = params.preferFallback ? [...getModels()].reverse() : getModels();
   const contents = params.file
     ? [
         {
@@ -137,7 +141,7 @@ export async function generateJson<T>(
       }
     },
     {
-      attemptsPerModel: ATTEMPTS_PER_MODEL,
+      attemptsPerModel: params.attemptsPerModel ?? ATTEMPTS_PER_MODEL,
       delaysMs: RETRY_DELAYS_MS,
       // 日記の本文は出さず、モデル名と失敗の種類だけを記録する
       onFailure: (log) =>
