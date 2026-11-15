@@ -24,6 +24,7 @@ import {
 } from "@/lib/diaryAnalysis";
 import type { AskRequest } from "@/lib/ask";
 import { quizSchema, type Quiz, type QuizRequest } from "@/lib/forgetting";
+import { isValidLocation, roundLocation } from "@/lib/placeMap";
 import { getDb } from "@/lib/firebase";
 import { forecastSchema, type Forecast, type ForecastRequest } from "@/lib/forecast";
 import { nearbyPlaceSchema, roundCoord, type NearbyPlace, type PlacesRequest } from "@/lib/places";
@@ -41,6 +42,8 @@ export type Diary = {
   analysisStatus: AnalysisStatus;
   analysis: DiaryAnalysis | null;
   analyzedModel: string | null;
+  /** 日記を書いた場所（約 100m に丸めたもの。記録していなければ null。段階14） */
+  location: { lat: number; lng: number } | null;
 };
 
 /** 分析に必要な、保存済みの日記の情報 */
@@ -90,6 +93,11 @@ export async function saveAnalysis(
   });
 }
 
+/** 日記を書いた場所を保存する（設定でオンにした人だけ。約 100m に丸める。段階14） */
+export async function saveDiaryLocation(uid: string, diaryId: string, lat: number, lng: number): Promise<void> {
+  await updateDoc(doc(diariesRef(uid), diaryId), { location: roundLocation(lat, lng) });
+}
+
 export async function markAnalysisFailed(uid: string, diaryId: string): Promise<void> {
   await updateDoc(doc(diariesRef(uid), diaryId), {
     analysisStatus: "failed" satisfies AnalysisStatus,
@@ -129,6 +137,7 @@ function toDiary(snapshot: DocumentSnapshot): Diary {
     analysisStatus: status,
     analysis: parsed?.success ? parsed.data : null,
     analyzedModel: typeof data.analyzedModel === "string" ? data.analyzedModel : null,
+    location: isValidLocation(data.location) ? { lat: data.location.lat, lng: data.location.lng } : null,
   };
 }
 
