@@ -68,6 +68,51 @@ const TEMPLATES: Record<"high" | "mid" | "low", DemoTemplate[]> = {
   ],
 };
 
+/**
+ * 架空の「学んだこと」（段階13 の忘却曲線を見せるため）。何日前の日記に入れるかと、復習の記録。
+ * 復習の日は「学んだ日から何日後か」
+ */
+const DEMO_LEARNINGS: {
+  daysAgo: number;
+  note: string;
+  learning: { topic: string; point: string };
+  reviews: { afterDays: number; result: "remembered" | "forgot" }[];
+}[] = [
+  {
+    daysAgo: 12,
+    note: "平方完成のコツが分かった。",
+    learning: { topic: "平方完成", point: "x²+6x は (x+3)²−9。x の係数の半分を 2 乗して引く" },
+    reviews: [
+      { afterDays: 1, result: "remembered" },
+      { afterDays: 4, result: "remembered" },
+    ],
+  },
+  {
+    daysAgo: 8,
+    note: "英単語 abandon を覚えた。",
+    learning: { topic: "英単語 abandon", point: "abandon は「捨てる・あきらめる」。名詞は abandonment" },
+    reviews: [{ afterDays: 2, result: "forgot" }],
+  },
+  {
+    daysAgo: 5,
+    note: "化学で 1 mol の意味がやっと分かった。",
+    learning: { topic: "物質量（mol）", point: "1 mol は粒子 6.0×10²³ 個の集まり。質量は分子量に g を付けた値" },
+    reviews: [],
+  },
+  {
+    daysAgo: 3,
+    note: "古文の「いと」は「とても」と習った。",
+    learning: { topic: "古文の「いと」", point: "「いと」は「とても・たいそう」。「いとをかし」＝とても趣がある" },
+    reviews: [],
+  },
+  {
+    daysAgo: 1,
+    note: "歴史で鎌倉幕府の成立を覚え直した。",
+    learning: { topic: "鎌倉幕府の成立", point: "1185 年に守護・地頭を設置。1192 年に源頼朝が征夷大将軍に" },
+    reviews: [],
+  },
+];
+
 /** 毎回同じ並びになる乱数（デモの見た目を固定するため） */
 function seededRandom(seed: number) {
   let s = seed;
@@ -123,8 +168,9 @@ export async function seedDemoDiaries(uid: string, today = new Date()): Promise<
 
   for (let i = 0; i < DEMO_DAYS; i++) {
     const daysAgo = DEMO_DAYS - 1 - i;
-    // 日記をつけなかった日も作る（グラフの線が途切れる様子を見せるため）。昨日と今日は必ず書いたことにする
-    if (rand() < 0.15 && daysAgo > 1) continue;
+    const demoLearning = DEMO_LEARNINGS.find((l) => l.daysAgo === daysAgo);
+    // 日記をつけなかった日も作る（グラフの線が途切れる様子を見せるため）。昨日と今日、学んだことの日は必ず書いたことにする
+    if (rand() < 0.15 && daysAgo > 1 && !demoLearning) continue;
     const day = new Date(today.getFullYear(), today.getMonth(), today.getDate() - (DEMO_DAYS - 1 - i), 22, 0);
     const scores = demoScores(i, rand);
     const band = scores.mood >= 65 ? "high" : scores.mood >= 45 ? "mid" : "low";
@@ -139,13 +185,29 @@ export async function seedDemoDiaries(uid: string, today = new Date()): Promise<
       });
     }
 
-    batch.set(doc(collection(db, "users", uid, "diaries")), {
+    const diaryRef = doc(collection(db, "users", uid, "diaries"));
+    if (demoLearning) {
+      const reviews = demoLearning.reviews.map((r) => ({
+        at: Timestamp.fromDate(new Date(day.getTime() + r.afterDays * 24 * 60 * 60 * 1000)),
+        result: r.result,
+      }));
+      if (reviews.length > 0) {
+        // 復習の記録（learnings/{diaryId}_{番号}。src/lib/learnings.ts と同じ形）
+        batch.set(doc(db, "users", uid, "learnings", `${diaryRef.id}_0`), {
+          diaryId: diaryRef.id,
+          ...demoLearning.learning,
+          reviews,
+          isDemo: true,
+        });
+      }
+    }
+    batch.set(diaryRef, {
       createdAt: Timestamp.fromDate(day),
       inputType: "text",
-      rawText: t.text,
+      rawText: demoLearning ? `${t.text}${demoLearning.note}` : t.text,
       scores,
       emotionLabels: t.labels,
-      learnings: [],
+      learnings: demoLearning ? [demoLearning.learning] : [],
       characterReply: t.reply,
       reason: t.reason,
       confidence: "high",
@@ -160,16 +222,16 @@ export async function seedDemoDiaries(uid: string, today = new Date()): Promise<
   return count;
 }
 
-/** デモ用の日記と「はかどった？」の答えをすべて消す（isDemo が付いたものだけ） */
+/** デモ用の日記と「はかどった？」の答え、復習の記録をすべて消す（isDemo が付いたものだけ） */
 export async function deleteDemoDiaries(uid: string): Promise<number> {
   const db = getDb();
-  const [diaries, feedback] = await Promise.all(
-    ["diaries", "feedback"].map((name) =>
+  const [diaries, feedback, learnings] = await Promise.all(
+    ["diaries", "feedback", "learnings"].map((name) =>
       getDocs(query(collection(db, "users", uid, name), where("isDemo", "==", true))),
     ),
   );
   const batch = writeBatch(db);
-  [...diaries.docs, ...feedback.docs].forEach((d) => batch.delete(d.ref));
+  [...diaries.docs, ...feedback.docs, ...learnings.docs].forEach((d) => batch.delete(d.ref));
   await batch.commit();
   return diaries.size;
 }

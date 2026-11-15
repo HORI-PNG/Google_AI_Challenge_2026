@@ -236,8 +236,8 @@ users/{uid}
     count
   usage/{date}_ask             ← 「ハカドリに聞く」の質問の回数（1 日 10 回まで。段階12）。会話そのものは保存しない
     count
-  learnings/{learningId}       ← 補助：忘却曲線
-    diaryId, topic, point, reviewedAt[], strength
+  learnings/{diaryId}_{番号}   ← 補助：忘却曲線（段階13）。学んだことそのものは diaries の learnings にあり、ここは復習の記録
+    diaryId, topic, point, reviews[{at, result(remembered|forgot)}], stability（安定度・日）
 ```
 
 ### Gemini がつながらないときの方針

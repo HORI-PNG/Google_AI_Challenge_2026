@@ -23,6 +23,7 @@ import {
   type TranscribeResponse,
 } from "@/lib/diaryAnalysis";
 import type { AskRequest } from "@/lib/ask";
+import { quizSchema, type Quiz, type QuizRequest } from "@/lib/forgetting";
 import { getDb } from "@/lib/firebase";
 import { forecastSchema, type Forecast, type ForecastRequest } from "@/lib/forecast";
 import { nearbyPlaceSchema, roundCoord, type NearbyPlace, type PlacesRequest } from "@/lib/places";
@@ -300,6 +301,16 @@ export async function requestForecast(
   }
   const model = field(json, "model");
   return { forecast: parsed.data, model: typeof model === "string" ? model : "unknown" };
+}
+
+/** 復習の思い出しクイズを作る（src/app/api/quiz）。送るのは学んだことの題目と要点だけ */
+export async function requestQuiz(user: User, body: QuizRequest): Promise<Quiz> {
+  const json = await callApi(user, "/api/quiz", JSON.stringify(body), "クイズを作れませんでした", "application/json");
+  const parsed = quizSchema.safeParse(field(json, "quiz"));
+  if (!parsed.success) {
+    throw new ApiRequestError("invalid_response", "クイズが読めませんでした");
+  }
+  return parsed.data;
 }
 
 /** ハカドリに質問する（src/app/api/ask）。日記の本文は要点だけ送る */

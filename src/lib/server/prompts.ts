@@ -48,6 +48,11 @@ export function getForecastPrompt(): Promise<PromptDefinition> {
   return loadPrompt("02_forecast.md");
 }
 
+/** プロンプト⑤：復習の思い出しクイズ（段階13） */
+export function getReviewQuizPrompt(): Promise<PromptDefinition> {
+  return loadPrompt("05_review_quiz.md");
+}
+
 /** プロンプト④：声の日記の書き起こし（音声といっしょに送る文も md から読む） */
 export async function getVoiceTranscriptionPrompt(): Promise<
   PromptDefinition & { userMessage: string }

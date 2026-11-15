@@ -55,18 +55,31 @@ export function HomeNotebook(props: HomeViewProps) {
   );
 }
 
-/** 「ハカドリに聞く」（段階12）への入り口。3 つの系統で、外側の見た目だけ変える */
+/** 「ハカドリに聞く」（段階12）と「復習」（段階13）への入り口。3 つの系統で、外側の見た目だけ変える */
 function AskLink({ className }: { className: string }) {
   return (
-    <Link href="/ask" className={`flex min-h-20 w-full items-center gap-3 ${className}`}>
-      <Mascot mood="normal" size={48} />
-      <span className="flex-1">
-        <span className="block text-xs font-bold text-accent-strong">ASK HAKADORI</span>
-        <strong className="mt-1 block">ハカドリに聞く</strong>
-        <span className="block text-xs text-muted">「先週の自分はどうだった？」に日記から答えるよ</span>
-      </span>
-      <span aria-hidden="true">→</span>
-    </Link>
+    <>
+      <Link href="/ask" className={`flex min-h-20 w-full items-center gap-3 ${className}`}>
+        <Mascot mood="normal" size={48} />
+        <span className="flex-1">
+          <span className="block text-xs font-bold text-accent-strong">ASK HAKADORI</span>
+          <strong className="mt-1 block">ハカドリに聞く</strong>
+          <span className="block text-xs text-muted">「先週の自分はどうだった？」に日記から答えるよ</span>
+        </span>
+        <span aria-hidden="true">→</span>
+      </Link>
+      <Link href="/review" className={`mt-4 flex min-h-20 w-full items-center gap-3 ${className}`}>
+        <span className="grid size-12 shrink-0 place-items-center text-2xl" aria-hidden="true">
+          🧠
+        </span>
+        <span className="flex-1">
+          <span className="block text-xs font-bold text-accent-strong">REVIEW</span>
+          <strong className="mt-1 block">復習（忘却曲線）</strong>
+          <span className="block text-xs text-muted">日記に書いた「学んだこと」を、忘れる前に思い出そう</span>
+        </span>
+        <span aria-hidden="true">→</span>
+      </Link>
+    </>
   );
 }
 
