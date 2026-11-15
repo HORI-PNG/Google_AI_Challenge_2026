@@ -1,12 +1,13 @@
 import type { Metadata, Viewport } from "next";
 import { Klee_One, M_PLUS_Rounded_1c, Noto_Sans_JP, Roboto_Mono, Zen_Maru_Gothic } from "next/font/google";
 import { AuthProvider } from "@/components/AuthProvider";
+import { GlassNav } from "@/components/GlassNav";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import { THEME_IDS, THEME_STORAGE_KEY } from "@/lib/themes";
 import "./globals.css";
 
 // テーマごとのフォント（使う変数は globals.css の --font-body など）。
-// 日本語のフォントは大きいので、標準テーマ（ことり）の Zen Maru Gothic 以外は先読みしない
+// 日本語のフォントは大きいので、標準テーマ（ことり）で使う Zen Maru Gothic（本文）と Klee One（見出し）以外は先読みしない
 const zenMaru = Zen_Maru_Gothic({
   variable: "--font-zen-maru",
   weight: ["400", "500", "700", "900"],
@@ -25,7 +26,6 @@ const klee = Klee_One({
   weight: ["400", "600"],
   subsets: ["latin"],
   display: "swap",
-  preload: false,
 });
 const notoSans = Noto_Sans_JP({
   variable: "--font-noto-sans",
@@ -78,6 +78,8 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
           <ThemeProvider>
             <div className="app-shell mx-auto flex min-h-dvh w-full max-w-[448px] flex-col overflow-x-hidden text-foreground">
               {children}
+              {/* クリアのテーマだけ、どの画面にも下のメニューを出す */}
+              <GlassNav />
             </div>
           </ThemeProvider>
         </AuthProvider>

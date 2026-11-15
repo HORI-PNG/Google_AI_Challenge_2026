@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { toMessage, useAuth } from "@/components/AuthProvider";
+import { Icon } from "@/components/ui/Icon";
 import { ApiRequestError, requestNearbyPlaces } from "@/lib/diaries";
 import { dateKey, type Place } from "@/lib/forecast";
 import {
@@ -86,12 +87,11 @@ export function NearbyPlaces({ places }: { places: Place[] }) {
             href={mapsSearchUrl(type)}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex min-h-11 w-full items-center justify-between rounded-[var(--radius-control)] border border-border bg-subtle px-4 text-sm font-bold transition active:scale-[.98]"
+            className="flex min-h-11 w-full items-center gap-2 rounded-[var(--radius-control)] border border-border bg-card px-4 py-2 text-sm font-bold transition active:scale-[.98]"
           >
-            <span>
-              <span aria-hidden="true">📍 </span>近くの{searchWord(type)}を Google マップで探す
-            </span>
-            <span aria-hidden="true">↗</span>
+            <Icon name="pin" size={18} className="text-accent-strong" />
+            <span className="flex-1">近くの{searchWord(type)}を Google マップで探す</span>
+            <Icon name="external" size={16} className="text-muted" />
           </a>
         ))}
       </div>
@@ -152,20 +152,20 @@ function NearbySearch({ type }: { type: SearchablePlace }) {
       <button
         type="button"
         onClick={() => (settings?.locationEnabled ? search() : setState({ status: "asking" }))}
-        className="flex min-h-11 w-full items-center justify-between rounded-[var(--radius-control)] border border-border bg-subtle px-4 text-sm font-bold transition active:scale-[.98]"
+        className="flex min-h-11 w-full items-center gap-2 rounded-[var(--radius-control)] border border-border bg-card px-4 py-2 text-sm font-bold transition active:scale-[.98]"
       >
-        <span>
-          <span aria-hidden="true">📍 </span>近くの{word}を探す
-        </span>
-        <span aria-hidden="true">→</span>
+        <Icon name="pin" size={18} className="text-accent-strong" />
+        <span className="flex-1 text-left">近くの{word}を探す</span>
+        <Icon name="next" size={16} className="text-muted" />
       </button>
     );
   }
 
   return (
     <section className="rounded-[var(--radius-control)] border border-border bg-subtle p-4 text-sm" aria-live="polite">
-      <p className="font-bold">
-        <span aria-hidden="true">📍 </span>近くの{word}
+      <p className="flex items-center gap-2 font-bold">
+        <Icon name="pin" size={18} className="text-accent-strong" />
+        近くの{word}
       </p>
 
       {state.status === "asking" && (

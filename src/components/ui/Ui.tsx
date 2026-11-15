@@ -1,5 +1,6 @@
 import Link from "next/link";
 import type { ButtonHTMLAttributes, HTMLAttributes, ReactNode } from "react";
+import { Icon } from "@/components/ui/Icon";
 
 // 共通の部品（Figma Make のデザイン design/figma_make/src/components/Ui.tsx から移した）。
 // 色・角丸・影は、すべてテーマの CSS 変数（src/app/globals.css）を使う
@@ -71,10 +72,10 @@ export function BackHeader({
 }) {
   return (
     <header className="sticky top-0 z-20 flex min-h-16 items-center justify-between border-b border-border bg-[color-mix(in_srgb,var(--background)_92%,transparent)] px-4 backdrop-blur-[var(--card-blur)]">
-      <Link href={backHref} className="flex min-h-11 min-w-11 items-center gap-1 font-bold" aria-label="戻る">
-        <span aria-hidden="true">←</span>
+      <Link href={backHref} className="-ml-2 grid min-h-11 min-w-11 place-items-center" aria-label="戻る">
+        <Icon name="back" size={22} />
       </Link>
-      <h1 className="font-display text-lg font-bold">{title}</h1>
+      <h1 className="font-display text-lg">{title}</h1>
       <div className="flex min-w-11 justify-end">{action}</div>
     </header>
   );
@@ -83,7 +84,7 @@ export function BackHeader({
 export function SpeechBubble({ children, className = "" }: { children: ReactNode; className?: string }) {
   return (
     <div
-      className={`relative rounded-[var(--radius)] border border-border bg-card px-5 py-4 font-bold leading-relaxed shadow-[var(--card-shadow)] before:absolute before:-bottom-2 before:left-7 before:size-4 before:rotate-45 before:border-b before:border-r before:border-border before:bg-card ${className}`}
+      className={`relative rounded-[var(--radius)] border border-border bg-card px-4 py-3 font-bold leading-relaxed before:absolute before:-bottom-[7px] before:left-6 before:size-3 before:rotate-45 before:border-b before:border-r before:border-border before:bg-card ${className}`}
     >
       {children}
     </div>

@@ -114,7 +114,7 @@ export function AskScreen({ user, profile }: { user: User; profile: UserProfile 
       <div className="grid grid-cols-[72px_1fr] items-end gap-2">
         <Mascot mood="normal" size={78} />
         <SpeechBubble>
-          キミの日記（最近 {ASK_HISTORY_DAYS} 日）を読んで答えるよ。なんでも聞いてね！
+          最近 {ASK_HISTORY_DAYS} 日の日記を読んで答えるよ。自分のこと、なんでも聞いてみて。
         </SpeechBubble>
       </div>
 
@@ -195,7 +195,7 @@ export function AskScreen({ user, profile }: { user: User; profile: UserProfile 
         </button>
       </form>
       <p className="text-xs leading-relaxed text-muted">
-        ※ 答えは、最近の日記をもとに AI（Gemini）が考えたものです。質問は 1 日 {ASK_DAILY_LIMIT} 回まで。会話は保存しません。
+        答えは日記をもとに AI（Gemini）が考えたものです。1 日 {ASK_DAILY_LIMIT} 回まで。会話は保存しません。
       </p>
     </div>
   );

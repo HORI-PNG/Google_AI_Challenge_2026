@@ -2,15 +2,17 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { Button, Card, SpeechBubble } from "@/components/ui/Ui";
+import { Button, SpeechBubble } from "@/components/ui/Ui";
+import { Icon, WeatherIcon, type IconName } from "@/components/ui/Icon";
 import { Mascot } from "@/components/ui/Mascot";
+import { useTheme } from "@/components/ThemeProvider";
 import type { HomeViewProps, LatestDiaryState } from "@/components/home/homeTypes";
 import type { ForecastState } from "@/components/useForecast";
 import type { GreetingState } from "@/components/useGreeting";
 import { CalendarButton } from "@/components/home/CalendarButton";
 import { NearbyPlaces } from "@/components/home/NearbyPlaces";
 import type { CalendarEvent } from "@/lib/calendar";
-import { FORECAST_DISCLAIMER, PLACE_LABELS, WEATHER_LABELS, type Place } from "@/lib/forecast";
+import { FORECAST_DISCLAIMER, PLACE_LABELS, WEATHER_LABELS, type Place, type Weather } from "@/lib/forecast";
 import { mascotMoodFromScores } from "@/lib/mascotMood";
 
 // ホームの3つの系統で共有する部品
@@ -25,28 +27,26 @@ export const SCORE_LABELS = [
 export function HomeHeader({
   props,
   compact = false,
+  actions = true,
 }: {
   props: HomeViewProps;
   compact?: boolean;
+  /** 「日記を書く」とユーザー情報を出すか（クリアは下のメニュー GlassNav に入っているので出さない） */
+  actions?: boolean;
 }) {
   return (
-    <header className="home-header sticky top-0 z-30 flex items-center justify-between border-b border-border bg-[color-mix(in_srgb,var(--background)_88%,transparent)] px-4 py-3 backdrop-blur-[var(--card-blur)]">
-      <div>
-        {compact && <p className="text-xs font-bold tracking-widest text-muted">RE:NOTE</p>}
-        <h1 className={`font-display font-bold ${compact ? "text-base" : "text-xl"}`}>{props.dateLabel}</h1>
-      </div>
-      <div className="flex items-center gap-2">
+    <header className="home-header sticky top-0 z-30 flex min-h-[68px] items-center justify-between border-b border-border bg-[color-mix(in_srgb,var(--background)_88%,transparent)] px-4 py-3 backdrop-blur-[var(--card-blur)]">
+      <h1 className={`font-display ${compact ? "text-base" : "text-xl"}`}>{props.dateLabel}</h1>
+      {actions && <div className="flex items-center gap-2">
         <Link
           href="/diary/new"
-          className="header-diary-button inline-flex min-h-11 items-center rounded-[var(--radius-control)] bg-accent px-4 text-sm font-bold text-accent-foreground shadow-[var(--button-shadow)] transition active:scale-[.98]"
+          className="header-diary-button inline-flex min-h-11 items-center gap-1.5 rounded-[var(--radius-control)] bg-accent px-4 text-sm font-bold text-accent-foreground shadow-[var(--button-shadow)] transition active:scale-[.98]"
         >
-          <span className="mr-1" aria-hidden="true">
-            ✎
-          </span>
+          <Icon name="edit" size={17} />
           日記を書く
         </Link>
         <AccountMenu props={props} />
-      </div>
+      </div>}
     </header>
   );
 }
@@ -63,40 +63,69 @@ function AccountMenu({ props }: { props: HomeViewProps }) {
         aria-expanded={open}
         aria-controls="account-panel"
       >
-        <UserIcon />
+        <Icon name="user" size={22} />
       </button>
       {open && (
         <div
           id="account-panel"
           className="account-panel absolute right-0 top-[calc(100%+12px)] z-40 w-[min(310px,calc(100vw-32px))] rounded-[var(--radius)] border border-border p-4 shadow-[0_18px_55px_color-mix(in_srgb,var(--foreground)_16%,transparent)]"
         >
-          <div className="flex items-center gap-3 border-b border-border pb-4">
-            <div className="grid size-12 shrink-0 place-items-center rounded-full bg-soft-accent text-accent-strong">
-              <UserIcon />
-            </div>
-            <div className="min-w-0">
-              <p className="font-bold">{props.nickname} さん</p>
-              {props.email && <p className="truncate text-xs text-muted">{props.email}</p>}
-            </div>
-          </div>
-          <dl className="grid grid-cols-[80px_1fr] gap-y-2 py-4 text-sm">
-            <dt className="text-muted">名前</dt>
-            <dd className="font-bold">{props.name}</dd>
-            <dt className="text-muted">学年</dt>
-            <dd className="font-bold">{props.grade}</dd>
-            <dt className="text-muted">ログイン</dt>
-            <dd className="font-bold">Google</dd>
-          </dl>
-          <Link
-            href="/settings"
-            className="flex min-h-11 w-full items-center justify-between rounded-[var(--radius-control)] bg-subtle px-4 text-sm font-bold"
-          >
-            テーマ・アカウント設定
-            <span aria-hidden="true">→</span>
-          </Link>
+          <AccountDetails nickname={props.nickname} name={props.name} grade={props.grade} email={props.email} />
         </div>
       )}
     </div>
+  );
+}
+
+/** ユーザー情報のパネルの中身（ヘッダーのメニューと、クリアの下のメニューで共有する） */
+export function AccountDetails({
+  nickname,
+  name,
+  grade,
+  email,
+}: {
+  nickname: string;
+  name: string;
+  grade: string;
+  email: string | null;
+}) {
+  const { theme } = useTheme();
+  return (
+    <>
+      <div className="flex items-center gap-3 border-b border-border pb-4">
+        <div className="grid size-12 shrink-0 place-items-center rounded-full bg-soft-accent text-accent-strong">
+          <Icon name="user" size={22} />
+        </div>
+        <div className="min-w-0">
+          <p className="font-bold">{nickname} さん</p>
+          {email && <p className="truncate text-xs text-muted">{email}</p>}
+        </div>
+      </div>
+      <dl className="grid grid-cols-[80px_1fr] gap-y-2 py-4 text-sm">
+        <dt className="text-muted">名前</dt>
+        <dd className="font-bold">{name}</dd>
+        <dt className="text-muted">学年</dt>
+        <dd className="font-bold">{grade}</dd>
+        <dt className="text-muted">ログイン</dt>
+        <dd className="font-bold">Google</dd>
+        {theme && (
+          <>
+            <dt className="text-muted">テーマ</dt>
+            <dd>
+              <span className="font-bold">{theme.name}</span>
+              <span className="ml-2 text-xs text-muted">{theme.description}</span>
+            </dd>
+          </>
+        )}
+      </dl>
+      <Link
+        href="/settings"
+        className="flex min-h-11 w-full items-center justify-between rounded-[var(--radius-control)] bg-subtle px-4 text-sm font-bold"
+      >
+        テーマ・アカウント設定
+        <Icon name="next" size={16} />
+      </Link>
+    </>
   );
 }
 
@@ -108,8 +137,8 @@ export function placeholderGreeting(nickname: string) {
 /** ハカドリの話しかけ（Gemini が最近の日記をふまえて話しかける） */
 export function Greeting({ nickname, greeting }: { nickname: string; greeting: GreetingState }) {
   return (
-    <div className="grid grid-cols-[72px_1fr] items-end gap-2">
-      <Mascot mood={greeting.mood} size={78} />
+    <div className="grid grid-cols-[64px_1fr] items-end gap-2">
+      <Mascot mood={greeting.mood} size={68} />
       <SpeechBubble>
         <span aria-live="polite">{greeting.text ?? placeholderGreeting(nickname)}</span>
       </SpeechBubble>
@@ -119,6 +148,12 @@ export function Greeting({ nickname, greeting }: { nickname: string; greeting: G
 
 /** 今日のはかどり予報の項目（3 つの系統で同じ並び） */
 export const FORECAST_ITEMS = ["おすすめ時間", "おすすめ場所", "ラッキーアイテム", "向いていること"] as const;
+const FORECAST_ITEM_ICONS: Record<(typeof FORECAST_ITEMS)[number], IconName> = {
+  おすすめ時間: "clock",
+  おすすめ場所: "pin",
+  ラッキーアイテム: "charm",
+  向いていること: "book",
+};
 /** 予報がまだないときの数字の代わり（「—」は丸ゴシックで長い棒に見え、メーターと間違えやすい） */
 export const FORECAST_PLACEHOLDER = "--";
 
@@ -127,10 +162,11 @@ export type ForecastView = {
   percent: string;
   /** 0〜100（メーターの長さ）。予報がないときは 0 */
   value: number;
-  icon: string;
+  /** 天気（予報がないときは null） */
+  weather: Weather | null;
   /** 天気、または「作っています」などの状態 */
   status: string;
-  items: { label: (typeof FORECAST_ITEMS)[number]; value: string; sub: string | null }[];
+  items: { label: (typeof FORECAST_ITEMS)[number]; icon: IconName; value: string; sub: string | null }[];
   /** ハカドリのひとこと、または予報がない理由 */
   message: string;
   rest: string | null;
@@ -146,26 +182,25 @@ export type ForecastView = {
 
 const NOT_READY_MESSAGE: Record<Exclude<ForecastState["status"], "ready" | "error">, [string, string]> = {
   loading: ["予報中…", "Gemini が今日のはかどりを予報しています…"],
-  waiting: ["もうすぐ", "昨日のはかどりを答えると、今日の予報が出るよ。"],
-  noDiary: ["まだなし", "日記を書くと、次の日からはかどり予報が出るよ。"],
+  waiting: ["もうすぐ", "昨日のはかどりを答えると、今日の予報が出ます。"],
+  noDiary: ["まだなし", "日記を書くと、次の日から予報が出ます。"],
 };
 
 /** 予報の状態を、画面に出す文字に直す（3 つの系統で共有する） */
 export function forecastView(state: ForecastState): ForecastView {
   if (state.status === "ready") {
     const f = state.saved.forecast;
-    const w = WEATHER_LABELS[f.weather];
     return {
       ready: true,
       percent: String(f.percent),
       value: f.percent,
-      icon: w.icon,
-      status: w.label,
+      weather: f.weather,
+      status: WEATHER_LABELS[f.weather].label,
       items: [
-        { label: "おすすめ時間", value: f.best_time.range, sub: f.best_time.reason },
-        { label: "おすすめ場所", value: f.places.map((p) => PLACE_LABELS[p]).join("・") || "どこでも", sub: null },
-        { label: "ラッキーアイテム", value: f.lucky_item.name, sub: f.lucky_item.reason },
-        { label: "向いていること", value: f.study_style, sub: null },
+        { label: "おすすめ時間", icon: "clock", value: f.best_time.range, sub: f.best_time.reason },
+        { label: "おすすめ場所", icon: "pin", value: f.places.map((p) => PLACE_LABELS[p]).join("・") || "どこでも", sub: null },
+        { label: "ラッキーアイテム", icon: "charm", value: f.lucky_item.name, sub: f.lucky_item.reason },
+        { label: "向いていること", icon: "book", value: f.study_style, sub: null },
       ],
       message: f.message,
       rest: f.rest_advice,
@@ -184,7 +219,7 @@ export function forecastView(state: ForecastState): ForecastView {
           `Re:Note のはかどり予報から追加しました。${FORECAST_DISCLAIMER}`,
         ].join("\n"),
       },
-      note: f.data_sufficiency === "few" ? "記録がたまるほど、予報があなたに合っていくよ" : null,
+      note: f.data_sufficiency === "few" ? "記録が少ないので、まだおおまかな予報です。" : null,
       onRetry: null,
     };
   }
@@ -194,9 +229,9 @@ export function forecastView(state: ForecastState): ForecastView {
     ready: false,
     percent: FORECAST_PLACEHOLDER,
     value: 0,
-    icon: "🌤️",
+    weather: null,
     status,
-    items: FORECAST_ITEMS.map((label) => ({ label, value: "—", sub: null })),
+    items: FORECAST_ITEMS.map((label) => ({ label, icon: FORECAST_ITEM_ICONS[label], value: "—", sub: null })),
     message,
     rest: null,
     evidence: [],
@@ -207,23 +242,44 @@ export function forecastView(state: ForecastState): ForecastView {
   };
 }
 
-/** 予報の根拠と注意書き（「根拠がない」と思われないよう、小さく出す） */
+/** はかどり印（予報の % を、手帳に押すはんこの形で出す。ホームでいちばん目立たせる所） */
+export function HakadoriStamp({ view, size = 104 }: { view: ForecastView; size?: number }) {
+  return (
+    <div
+      className="hakadori-stamp"
+      data-ready={view.ready}
+      style={{ width: size, height: size }}
+      role="img"
+      aria-label={view.ready ? `はかどり度 ${view.percent}%` : "まだ予報はありません"}
+    >
+      <span className="text-[11px] font-bold tracking-[.2em]">はかどり</span>
+      <span className="mt-1 font-num text-[40px] font-bold leading-none tracking-tight">
+        {view.percent}
+        <span className="text-base">%</span>
+      </span>
+    </div>
+  );
+}
+
+/** 予報の根拠と注意書き（「根拠がない」と思われないよう、小さく出す。注意書きは必ず 1 行出す） */
 export function ForecastEvidence({ view }: { view: ForecastView }) {
   if (!view.ready) return null;
   return (
-    <div className="mt-3 text-xs leading-relaxed text-muted">
+    <div className="mt-4 text-xs leading-relaxed text-muted">
       {view.evidence.length > 0 && (
-        <>
-          <p className="font-bold">予報の根拠</p>
-          <ul className="mt-1 list-disc pl-5">
+        <details>
+          <summary className="inline-flex min-h-11 cursor-pointer items-center font-bold">予報の根拠を見る</summary>
+          <ul className="mb-2 list-disc pl-5">
             {view.evidence.map((e) => (
               <li key={e}>{e}</li>
             ))}
           </ul>
-        </>
+        </details>
       )}
-      {view.note && <p className="mt-1">※ {view.note}</p>}
-      <p className="mt-1">※ {FORECAST_DISCLAIMER}</p>
+      <p>
+        {view.note && `${view.note} `}
+        {FORECAST_DISCLAIMER}
+      </p>
     </div>
   );
 }
@@ -237,53 +293,74 @@ export function ForecastRetry({ view }: { view: ForecastView }) {
   );
 }
 
-/** 手帳の系統の予報カード */
+/** 予報の 4 つの項目を、手帳の行のように並べる（左に項目名、右に中身） */
+export function ForecastRows({ view }: { view: ForecastView }) {
+  return (
+    <dl className="mt-1">
+      {view.items.map((item) => (
+        <div key={item.label} className="ruled grid grid-cols-[7.5rem_1fr] gap-2 py-3">
+          <dt className="flex items-start gap-1.5 text-xs font-bold text-muted">
+            <Icon name={item.icon} size={16} className="mt-px" />
+            {item.label}
+          </dt>
+          <dd>
+            <span className={`block text-sm font-bold leading-snug ${view.ready ? "" : "text-muted"}`}>{item.value}</span>
+            {item.sub && <span className="mt-1 block text-xs leading-relaxed text-muted">{item.sub}</span>}
+          </dd>
+        </div>
+      ))}
+    </dl>
+  );
+}
+
+/** 手帳の系統の予報（カードにせず、はかどり印と罫線で見せる） */
 export function ForecastCard({ state }: { state: ForecastState }) {
   const view = forecastView(state);
   return (
-    <Card className="overflow-hidden p-0" aria-busy={state.status === "loading"}>
-      <div className="flex items-start justify-between border-b border-border p-5">
-        <div>
-          <p className="text-sm font-bold text-accent-strong">TODAY&apos;S FORECAST</p>
-          <h2 className="mt-1 font-display text-xl font-bold">今日のはかどり予報</h2>
-        </div>
-        <div className="text-right text-3xl" aria-hidden="true">
-          {view.icon}
-        </div>
-      </div>
-      <div className="p-5">
-        <div className="flex items-end gap-3">
-          <strong
-            className={`font-num text-6xl leading-none ${view.ready ? "" : "text-muted"}`}
-            aria-label={view.ready ? `はかどり度 ${view.percent}%` : "まだ予報はありません"}
-          >
-            {view.percent}
-            <span className="text-2xl">%</span>
-          </strong>
-          <p className={`pb-1 text-sm font-bold leading-relaxed ${view.ready ? "text-accent-strong" : "text-muted"}`}>
+    <section aria-labelledby="forecast-title" aria-busy={state.status === "loading"}>
+      <div className="flex items-start justify-between gap-3">
+        <div className="pt-2">
+          <h2 id="forecast-title" className="font-display text-2xl">
+            今日のはかどり
+          </h2>
+          <p className={`mt-2 flex items-center gap-1.5 text-sm font-bold ${view.ready ? "text-accent-strong" : "text-muted"}`}>
+            {view.weather && <WeatherIcon weather={view.weather} size={22} />}
             {view.status}
           </p>
         </div>
-        <div className="my-5 h-px bg-border" />
-        <div className="grid grid-cols-2 gap-4">
-          {view.items.map((item) => (
-            <div key={item.label}>
-              <p className="text-xs font-bold text-muted">{item.label}</p>
-              <p className={`mt-1 text-sm font-bold leading-snug ${view.ready ? "" : "text-muted"}`}>{item.value}</p>
-              {item.sub && <p className="mt-1 text-xs leading-relaxed text-muted">{item.sub}</p>}
-            </div>
-          ))}
-        </div>
+        <HakadoriStamp view={view} />
+      </div>
+      <div className="mt-4 flex items-start gap-2">
+        <Mascot mood={view.ready ? "cheer" : "normal"} size={40} className="shrink-0" />
+        <p className="pt-1 text-sm font-bold leading-relaxed" aria-live="polite">
+          {view.message}
+          {view.rest && <span className="mt-1 block font-normal text-muted">{view.rest}</span>}
+        </p>
+      </div>
+      <ForecastRetry view={view} />
+      <div className="mt-4">
+        <ForecastRows view={view} />
+      </div>
+      <div className="ruled">
         <CalendarButton event={view.calendar} />
         <NearbyPlaces places={view.places} />
-        <p className="mt-4 rounded-[var(--radius-control)] bg-soft-accent p-4 text-sm font-bold leading-relaxed" aria-live="polite">
-          {view.message}
-          {view.rest && <span className="mt-2 block font-normal">{view.rest}</span>}
-        </p>
-        <ForecastRetry view={view} />
-        <ForecastEvidence view={view} />
       </div>
-    </Card>
+      <ForecastEvidence view={view} />
+    </section>
+  );
+}
+
+/** 最新の日記の点数を、横 1 列の小さな数字で並べる */
+export function ScoreLine({ scores }: { scores: Record<(typeof SCORE_LABELS)[number][0], number> }) {
+  return (
+    <dl className="mt-3 flex justify-between gap-2">
+      {SCORE_LABELS.map(([key, label]) => (
+        <div key={key} className="flex items-baseline gap-1">
+          <dt className="text-xs text-muted">{label}</dt>
+          <dd className="font-num text-lg font-bold">{scores[key]}</dd>
+        </div>
+      ))}
+    </dl>
   );
 }
 
@@ -307,9 +384,9 @@ export function ReflectionContent({
   if (latest.status === "empty") {
     return (
       <div className="flex items-center gap-3">
-        <Mascot mood="cheer" size={66} />
+        <Mascot mood="cheer" size={56} />
         <p className="font-bold leading-relaxed">
-          はじめての日記を書いてみよう。気持ちをそのまま書くだけで大丈夫だよ。
+          はじめての日記を書いてみよう。気持ちをそのまま書くだけで大丈夫。
         </p>
       </div>
     );
@@ -322,20 +399,11 @@ export function ReflectionContent({
     const isUrgent = analysis.concern_level === "urgent";
     return (
       <>
-        <div className="flex items-center gap-3">
-          <Mascot mood={mascotMoodFromScores(analysis)} size={66} />
-          <p className="font-bold leading-relaxed">{analysis.character_reply}</p>
+        <div className="flex items-start gap-3">
+          <Mascot mood={mascotMoodFromScores(analysis)} size={48} />
+          <p className="pt-1 text-sm font-bold leading-relaxed">{analysis.character_reply}</p>
         </div>
-        {!isUrgent && (
-          <div className="mt-4 grid grid-cols-4 gap-2">
-            {SCORE_LABELS.map(([key, label]) => (
-              <div key={key} className="rounded-[var(--radius-small)] bg-subtle p-2 text-center">
-                <strong className="block font-num text-lg">{analysis.scores[key]}</strong>
-                <span className="text-xs text-muted">{label}</span>
-              </div>
-            ))}
-          </div>
-        )}
+        {!isUrgent && <ScoreLine scores={analysis.scores} />}
       </>
     );
   }
@@ -343,8 +411,8 @@ export function ReflectionContent({
   return (
     <div className="flex flex-col gap-3">
       <div className="flex items-center gap-3">
-        <Mascot mood="worried" size={66} />
-        <p className="font-bold leading-relaxed">最新の日記は、まだ分析できていないよ。</p>
+        <Mascot mood="worried" size={48} />
+        <p className="text-sm font-bold leading-relaxed">最新の日記は、まだ分析できていません。</p>
       </div>
       {retryError && (
         <p role="alert" className="text-sm text-accent-strong">
@@ -359,35 +427,32 @@ export function ReflectionContent({
 }
 
 export function latestTitle(latest: LatestDiaryState) {
-  return latest.status === "loaded" ? "最新の日記をふりかえり" : "日記";
+  return latest.status === "loaded" ? "最新の日記" : "日記";
 }
 
-export function MiniChart() {
-  return (
-    <svg width="82" height="44" viewBox="0 0 82 44" aria-hidden="true">
-      <path
-        d="M2 34 15 28 28 31 41 17 55 22 68 8 80 12"
-        fill="none"
-        style={{ stroke: "var(--series-mood)" }}
-        strokeWidth="3"
-        strokeLinecap="round"
-      />
-      <path
-        d="M2 39 15 35 28 26 41 30 55 18 68 24 80 20"
-        fill="none"
-        style={{ stroke: "var(--series-focus)" }}
-        strokeWidth="3"
-        strokeLinecap="round"
-      />
-    </svg>
-  );
-}
+const ENTRIES: { href: string; label: string; icon: IconName | "mascot" }[] = [
+  { href: "/mood", label: "グラフ", icon: "chart" },
+  { href: "/ask", label: "聞く", icon: "mascot" },
+  { href: "/review", label: "復習", icon: "review" },
+  { href: "/map", label: "場所", icon: "map" },
+];
 
-export function UserIcon() {
+/** ほかの画面への入り口（グラフ・ハカドリに聞く・復習・はかどり場所マップ）を、アイコンの 1 列にまとめる */
+export function EntryRow({ className = "" }: { className?: string }) {
   return (
-    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
-      <circle cx="12" cy="8" r="4" />
-      <path d="M4.8 20c.8-4 3.2-6 7.2-6s6.4 2 7.2 6" />
-    </svg>
+    <nav aria-label="ほかの画面" className={`grid grid-cols-4 gap-1 ${className}`}>
+      {ENTRIES.map((e) => (
+        <Link
+          key={e.href}
+          href={e.href}
+          className="flex min-h-[72px] flex-col items-center justify-center gap-1.5 rounded-[var(--radius-control)] text-xs font-bold transition active:scale-[.97]"
+        >
+          <span className="grid size-10 place-items-center rounded-full bg-soft-accent text-accent-strong" aria-hidden="true">
+            {e.icon === "mascot" ? <Mascot mood="normal" size={34} /> : <Icon name={e.icon} size={21} />}
+          </span>
+          {e.label}
+        </Link>
+      ))}
+    </nav>
   );
 }

@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { type FormEvent, useEffect, useState } from "react";
 import { toMessage, useAuth } from "@/components/AuthProvider";
+import { Icon } from "@/components/ui/Icon";
 import { Mascot } from "@/components/ui/Mascot";
 import { Button, Loading } from "@/components/ui/Ui";
 import { GRADES, userProfileSchema } from "@/lib/userProfile";
@@ -60,16 +61,13 @@ export function ProfileForm() {
   return (
     <>
       {saved && (
-        <Link href="/settings" className="mb-4 inline-flex min-h-11 items-center font-bold" aria-label="設定に戻る">
-          <span aria-hidden="true">←</span>
+        <Link href="/settings" className="-ml-2 mb-4 grid min-h-11 min-w-11 place-items-center" aria-label="設定に戻る">
+          <Icon name="back" size={22} />
         </Link>
       )}
       <div className="flex items-center gap-3">
         <Mascot mood="happy" size={78} />
-        <div>
-          <p className="text-sm font-bold text-accent-strong">{saved ? "PROFILE" : "WELCOME TO RE:NOTE"}</p>
-          <h1 className="font-display text-3xl font-bold">{saved ? "基本情報" : "はじめまして！"}</h1>
-        </div>
+        <h1 className="font-display text-3xl">{saved ? "基本情報" : "はじめまして"}</h1>
       </div>
       {!saved && (
         <p className="mt-5 leading-relaxed text-muted">

@@ -7,6 +7,7 @@ import Link from "next/link";
 import { toMessage, useAuth } from "@/components/AuthProvider";
 import { SelectDiaryForm } from "@/components/SelectDiaryForm";
 import { Mascot } from "@/components/ui/Mascot";
+import { Icon, type IconName } from "@/components/ui/Icon";
 import { placeholderGreeting } from "@/components/home/HomeParts";
 import { BackHeader, Button, ButtonLink, SpeechBubble } from "@/components/ui/Ui";
 import { useGreeting } from "@/components/useGreeting";
@@ -18,10 +19,10 @@ import type { UserProfile } from "@/lib/userProfile";
 
 const MAX_LENGTH = 4000;
 
-const MODES: { type: InputType; label: string }[] = [
-  { type: "text", label: "✎ 書く" },
-  { type: "voice", label: "◉ 話す" },
-  { type: "select", label: "✓ 選ぶ" },
+const MODES: { type: InputType; label: string; icon: IconName }[] = [
+  { type: "text", label: "書く", icon: "edit" },
+  { type: "voice", label: "話す", icon: "mic" },
+  { type: "select", label: "選ぶ", icon: "check" },
 ];
 
 type Phase =
@@ -130,26 +131,30 @@ export function DiaryForm({ user, profile }: { user: User; profile: UserProfile 
                 setMode(m.type);
                 setSaveError(null);
               }}
-              className={`min-h-12 rounded-[calc(var(--radius-control)-4px)] font-bold transition ${
+              className={`flex min-h-12 items-center justify-center gap-1.5 rounded-[calc(var(--radius-control)-3px)] font-bold transition ${
                 mode === m.type ? "bg-card text-accent-strong shadow-sm" : "text-muted"
               }`}
             >
+              <Icon name={m.icon} size={18} />
               {m.label}
             </button>
           ))}
         </div>
 
-        <p className="mt-3 text-xs text-muted">
+        <p className="mt-3 flex items-start gap-1 text-xs text-muted">
           {settings?.locationEnabled ? (
-            <>📍 この日記の場所も記録して、はかどり場所マップに出します（設定で変えられます）</>
-          ) : (
             <>
+              <Icon name="pin" size={14} className="mt-px" />
+              この日記の場所も記録して、はかどり場所マップに出します（設定で変えられます）
+            </>
+          ) : (
+            <span>
               場所を記録すると、はかどる場所が地図で分かります（
               <Link href="/settings" className="font-bold text-accent-strong underline">
                 設定
               </Link>
               ）
-            </>
+            </span>
           )}
         </p>
 
@@ -161,14 +166,11 @@ export function DiaryForm({ user, profile }: { user: User; profile: UserProfile 
 
         {mode === "text" && (
           <form onSubmit={handleTextSubmit} className="mt-6">
-            <div className="mb-4">
-              <p className="font-display text-xl font-bold">思ったまま、書いてみよう</p>
-              <p className="mt-1 text-sm text-muted">うまくまとめなくて大丈夫です。</p>
-            </div>
+            <p className="mb-3 text-sm text-muted">うまくまとめなくて大丈夫です。</p>
             <label>
               <span className="sr-only">日記</span>
               <textarea
-                className="field min-h-72 resize-none leading-relaxed"
+                className="field notebook-paper min-h-72 resize-none"
                 maxLength={MAX_LENGTH}
                 value={text}
                 onChange={(e) => setText(e.target.value)}
@@ -223,8 +225,7 @@ function AnalyzingView() {
         <div className="mx-auto mb-8 rounded-[calc(var(--radius)*1.5)] bg-hero px-2 pt-6">
           <WaitAnimation label="日記を分析しています" />
         </div>
-        <p className="text-sm font-bold tracking-widest text-accent-strong">READING YOUR NOTE</p>
-        <h1 className="mt-3 font-display text-2xl font-bold leading-relaxed" role="status">
+        <h1 className="font-display text-2xl leading-relaxed" role="status">
           日記を保存しました。
           <br />
           ハカドリが日記を読んでいます…
