@@ -41,11 +41,16 @@
   --chart-grid: #e8ded4;
   --chart-axis: #8c7c73;
   --font-body: var(--font-zen-maru), sans-serif;
-  --font-heading: var(--font-zen-maru), sans-serif;
+  /* 手帳の系統は、日付と見出しを手書きに近い Klee One にする（段階15） */
+  --font-heading: var(--font-klee), serif;
+  --heading-weight: 600;
   --font-number: var(--font-mplus-rounded), sans-serif;
-  --radius: 22px;
-  --radius-control: 16px;
-  --radius-small: 11px;
+  /* 手帳の角くらいの丸み（段階15 で 22px から小さくした） */
+  --radius: 10px;
+  --radius-control: 8px;
+  --radius-small: 6px;
+  /* はかどり印（はんこ）の色 */
+  --stamp: #c8553f;
   --card-shadow: 0 5px 0 rgba(92, 67, 51, 0.04);
   --button-shadow: 0 5px 0 rgba(111, 56, 46, 0.18);
   --shell-shadow: 0 0 40px rgba(71, 53, 43, 0.08);
@@ -81,6 +86,7 @@
   --series-stress: #c98500;
   --chart-grid: #34425f;
   --chart-axis: #aab3ca;
+  --stamp: #e7c65d;
   --card-shadow: 0 7px 22px rgba(1, 6, 17, 0.22);
   --button-shadow: 0 5px 0 rgba(4, 9, 23, 0.38);
   --shell-shadow: 0 0 50px rgba(4, 9, 23, 0.3);
@@ -112,9 +118,10 @@
   --chart-axis: #6c776d;
   --font-body: var(--font-klee), serif;
   --font-heading: var(--font-klee), serif;
-  --radius: 12px;
-  --radius-control: 9px;
-  --radius-small: 6px;
+  --radius: 8px;
+  --radius-control: 6px;
+  --radius-small: 4px;
+  --stamp: #3e6c55;
   --card-shadow: 0 4px 0 rgba(57, 72, 54, 0.05);
   --button-shadow: 0 4px 0 rgba(31, 72, 50, 0.22);
   --shell-shadow: 0 0 40px rgba(44, 59, 44, 0.1);
@@ -145,10 +152,10 @@
   --chart-grid: #d5edf1;
   --chart-axis: #607d86;
   --font-body: var(--font-mplus-rounded), sans-serif;
-  --font-heading: var(--font-mplus-rounded), sans-serif;
-  --radius: 25px;
-  --radius-control: 18px;
-  --radius-small: 12px;
+  --radius: 12px;
+  --radius-control: 9px;
+  --radius-small: 6px;
+  --stamp: #0b718e;
   --card-shadow: 0 6px 0 rgba(18, 126, 150, 0.08);
   --button-shadow: 0 5px 0 rgba(10, 104, 127, 0.2);
   --shell-shadow: 0 0 40px rgba(17, 107, 130, 0.09);
@@ -178,9 +185,10 @@
   --bird-beak: #cf795e;
   --chart-grid: #eadbdb;
   --chart-axis: #806f71;
-  --radius: 28px;
-  --radius-control: 20px;
-  --radius-small: 13px;
+  --radius: 12px;
+  --radius-control: 9px;
+  --radius-small: 6px;
+  --stamp: #b4475f;
   --card-shadow: 0 6px 0 rgba(118, 76, 81, 0.05);
   --button-shadow: 0 5px 0 rgba(132, 65, 82, 0.18);
   --shell-shadow: 0 0 40px rgba(99, 66, 70, 0.08);
@@ -217,14 +225,16 @@
   --chart-axis: #aebfb8;
   --font-body: var(--font-noto-sans), sans-serif;
   --font-heading: var(--font-noto-sans), sans-serif;
+  --heading-weight: 700;
   --font-number: var(--font-roboto-mono), monospace;
-  --radius: 28px;
-  --radius-control: 20px;
-  --radius-small: 14px;
-  --card-shadow: 0 14px 38px rgba(0, 0, 0, 0.28);
-  --button-shadow: 0 9px 24px rgba(0, 0, 0, 0.3);
+  --radius: 18px;
+  --radius-control: 12px;
+  --radius-small: 8px;
+  --stamp: #8de4c2;
+  --card-shadow: 0 10px 28px rgba(0, 0, 0, 0.24);
+  --button-shadow: 0 6px 18px rgba(0, 0, 0, 0.26);
   --shell-shadow: 0 0 60px rgba(0, 0, 0, 0.36);
-  --card-blur: 32px;
+  --card-blur: 18px;
 }
 
 :root[data-theme="office"] {
@@ -253,10 +263,12 @@
   --chart-axis: #7a7a84;
   --font-body: var(--font-noto-sans), sans-serif;
   --font-heading: var(--font-noto-sans), sans-serif;
+  --heading-weight: 700;
   --font-number: var(--font-noto-sans), sans-serif;
-  --radius: 16px;
-  --radius-control: 12px;
-  --radius-small: 8px;
+  --radius: 10px;
+  --radius-control: 8px;
+  --radius-small: 6px;
+  --stamp: #5853ad;
   --card-shadow: 0 1px 2px rgba(25, 25, 35, 0.04);
   --button-shadow: 0 2px 8px rgba(35, 35, 45, 0.08);
   --shell-shadow: 0 0 35px rgba(30, 30, 40, 0.06);
@@ -404,32 +416,18 @@
 }
 
 /* クリア（すりガラス）の部品 */
+/* 段階15：光の反射やグラデーションの飾りを減らし、落ち着いた面にした（すりガラスの感じは残す） */
 .liquid-card {
   position: relative;
   isolation: isolate;
-  border: 1.5px solid rgba(222, 255, 242, 0.24);
-  background: linear-gradient(145deg, rgba(55, 80, 70, 0.7), rgba(18, 34, 27, 0.52));
-  box-shadow:
-    inset 0 1px 0 rgba(234, 255, 247, 0.3),
-    inset 0 -1px 0 rgba(91, 180, 147, 0.16),
-    0 20px 48px rgba(0, 0, 0, 0.34);
-  backdrop-filter: blur(var(--card-blur)) saturate(1.45);
-}
-
-.liquid-card::before {
-  position: absolute;
-  z-index: -1;
-  inset: 0;
-  border-radius: inherit;
-  background:
-    linear-gradient(115deg, rgba(231, 255, 246, 0.2), transparent 38%),
-    radial-gradient(circle at 94% 4%, rgba(112, 212, 174, 0.2), transparent 32%);
-  content: "";
-  pointer-events: none;
+  border: 1px solid rgba(222, 255, 242, 0.16);
+  background: rgba(30, 46, 39, 0.72);
+  box-shadow: inset 0 1px 0 rgba(234, 255, 247, 0.12);
+  backdrop-filter: blur(var(--card-blur)) saturate(1.2);
 }
 
 .material-hero {
-  background: linear-gradient(142deg, rgba(55, 82, 70, 0.76), rgba(16, 33, 26, 0.56));
+  background: rgba(36, 58, 48, 0.82);
 }
 
 .material-label,
@@ -601,6 +599,83 @@
   --swatch-accent: #7772d3;
   --swatch-text: #25252b;
   --swatch-muted: #73737d;
+}
+
+/* 見出しの太さ（Klee One は 600 までなので、手帳の系統は 600。ほかは 700） */
+.font-display {
+  font-weight: var(--heading-weight, 700);
+}
+
+/* 手帳の罫線（カードの枠の代わりに、点線で区切る） */
+.ruled {
+  border-top: 1px dashed color-mix(in srgb, var(--muted) 38%, transparent);
+}
+
+.ruled-bottom {
+  border-bottom: 1px dashed color-mix(in srgb, var(--muted) 38%, transparent);
+}
+
+/* 日記を書く欄（手帳の系統は罫線のノートにする。行の高さと罫線の間かくをそろえる） */
+.notebook-paper {
+  padding-top: 8px;
+  line-height: 2rem;
+  background-image: linear-gradient(
+    transparent calc(2rem - 1px),
+    color-mix(in srgb, var(--muted) 22%, transparent) calc(2rem - 1px),
+    color-mix(in srgb, var(--muted) 22%, transparent) 2rem
+  );
+  background-position: 0 8px;
+  background-size: 100% 2rem;
+  background-attachment: local;
+}
+
+[data-theme="clear"] .notebook-paper,
+[data-theme="office"] .notebook-paper {
+  padding-top: 14px;
+  line-height: 1.7;
+  background-image: none;
+}
+
+/*
+ * はかどり印（予報の % を、手帳に押すはんこの形で出す）。
+ * 画面でいちばん目立たせる所なので、飾りはここにだけ使う
+ */
+.hakadori-stamp {
+  display: grid;
+  width: 104px;
+  height: 104px;
+  flex-shrink: 0;
+  place-items: center;
+  align-content: center;
+  border: 2.5px solid var(--stamp);
+  border-radius: 999px;
+  box-shadow: inset 0 0 0 3px var(--background), inset 0 0 0 4.5px var(--stamp);
+  color: var(--stamp);
+  transform: rotate(-9deg);
+  line-height: 1;
+}
+
+.hakadori-stamp[data-ready="false"] {
+  border-style: dashed;
+  border-color: color-mix(in srgb, var(--muted) 55%, transparent);
+  box-shadow: none;
+  color: var(--muted);
+  transform: none;
+}
+
+.hakadori-stamp[data-ready="true"] {
+  animation: stamp-press 420ms cubic-bezier(0.2, 0.9, 0.3, 1.2) both;
+}
+
+@keyframes stamp-press {
+  0% {
+    opacity: 0;
+    transform: rotate(-9deg) scale(1.35);
+  }
+  100% {
+    opacity: 1;
+    transform: rotate(-9deg) scale(1);
+  }
 }
 
 /* ハカドリが考えている動き */

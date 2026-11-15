@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState, useSyncExternalStore } from "react";
 import { toMessage, useAuth } from "@/components/AuthProvider";
 import { useTheme } from "@/components/ThemeProvider";
+import { Icon } from "@/components/ui/Icon";
 import { Mascot } from "@/components/ui/Mascot";
 import { PLACES_API_ENABLED } from "@/components/home/NearbyPlaces";
 import { WAIT_ANIMATION_INFO } from "@/components/ui/WaitAnimation";
@@ -72,10 +73,10 @@ export function SettingsScreen({ user }: { user: User }) {
     <div className="space-y-6 p-4">
       <section className="recommend-card rounded-[var(--radius)] border p-5">
         <div className="flex items-center gap-3">
-          <Mascot mood="normal" size={70} />
+          <Mascot mood="normal" size={56} />
           <div>
-            <p className="text-sm font-bold text-accent-strong">今日の気分には、このテーマはどう？</p>
-            <p className="mt-1 font-display text-lg font-bold">{recommended.name}</p>
+            <p className="text-sm text-muted">今日の気分に合うテーマ</p>
+            <p className="mt-1 font-display text-lg">{recommended.name}</p>
           </div>
         </div>
         <p className="mt-3 text-sm leading-relaxed text-muted">{recommendation.reason}</p>
@@ -156,7 +157,7 @@ export function SettingsScreen({ user }: { user: User }) {
           className="flex min-h-14 w-full items-center justify-between rounded-[var(--radius-control)] border border-border bg-card px-4 font-bold"
         >
           <span>基本情報を変更</span>
-          <span aria-hidden="true">→</span>
+          <Icon name="next" size={18} className="text-muted" />
         </Link>
         <button
           type="button"

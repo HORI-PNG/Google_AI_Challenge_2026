@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import { ForgettingCurve } from "@/components/ForgettingCurve";
 import { Mascot } from "@/components/ui/Mascot";
 import { Card } from "@/components/ui/Ui";
+import { Icon } from "@/components/ui/Icon";
 import { calendarUrl } from "@/lib/calendar";
 import { ApiRequestError, requestQuiz } from "@/lib/diaries";
 import { dateKey } from "@/lib/forecast";
@@ -107,8 +108,8 @@ export function ReviewScreen({ user, profile }: { user: User; profile: UserProfi
       setQuiz({ status: "idle" });
       setMessage(
         result === "remembered"
-          ? "ばっちり！ 前より忘れにくくなったよ。ピッ"
-          : "大丈夫、今思い出したからまた覚え直せたよ。",
+          ? "思い出せました。前より忘れにくくなっています。"
+          : "今思い出したので、ここからまた覚え直せます。",
       );
     } catch {
       setMessage("保存できませんでした。もう一度押してね");
@@ -127,20 +128,15 @@ export function ReviewScreen({ user, profile }: { user: User; profile: UserProfi
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="grid grid-cols-[72px_1fr] items-end gap-2">
-        <Mascot mood={dueCount > 0 ? "cheer" : "normal"} size={78} />
-        <p className="rounded-[var(--radius-control)] border border-border bg-card px-4 py-3 text-sm font-bold leading-relaxed">
-          {dueCount > 0
-            ? `そろそろ忘れかけていることが ${dueCount} つあるよ。思い出してみよう！`
-            : "今はどれもよく覚えているみたい。この調子！"}
-        </p>
-      </div>
+      <p className="font-display text-xl leading-relaxed">
+        {dueCount > 0 ? `忘れかけていることが ${dueCount} つあります。` : "今はどれもよく覚えています。"}
+      </p>
 
       <Card className="p-5">
         <p className="text-xs font-bold text-muted">
-          {daysAgoLabel(selected.learnedAt, now)}に学んだこと・復習 {selected.reviews.length} 回
+          {daysAgoLabel(selected.learnedAt, now)}に学んだこと（復習 {selected.reviews.length} 回）
         </p>
-        <h2 className="mt-1 font-display text-xl font-bold">{selected.topic}</h2>
+        <h2 className="mt-1 font-display text-xl">{selected.topic}</h2>
         <p className="mt-1 text-sm leading-relaxed text-muted">{selected.point}</p>
         <div className="mt-4">
           <ForgettingCurve item={selected} now={now} />
@@ -200,18 +196,17 @@ export function ReviewScreen({ user, profile }: { user: User; profile: UserProfi
             href={nextUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="mt-3 flex min-h-11 items-center justify-between rounded-[var(--radius-control)] border border-border px-4 text-sm font-bold"
+            className="mt-3 flex min-h-11 items-center gap-2 rounded-[var(--radius-control)] border border-border px-4 py-2 text-sm font-bold"
           >
-            <span>
-              <span aria-hidden="true">📅 </span>次の復習（{next.getMonth() + 1}/{next.getDate()} ごろ）をカレンダーに入れる
-            </span>
-            <span aria-hidden="true">↗</span>
+            <Icon name="calendar" size={18} className="text-accent-strong" />
+            <span className="flex-1">次の復習（{next.getMonth() + 1}/{next.getDate()} ごろ）をカレンダーに入れる</span>
+            <Icon name="external" size={16} className="text-muted" />
           </a>
         )}
       </Card>
 
       <section>
-        <h2 className="text-sm font-bold">学んだこと（最近 {LEARNING_DAYS} 日・忘れかけている順）</h2>
+        <h2 className="text-sm font-bold">学んだこと（最近 {LEARNING_DAYS} 日、忘れかけている順）</h2>
         <ul className="mt-2 flex flex-col gap-2">
           {items.map((item) => {
             const r = Math.round(retention(item, now) * 100);
@@ -229,7 +224,7 @@ export function ReviewScreen({ user, profile }: { user: User; profile: UserProfi
                   <span className="min-w-0 flex-1">
                     <strong className="block truncate text-sm">{item.topic}</strong>
                     <span className="text-xs text-muted">
-                      {daysAgoLabel(item.learnedAt, now)}・復習 {item.reviews.length} 回{due && "・そろそろ復習"}
+                      {daysAgoLabel(item.learnedAt, now)}、復習 {item.reviews.length} 回{due && "（そろそろ復習）"}
                     </span>
                   </span>
                   <span className="w-16 shrink-0 text-right">
@@ -244,7 +239,7 @@ export function ReviewScreen({ user, profile }: { user: User; profile: UserProfi
           })}
         </ul>
         <p className="mt-3 text-xs leading-relaxed text-muted">
-          ※ 記憶の残り（%）は、エビングハウスの忘却曲線の形をもとにした目安です。「思い出せた」と答えるほど、忘れにくくなるように計算しています。
+          記憶の残り（%）は、エビングハウスの忘却曲線をもとにした目安です。「思い出せた」と答えるほど、忘れにくくなるように計算しています。
         </p>
         <Link href="/diary/new" className="mt-3 inline-flex min-h-11 items-center text-sm font-bold text-accent-strong underline">
           今日学んだことを日記に書く
@@ -261,17 +256,19 @@ function ReviewButtons({ saving, onAnswer }: { saving: boolean; onAnswer: (r: Re
         type="button"
         disabled={saving}
         onClick={() => onAnswer("remembered")}
-        className="min-h-12 rounded-[var(--radius-control)] bg-accent font-bold text-accent-foreground disabled:opacity-50"
+        className="flex min-h-12 items-center justify-center gap-1.5 rounded-[var(--radius-control)] bg-accent font-bold text-accent-foreground disabled:opacity-50"
       >
-        😆 思い出せた
+        <Icon name="face3" size={20} />
+        思い出せた
       </button>
       <button
         type="button"
         disabled={saving}
         onClick={() => onAnswer("forgot")}
-        className="min-h-12 rounded-[var(--radius-control)] border border-border bg-card font-bold disabled:opacity-50"
+        className="flex min-h-12 items-center justify-center gap-1.5 rounded-[var(--radius-control)] border border-border bg-card font-bold disabled:opacity-50"
       >
-        😣 忘れてた
+        <Icon name="face1" size={20} />
+        忘れてた
       </button>
     </div>
   );

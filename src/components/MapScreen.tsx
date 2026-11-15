@@ -5,7 +5,7 @@ import dynamic from "next/dynamic";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useAuth } from "@/components/AuthProvider";
-import { Mascot } from "@/components/ui/Mascot";
+import { Icon } from "@/components/ui/Icon";
 import { getDiariesSince } from "@/lib/diaries";
 import { getFeedbackSince } from "@/lib/feedback";
 import { dateKey, startOfDay } from "@/lib/forecast";
@@ -72,24 +72,25 @@ export function MapScreen({ user }: { user: User }) {
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="grid grid-cols-[72px_1fr] items-end gap-2">
-        <Mascot mood="normal" size={78} />
-        <p className="rounded-[var(--radius-control)] border border-border bg-card px-4 py-3 text-sm font-bold leading-relaxed">
-          {spots.length === 0
-            ? "まだ場所のある日記がないよ。場所を記録すると、キミのはかどる場所が地図で分かるよ。"
-            : best
-              ? `オレンジの丸が、はかどった場所だよ。いちばんはかどるのは、日記 ${best.count} 日分のあの場所みたい！`
-              : "日記がたまるほど、はかどる場所がはっきりしてくるよ。"}
-        </p>
-      </div>
+      <p className="font-display text-xl leading-relaxed">
+        {spots.length === 0
+          ? "まだ場所のある日記がありません。"
+          : best
+            ? `いちばんはかどるのは、日記 ${best.count} 日分の「場所 ${spots.indexOf(best) + 1}」です。`
+            : "日記がたまるほど、はかどる場所がはっきりします。"}
+      </p>
+      {spots.length === 0 && (
+        <p className="-mt-2 text-sm leading-relaxed text-muted">日記を書いた場所を記録すると、はかどる場所が地図で分かります。</p>
+      )}
 
       {spots.length === 0 && !settings?.locationEnabled && (
         <Link
           href="/settings"
-          className="flex min-h-12 items-center justify-between rounded-[var(--radius-control)] bg-accent px-4 font-bold text-accent-foreground"
+          className="flex min-h-12 items-center gap-2 rounded-[var(--radius-control)] bg-accent px-4 py-2 font-bold text-accent-foreground"
         >
-          設定で「日記に場所を記録する」をオンにする
-          <span aria-hidden="true">→</span>
+          <Icon name="pin" size={18} />
+          <span className="flex-1">設定で「日記に場所を記録する」をオンにする</span>
+          <Icon name="next" size={18} />
         </Link>
       )}
 
@@ -128,7 +129,7 @@ export function MapScreen({ user }: { user: User }) {
       )}
 
       <p className="text-xs leading-relaxed text-muted">
-        ※ 色は「はかどった？」の答え（答えていない日は集中の点数）の平均です。場所は約 100m の粗さで記録しており、本人しか見られません。
+        色は「はかどった？」の答え（答えていない日は集中の点数）の平均です。場所は約 100m の粗さで記録しており、本人しか見られません。
       </p>
     </div>
   );

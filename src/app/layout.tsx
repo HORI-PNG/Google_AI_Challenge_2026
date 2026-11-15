@@ -6,7 +6,7 @@ import { THEME_IDS, THEME_STORAGE_KEY } from "@/lib/themes";
 import "./globals.css";
 
 // テーマごとのフォント（使う変数は globals.css の --font-body など）。
-// 日本語のフォントは大きいので、標準テーマ（ことり）の Zen Maru Gothic 以外は先読みしない
+// 日本語のフォントは大きいので、標準テーマ（ことり）で使う Zen Maru Gothic（本文）と Klee One（見出し）以外は先読みしない
 const zenMaru = Zen_Maru_Gothic({
   variable: "--font-zen-maru",
   weight: ["400", "500", "700", "900"],
@@ -25,7 +25,6 @@ const klee = Klee_One({
   weight: ["400", "600"],
   subsets: ["latin"],
   display: "swap",
-  preload: false,
 });
 const notoSans = Noto_Sans_JP({
   variable: "--font-noto-sans",

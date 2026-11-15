@@ -16,6 +16,7 @@ import {
   formatDayLabel,
   periodStart,
   SCORE_KEYS,
+  type DayPoint,
   type ScoredEntry,
   type ScoreKey,
 } from "@/lib/moodSeries";
@@ -25,6 +26,27 @@ const PERIODS = [
   { days: 30, label: "1か月" },
 ] as const;
 const MAX_DAYS = 30;
+
+/** 期間の前半と後半の平均を比べて、流れを 1 語にする（この差より小さければ「いつもどおり」） */
+const TREND_THRESHOLD = 8;
+
+function trend(values: number[], up: string, down: string): string {
+  const half = Math.floor(values.length / 2);
+  const mean = (v: number[]) => v.reduce((a, b) => a + b, 0) / v.length;
+  const diff = mean(values.slice(values.length - half)) - mean(values.slice(0, half));
+  if (diff >= TREND_THRESHOLD) return up;
+  if (diff <= -TREND_THRESHOLD) return down;
+  return "いつもどおり";
+}
+
+/** この期間の自分を 1 行で（例：「この1週間、気分は上向き。集中はいつもどおり。」）。Gemini は使わず、点数から決める */
+function summarize(points: DayPoint[], periodLabel: string): string {
+  const filled = points.flatMap((p) => (p.scores ? [p.scores] : []));
+  if (filled.length < 2) return "日記が 2 日分たまると、この期間の流れをここにまとめます。";
+  const mood = trend(filled.map((s) => s.mood), "上向き", "下がりぎみ");
+  const focus = trend(filled.map((s) => s.focus), "高まっている", "下がりぎみ");
+  return `この${periodLabel}、気分は${mood}。集中は${focus}。`;
+}
 
 type Load =
   | { status: "loading" }
@@ -85,8 +107,15 @@ export function MoodScreen({ user }: { user: User }) {
   const productiveDays = points.filter((p) => productivity[p.date] === 3).length;
   const periodLabel = PERIODS.find((p) => p.days === days)?.label ?? "";
 
+  const summary = load.status === "ready" ? summarize(points, periodLabel) : " ";
+
   return (
     <div className="flex flex-col gap-5">
+      {/* この期間の自分を、ひとことで（段階15） */}
+      <p className="font-display text-xl leading-relaxed" aria-live="polite">
+        {summary}
+      </p>
+
       {/* 期間（グラフ全体にかかるフィルターは、上に1列で） */}
       <div role="radiogroup" aria-label="期間" className="grid grid-cols-2 rounded-[var(--radius-control)] bg-subtle p-1">
         {PERIODS.map((p) => (
@@ -117,8 +146,8 @@ export function MoodScreen({ user }: { user: User }) {
           load.status === "loading" ? "opacity-50" : ""
         }`}
       >
-        <h2 className="font-display text-sm font-bold">
-          感情の点数の移り変わり
+        <h2 className="text-sm font-bold">
+          点数の移り変わり
           <span className="ml-2 text-xs font-normal text-muted">
             {periodLabel}・{recordedDays}日分の日記
           </span>
@@ -165,33 +194,31 @@ export function MoodScreen({ user }: { user: User }) {
         )}
       </Card>
 
-      {/* 期間の平均 */}
+      {/* 期間の平均（横 1 列の小さな数字） */}
       {average && (
-        <section aria-label={`${periodLabel}の平均`} className="grid grid-cols-2 gap-3">
-          {SCORE_KEYS.map((k) => (
-            <Card key={k} className="flex flex-col gap-1 p-4">
-              <span className="flex items-center gap-2 text-sm font-bold text-muted">
-                <span
-                  aria-hidden
-                  className="inline-block h-0.5 w-3 rounded-full"
-                  style={{ background: SERIES[k].color }}
-                />
-                {SERIES[k].label}の平均
-              </span>
-              <span className="font-num text-3xl font-bold">
-                {average[k]}
-                <span className="ml-0.5 text-sm font-normal">点</span>
-              </span>
-              {SERIES[k].note && <span className="text-xs text-muted">{SERIES[k].note}</span>}
-            </Card>
-          ))}
+        <section aria-labelledby="average-title">
+          <h2 id="average-title" className="text-sm font-bold text-muted">
+            {periodLabel}の平均
+          </h2>
+          <dl className="ruled-bottom mt-2 grid grid-cols-4 gap-2 pb-3">
+            {SCORE_KEYS.map((k) => (
+              <div key={k}>
+                <dt className="flex items-center gap-1.5 text-xs text-muted">
+                  <span aria-hidden className="inline-block h-0.5 w-3 rounded-full" style={{ background: SERIES[k].color }} />
+                  {SERIES[k].label}
+                </dt>
+                <dd className="mt-0.5 font-num text-2xl font-bold">{average[k]}</dd>
+              </div>
+            ))}
+          </dl>
+          <p className="mt-2 text-xs text-muted">100 点満点。ストレスだけは低いほど良い点です。</p>
         </section>
       )}
 
       {/* 表で見る（色やグラフに頼らずに数値を確かめられる） */}
       {recordedDays > 0 && (
-        <details className="rounded-[var(--radius)] border border-border bg-card p-4 text-sm shadow-[var(--card-shadow)]">
-          <summary className="flex min-h-8 cursor-pointer items-center font-bold">表で見る</summary>
+        <details className="text-sm">
+          <summary className="flex min-h-11 cursor-pointer items-center font-bold">表で見る</summary>
           <table className="mt-3 w-full text-left text-xs">
             <thead className="text-muted">
               <tr>

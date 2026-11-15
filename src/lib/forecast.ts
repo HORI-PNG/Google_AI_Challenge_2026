@@ -174,11 +174,12 @@ export function buildForecastMessage(request: ForecastRequest): string {
 export const WEATHERS = ["sunny", "partly_cloudy", "cloudy", "rainy"] as const;
 export type Weather = (typeof WEATHERS)[number];
 
-export const WEATHER_LABELS: Record<Weather, { icon: string; label: string }> = {
-  sunny: { icon: "☀️", label: "晴れ" },
-  partly_cloudy: { icon: "🌤️", label: "晴れときどきくもり" },
-  cloudy: { icon: "☁️", label: "くもり" },
-  rainy: { icon: "🌧️", label: "雨" },
+/** 天気の名前（アイコンは src/components/ui/Icon.tsx の WeatherIcon。絵文字は使わない） */
+export const WEATHER_LABELS: Record<Weather, { label: string }> = {
+  sunny: { label: "晴れ" },
+  partly_cloudy: { label: "晴れときどきくもり" },
+  cloudy: { label: "くもり" },
+  rainy: { label: "雨" },
 };
 
 /** プロンプト②の「percent から weather を決める」と同じ区切り */
@@ -249,5 +250,5 @@ export function describeForecast(forecast: Forecast): string {
 export const FEEDBACK_THANKS: Record<Productivity, string> = {
   1: "教えてくれてありがとう。そういう日もあるよ、今日の予報に活かすね。",
   2: "ありがとう！ふつうの日の記録も、予報の大事な材料だよ。",
-  3: "はかどったんだね！その日の過ごし方、予報に活かすよ♪",
+  3: "はかどったんだね。その日の過ごし方を、今日の予報に活かすよ。",
 };

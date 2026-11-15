@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Card } from "@/components/ui/Ui";
+import { Icon, type IconName } from "@/components/ui/Icon";
 import { Mascot } from "@/components/ui/Mascot";
 import type { FeedbackState } from "@/components/useForecast";
 import {
@@ -18,10 +19,10 @@ import {
 // 「昨日ははかどった？」（PLAN.md 4章 ⑤）。3 段階は 1 タップで保存する。
 // 時間帯と場所は任意（先に選んでおくと、いっしょに保存する）。予報の「はかどった日に多い時間帯・場所」の根拠になる
 
-const ANSWERS: { value: Productivity; face: string }[] = [
-  { value: 1, face: "😣" },
-  { value: 2, face: "🙂" },
-  { value: 3, face: "😆" },
+const ANSWERS: { value: Productivity; face: IconName }[] = [
+  { value: 1, face: "face1" },
+  { value: 2, face: "face2" },
+  { value: 3, face: "face3" },
 ];
 
 export function FeedbackCard({ state }: { state: FeedbackState }) {
@@ -44,13 +45,10 @@ export function FeedbackCard({ state }: { state: FeedbackState }) {
   return (
     <Card className="feedback-card" aria-labelledby="feedback-title">
       <div className="flex items-center gap-3">
-        <Mascot mood="cheer" size={56} />
-        <div>
-          <p className="text-xs font-bold text-accent-strong">YESTERDAY</p>
-          <h2 id="feedback-title" className="font-display text-lg font-bold leading-snug">
-            昨日（{state.dayLabel}）の勉強は、はかどった？
-          </h2>
-        </div>
+        <Mascot mood="cheer" size={48} />
+        <h2 id="feedback-title" className="font-display text-lg leading-snug">
+          昨日（{state.dayLabel}）の勉強は、はかどった？
+        </h2>
       </div>
 
       <Chips
@@ -73,11 +71,9 @@ export function FeedbackCard({ state }: { state: FeedbackState }) {
             type="button"
             disabled={state.saving}
             onClick={() => state.onAnswer({ productivity: a.value, studyTime, place })}
-            className="flex min-h-20 flex-col items-center justify-center gap-1 rounded-[var(--radius-control)] border border-border bg-subtle px-1 text-xs font-bold transition active:scale-[.97] disabled:opacity-60"
+            className="flex min-h-20 flex-col items-center justify-center gap-1.5 rounded-[var(--radius-control)] border border-border bg-card px-1 text-xs font-bold transition active:scale-[.97] disabled:opacity-60"
           >
-            <span className="text-2xl" aria-hidden="true">
-              {a.face}
-            </span>
+            <Icon name={a.face} size={30} className="text-accent-strong" />
             {PRODUCTIVITY_LABELS[a.value]}
           </button>
         ))}
@@ -123,7 +119,7 @@ function Chips<T extends string>({
               aria-pressed={on}
               // もう一度押すと選択を外す（任意の項目なので）
               onClick={() => onSelect(on ? null : o.value)}
-              className={`min-h-10 rounded-full border px-4 text-sm font-bold transition ${
+              className={`min-h-11 rounded-full border px-4 text-sm font-bold transition ${
                 on ? "border-accent bg-accent text-accent-foreground" : "border-border bg-card"
               }`}
             >
