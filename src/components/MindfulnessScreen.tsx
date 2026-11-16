@@ -5,12 +5,14 @@ import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { Button, buttonClass } from "@/components/ui/Ui";
 
-import { MINDFULNESS_DURATION_MS, MINDFULNESS_ENTRANCE_MS, MINDFULNESS_JUMP_FRAMES } from "@/lib/mindfulness";
+import { MINDFULNESS_DURATION_MS, MINDFULNESS_ENTRANCE_MS, MINDFULNESS_JUMP_FRAMES, pickMindfulnessFinish, type MindfulnessFinish, type MindfulnessFinishId } from "@/lib/mindfulness";
 
 type Phase = "ready" | "entering" | "watching" | "done";
 
 export function MindfulnessScreen() {
   const [phase, setPhase] = useState<Phase>("ready");
+  const [finish, setFinish] = useState<MindfulnessFinish | null>(null);
+  const previousFinish = useRef<MindfulnessFinishId | null>(null);
   const [imageReady, setImageReady] = useState(false);
   const [imageError, setImageError] = useState(false);
   const deadline = useRef(0);
@@ -18,6 +20,7 @@ export function MindfulnessScreen() {
   const completion = useRef<HTMLHeadingElement>(null);
 
   function start() {
+    setFinish(null);
     setPhase("entering");
   }
 
@@ -44,10 +47,17 @@ export function MindfulnessScreen() {
 
   useEffect(() => {
     if (phase !== "watching") return;
+    let completed = false;
     // 間隔を数える方式にせず、タブを切り替えても経過時間がずれないようにする。
     function tick() {
       const milliseconds = Math.max(0, deadline.current - performance.now());
-      if (milliseconds === 0) setPhase("done");
+      if (!completed && milliseconds === 0) {
+        completed = true;
+        const next = pickMindfulnessFinish(previousFinish.current);
+        previousFinish.current = next.id;
+        setFinish(next);
+        setPhase("done");
+      }
     }
     const timer = window.setInterval(tick, 100);
     document.addEventListener("visibilitychange", tick);
@@ -85,9 +95,9 @@ export function MindfulnessScreen() {
           <div className="mindfulness-stage-smoke mindfulness-stage-smoke-right" aria-hidden="true" />
           <div ref={performer} className="mindfulness-performer" aria-hidden={phase === "ready"}>
             <Image
-              key={phase === "done" ? "singing" : "standing"}
-              src={phase === "done" ? "/animations/mindfulness-stage-singing.svg" : "/animations/mindfulness-stage-performer.svg"}
-              alt={phase === "done" ? "マイクを口元に上げ、口と頭を動かして歌い始めるキャラクター" : "黒と金の舞台衣装とサングラスで、足を開いて腕を下ろし、仁王立ちするキャラクター"}
+              key={phase === "done" && finish ? finish.id : "standing"}
+              src={phase === "done" && finish ? finish.src : "/animations/mindfulness-stage-performer.svg"}
+              alt={phase === "done" && finish ? finish.alt : "黒と金の舞台衣装とサングラスで、足を開いて腕を下ろし、仁王立ちするキャラクター"}
               width={240}
               height={440}
               unoptimized

@@ -1,0 +1,392 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="205 185 90 165" width="240" height="440">
+  <style>.mw-anim { transform-box: view-box; transform-origin: 0 0; animation-duration: 1s; animation-timing-function: linear; animation-iteration-count: infinite; }
+.mw-actor { animation-name: mw-actor; }
+@keyframes mw-actor {
+0.00% {  transform:translate(250px,343px) scale(1,1) rotate(0deg) translate(0px,-70px) rotate(0deg) translate(0px,70px)  }
+9.74% {  transform:translate(250px,341.38px) scale(1,1) rotate(0deg) translate(0px,-70px) rotate(0deg) translate(0px,70px)  }
+16.23% {  transform:translate(250px,341px) scale(1,1) rotate(0deg) translate(0px,-70px) rotate(0deg) translate(0px,70px)  }
+22.72% {  transform:translate(250px,341.38px) scale(1,1) rotate(0deg) translate(0px,-70px) rotate(0deg) translate(0px,70px)  }
+32.56% {  transform:translate(250px,343px) scale(1,1) rotate(0deg) translate(0px,-70px) rotate(0deg) translate(0px,70px)  }
+42.30% {  transform:translate(250px,341.38px) scale(1,1) rotate(0deg) translate(0px,-70px) rotate(0deg) translate(0px,70px)  }
+48.79% {  transform:translate(250px,341px) scale(1,1) rotate(0deg) translate(0px,-70px) rotate(0deg) translate(0px,70px)  }
+55.28% {  transform:translate(250px,341.38px) scale(1,1) rotate(0deg) translate(0px,-70px) rotate(0deg) translate(0px,70px)  }
+65.02% {  transform:translate(250px,343px) scale(1,1) rotate(0deg) translate(0px,-70px) rotate(0deg) translate(0px,70px)  }
+74.76% {  transform:translate(250px,341.38px) scale(1,1) rotate(0deg) translate(0px,-70px) rotate(0deg) translate(0px,70px)  }
+81.25% {  transform:translate(250px,341px) scale(1,1) rotate(0deg) translate(0px,-70px) rotate(0deg) translate(0px,70px)  }
+87.84% {  transform:translate(250px,341.38px) scale(1,1) rotate(0deg) translate(0px,-70px) rotate(0deg) translate(0px,70px)  }
+97.58% {  transform:translate(250px,343px) scale(1,1) rotate(0deg) translate(0px,-70px) rotate(0deg) translate(0px,70px)  }
+100% {  transform:translate(250px,343px) scale(1,1) rotate(0deg) translate(0px,-70px) rotate(0deg) translate(0px,70px)  }
+}
+.mw-torso { animation-name: mw-torso; }
+@keyframes mw-torso {
+0.00% {  transform:translate(0px,-60px) rotate(4deg) translate(0px,60px)  }
+4.92% {  transform:translate(0px,-60px) rotate(5.21deg) translate(0px,60px)  }
+8.17% {  transform:translate(0px,-60px) rotate(5.5deg) translate(0px,60px)  }
+11.41% {  transform:translate(0px,-60px) rotate(5.21deg) translate(0px,60px)  }
+21.15% {  transform:translate(0px,-60px) rotate(2.79deg) translate(0px,60px)  }
+24.40% {  transform:translate(0px,-60px) rotate(2.5deg) translate(0px,60px)  }
+27.64% {  transform:translate(0px,-60px) rotate(2.79deg) translate(0px,60px)  }
+37.38% {  transform:translate(0px,-60px) rotate(5.21deg) translate(0px,60px)  }
+40.62% {  transform:translate(0px,-60px) rotate(5.5deg) translate(0px,60px)  }
+43.87% {  transform:translate(0px,-60px) rotate(5.21deg) translate(0px,60px)  }
+53.61% {  transform:translate(0px,-60px) rotate(2.79deg) translate(0px,60px)  }
+56.85% {  transform:translate(0px,-60px) rotate(2.5deg) translate(0px,60px)  }
+60.20% {  transform:translate(0px,-60px) rotate(2.79deg) translate(0px,60px)  }
+69.94% {  transform:translate(0px,-60px) rotate(5.21deg) translate(0px,60px)  }
+73.19% {  transform:translate(0px,-60px) rotate(5.5deg) translate(0px,60px)  }
+76.43% {  transform:translate(0px,-60px) rotate(5.21deg) translate(0px,60px)  }
+86.17% {  transform:translate(0px,-60px) rotate(2.79deg) translate(0px,60px)  }
+89.41% {  transform:translate(0px,-60px) rotate(2.5deg) translate(0px,60px)  }
+92.66% {  transform:translate(0px,-60px) rotate(2.79deg) translate(0px,60px)  }
+100% {  transform:translate(0px,-60px) rotate(4deg) translate(0px,60px)  }
+}
+.mw-lf1 { animation-name: mw-lf1; }
+@keyframes mw-lf1 {
+0.00% {  transform:translate(0px,-60px) rotate(-11.19deg) translate(0px,60px)  }
+4.92% {  transform:translate(0px,-60px) rotate(-16.99deg) translate(0px,60px)  }
+12.98% {  transform:translate(0px,-60px) rotate(-25.49deg) translate(0px,60px)  }
+25.97% {  transform:translate(0px,-60px) rotate(-38.35deg) translate(0px,60px)  }
+27.64% {  transform:translate(0px,-60px) rotate(-38.01deg) translate(0px,60px)  }
+29.32% {  transform:translate(0px,-60px) rotate(-34.5deg) translate(0px,60px)  }
+30.89% {  transform:translate(0px,-60px) rotate(-29.33deg) translate(0px,60px)  }
+32.56% {  transform:translate(0px,-60px) rotate(-26.75deg) translate(0px,60px)  }
+35.81% {  transform:translate(0px,-60px) rotate(-23.65deg) translate(0px,60px)  }
+40.62% {  transform:translate(0px,-60px) rotate(-18.06deg) translate(0px,60px)  }
+56.85% {  transform:translate(0px,-60px) rotate(1.97deg) translate(0px,60px)  }
+58.53% {  transform:translate(0px,-60px) rotate(4.1deg) translate(0px,60px)  }
+60.20% {  transform:translate(0px,-60px) rotate(0.33deg) translate(0px,60px)  }
+61.77% {  transform:translate(0px,-60px) rotate(-6.14deg) translate(0px,60px)  }
+63.45% {  transform:translate(0px,-60px) rotate(-10.63deg) translate(0px,60px)  }
+65.02% {  transform:translate(0px,-60px) rotate(-11.19deg) translate(0px,60px)  }
+69.94% {  transform:translate(0px,-60px) rotate(-16.99deg) translate(0px,60px)  }
+78.00% {  transform:translate(0px,-60px) rotate(-25.49deg) translate(0px,60px)  }
+91.09% {  transform:translate(0px,-60px) rotate(-38.35deg) translate(0px,60px)  }
+92.66% {  transform:translate(0px,-60px) rotate(-38.01deg) translate(0px,60px)  }
+94.33% {  transform:translate(0px,-60px) rotate(-34.5deg) translate(0px,60px)  }
+95.91% {  transform:translate(0px,-60px) rotate(-29.33deg) translate(0px,60px)  }
+97.58% {  transform:translate(0px,-60px) rotate(-26.75deg) translate(0px,60px)  }
+100% {  transform:translate(0px,-60px) rotate(-11.19deg) translate(0px,60px)  }
+}
+.mw-lf2 { animation-name: mw-lf2; }
+@keyframes mw-lf2 {
+0.00% {  transform:translate(0px,-32px) rotate(54.39deg) translate(0px,32px)  }
+3.25% {  transform:translate(0px,-32px) rotate(54.95deg) translate(0px,32px)  }
+8.17% {  transform:translate(0px,-32px) rotate(54.68deg) translate(0px,32px)  }
+24.40% {  transform:translate(0px,-32px) rotate(51.26deg) translate(0px,32px)  }
+25.97% {  transform:translate(0px,-32px) rotate(50.77deg) translate(0px,32px)  }
+27.64% {  transform:translate(0px,-32px) rotate(48.83deg) translate(0px,32px)  }
+29.32% {  transform:translate(0px,-32px) rotate(42.98deg) translate(0px,32px)  }
+30.89% {  transform:translate(0px,-32px) rotate(32.98deg) translate(0px,32px)  }
+32.56% {  transform:translate(0px,-32px) rotate(25.81deg) translate(0px,32px)  }
+34.13% {  transform:translate(0px,-32px) rotate(26.25deg) translate(0px,32px)  }
+35.81% {  transform:translate(0px,-32px) rotate(26.34deg) translate(0px,32px)  }
+39.05% {  transform:translate(0px,-32px) rotate(25.73deg) translate(0px,32px)  }
+43.87% {  transform:translate(0px,-32px) rotate(23.68deg) translate(0px,32px)  }
+53.61% {  transform:translate(0px,-32px) rotate(19.2deg) translate(0px,32px)  }
+56.85% {  transform:translate(0px,-32px) rotate(17.66deg) translate(0px,32px)  }
+58.53% {  transform:translate(0px,-32px) rotate(16.66deg) translate(0px,32px)  }
+60.20% {  transform:translate(0px,-32px) rotate(27.16deg) translate(0px,32px)  }
+61.77% {  transform:translate(0px,-32px) rotate(41.79deg) translate(0px,32px)  }
+63.45% {  transform:translate(0px,-32px) rotate(51.33deg) translate(0px,32px)  }
+65.02% {  transform:translate(0px,-32px) rotate(54.39deg) translate(0px,32px)  }
+68.26% {  transform:translate(0px,-32px) rotate(54.95deg) translate(0px,32px)  }
+73.19% {  transform:translate(0px,-32px) rotate(54.68deg) translate(0px,32px)  }
+89.41% {  transform:translate(0px,-32px) rotate(51.26deg) translate(0px,32px)  }
+91.09% {  transform:translate(0px,-32px) rotate(50.77deg) translate(0px,32px)  }
+92.66% {  transform:translate(0px,-32px) rotate(48.83deg) translate(0px,32px)  }
+94.33% {  transform:translate(0px,-32px) rotate(42.98deg) translate(0px,32px)  }
+95.91% {  transform:translate(0px,-32px) rotate(32.98deg) translate(0px,32px)  }
+97.58% {  transform:translate(0px,-32px) rotate(25.81deg) translate(0px,32px)  }
+99.15% {  transform:translate(0px,-32px) rotate(26.25deg) translate(0px,32px)  }
+100% {  transform:translate(0px,-32px) rotate(54.39deg) translate(0px,32px)  }
+}
+.mw-lf3 { animation-name: mw-lf3; }
+@keyframes mw-lf3 {
+0.00% {  transform:translate(0px,-5px) rotate(-3.2deg) translate(0px,5px)  }
+4.92% {  transform:translate(0px,-5px) rotate(2.02deg) translate(0px,5px)  }
+24.40% {  transform:translate(0px,-5px) rotate(25.54deg) translate(0px,5px)  }
+25.97% {  transform:translate(0px,-5px) rotate(27.58deg) translate(0px,5px)  }
+27.64% {  transform:translate(0px,-5px) rotate(22.92deg) translate(0px,5px)  }
+29.32% {  transform:translate(0px,-5px) rotate(11.52deg) translate(0px,5px)  }
+30.89% {  transform:translate(0px,-5px) rotate(2.6deg) translate(0px,5px)  }
+32.56% {  transform:translate(0px,-5px) rotate(0.94deg) translate(0px,5px)  }
+35.81% {  transform:translate(0px,-5px) rotate(-2.69deg) translate(0px,5px)  }
+40.62% {  transform:translate(0px,-5px) rotate(-7.08deg) translate(0px,5px)  }
+56.85% {  transform:translate(0px,-5px) rotate(-19.63deg) translate(0px,5px)  }
+58.53% {  transform:translate(0px,-5px) rotate(-20.76deg) translate(0px,5px)  }
+60.20% {  transform:translate(0px,-5px) rotate(-21.24deg) translate(0px,5px)  }
+61.77% {  transform:translate(0px,-5px) rotate(-15.64deg) translate(0px,5px)  }
+63.45% {  transform:translate(0px,-5px) rotate(-6.96deg) translate(0px,5px)  }
+65.02% {  transform:translate(0px,-5px) rotate(-3.2deg) translate(0px,5px)  }
+69.94% {  transform:translate(0px,-5px) rotate(2.02deg) translate(0px,5px)  }
+89.41% {  transform:translate(0px,-5px) rotate(25.54deg) translate(0px,5px)  }
+91.09% {  transform:translate(0px,-5px) rotate(27.58deg) translate(0px,5px)  }
+92.66% {  transform:translate(0px,-5px) rotate(22.92deg) translate(0px,5px)  }
+94.33% {  transform:translate(0px,-5px) rotate(11.52deg) translate(0px,5px)  }
+95.91% {  transform:translate(0px,-5px) rotate(2.6deg) translate(0px,5px)  }
+97.58% {  transform:translate(0px,-5px) rotate(0.94deg) translate(0px,5px)  }
+100% {  transform:translate(0px,-5px) rotate(-3.2deg) translate(0px,5px)  }
+}
+.mw-lb1 { animation-name: mw-lb1; }
+@keyframes mw-lb1 {
+0.00% {  transform:translate(0px,-60px) rotate(-26.75deg) translate(0px,60px)  }
+3.25% {  transform:translate(0px,-60px) rotate(-23.65deg) translate(0px,60px)  }
+8.17% {  transform:translate(0px,-60px) rotate(-18.06deg) translate(0px,60px)  }
+24.40% {  transform:translate(0px,-60px) rotate(1.97deg) translate(0px,60px)  }
+25.97% {  transform:translate(0px,-60px) rotate(4.1deg) translate(0px,60px)  }
+27.64% {  transform:translate(0px,-60px) rotate(0.33deg) translate(0px,60px)  }
+29.32% {  transform:translate(0px,-60px) rotate(-6.14deg) translate(0px,60px)  }
+30.89% {  transform:translate(0px,-60px) rotate(-10.63deg) translate(0px,60px)  }
+32.56% {  transform:translate(0px,-60px) rotate(-11.19deg) translate(0px,60px)  }
+37.38% {  transform:translate(0px,-60px) rotate(-16.99deg) translate(0px,60px)  }
+45.54% {  transform:translate(0px,-60px) rotate(-25.49deg) translate(0px,60px)  }
+58.53% {  transform:translate(0px,-60px) rotate(-38.35deg) translate(0px,60px)  }
+60.20% {  transform:translate(0px,-60px) rotate(-38.01deg) translate(0px,60px)  }
+61.77% {  transform:translate(0px,-60px) rotate(-34.5deg) translate(0px,60px)  }
+63.45% {  transform:translate(0px,-60px) rotate(-29.33deg) translate(0px,60px)  }
+65.02% {  transform:translate(0px,-60px) rotate(-26.75deg) translate(0px,60px)  }
+68.26% {  transform:translate(0px,-60px) rotate(-23.65deg) translate(0px,60px)  }
+73.19% {  transform:translate(0px,-60px) rotate(-18.06deg) translate(0px,60px)  }
+89.41% {  transform:translate(0px,-60px) rotate(1.97deg) translate(0px,60px)  }
+91.09% {  transform:translate(0px,-60px) rotate(4.1deg) translate(0px,60px)  }
+92.66% {  transform:translate(0px,-60px) rotate(0.33deg) translate(0px,60px)  }
+94.33% {  transform:translate(0px,-60px) rotate(-6.14deg) translate(0px,60px)  }
+95.91% {  transform:translate(0px,-60px) rotate(-10.63deg) translate(0px,60px)  }
+97.58% {  transform:translate(0px,-60px) rotate(-11.19deg) translate(0px,60px)  }
+100% {  transform:translate(0px,-60px) rotate(-26.75deg) translate(0px,60px)  }
+}
+.mw-lb2 { animation-name: mw-lb2; }
+@keyframes mw-lb2 {
+0.00% {  transform:translate(0px,-32px) rotate(25.81deg) translate(0px,32px)  }
+1.68% {  transform:translate(0px,-32px) rotate(26.25deg) translate(0px,32px)  }
+3.25% {  transform:translate(0px,-32px) rotate(26.34deg) translate(0px,32px)  }
+6.49% {  transform:translate(0px,-32px) rotate(25.73deg) translate(0px,32px)  }
+11.41% {  transform:translate(0px,-32px) rotate(23.68deg) translate(0px,32px)  }
+21.15% {  transform:translate(0px,-32px) rotate(19.2deg) translate(0px,32px)  }
+24.40% {  transform:translate(0px,-32px) rotate(17.66deg) translate(0px,32px)  }
+25.97% {  transform:translate(0px,-32px) rotate(16.66deg) translate(0px,32px)  }
+27.64% {  transform:translate(0px,-32px) rotate(27.16deg) translate(0px,32px)  }
+29.32% {  transform:translate(0px,-32px) rotate(41.79deg) translate(0px,32px)  }
+30.89% {  transform:translate(0px,-32px) rotate(51.33deg) translate(0px,32px)  }
+32.56% {  transform:translate(0px,-32px) rotate(54.39deg) translate(0px,32px)  }
+35.81% {  transform:translate(0px,-32px) rotate(54.95deg) translate(0px,32px)  }
+40.62% {  transform:translate(0px,-32px) rotate(54.68deg) translate(0px,32px)  }
+56.85% {  transform:translate(0px,-32px) rotate(51.26deg) translate(0px,32px)  }
+58.53% {  transform:translate(0px,-32px) rotate(50.77deg) translate(0px,32px)  }
+60.20% {  transform:translate(0px,-32px) rotate(48.83deg) translate(0px,32px)  }
+61.77% {  transform:translate(0px,-32px) rotate(42.98deg) translate(0px,32px)  }
+63.45% {  transform:translate(0px,-32px) rotate(32.98deg) translate(0px,32px)  }
+65.02% {  transform:translate(0px,-32px) rotate(25.81deg) translate(0px,32px)  }
+66.69% {  transform:translate(0px,-32px) rotate(26.25deg) translate(0px,32px)  }
+68.26% {  transform:translate(0px,-32px) rotate(26.34deg) translate(0px,32px)  }
+71.51% {  transform:translate(0px,-32px) rotate(25.73deg) translate(0px,32px)  }
+76.43% {  transform:translate(0px,-32px) rotate(23.68deg) translate(0px,32px)  }
+86.17% {  transform:translate(0px,-32px) rotate(19.2deg) translate(0px,32px)  }
+89.41% {  transform:translate(0px,-32px) rotate(17.66deg) translate(0px,32px)  }
+91.09% {  transform:translate(0px,-32px) rotate(16.66deg) translate(0px,32px)  }
+92.66% {  transform:translate(0px,-32px) rotate(27.16deg) translate(0px,32px)  }
+94.33% {  transform:translate(0px,-32px) rotate(41.79deg) translate(0px,32px)  }
+95.91% {  transform:translate(0px,-32px) rotate(51.33deg) translate(0px,32px)  }
+97.58% {  transform:translate(0px,-32px) rotate(54.39deg) translate(0px,32px)  }
+100% {  transform:translate(0px,-32px) rotate(25.81deg) translate(0px,32px)  }
+}
+.mw-lb3 { animation-name: mw-lb3; }
+@keyframes mw-lb3 {
+0.00% {  transform:translate(0px,-5px) rotate(0.94deg) translate(0px,5px)  }
+3.25% {  transform:translate(0px,-5px) rotate(-2.69deg) translate(0px,5px)  }
+8.17% {  transform:translate(0px,-5px) rotate(-7.08deg) translate(0px,5px)  }
+24.40% {  transform:translate(0px,-5px) rotate(-19.63deg) translate(0px,5px)  }
+25.97% {  transform:translate(0px,-5px) rotate(-20.76deg) translate(0px,5px)  }
+27.64% {  transform:translate(0px,-5px) rotate(-21.24deg) translate(0px,5px)  }
+29.32% {  transform:translate(0px,-5px) rotate(-15.64deg) translate(0px,5px)  }
+30.89% {  transform:translate(0px,-5px) rotate(-6.96deg) translate(0px,5px)  }
+32.56% {  transform:translate(0px,-5px) rotate(-3.2deg) translate(0px,5px)  }
+37.38% {  transform:translate(0px,-5px) rotate(2.02deg) translate(0px,5px)  }
+56.85% {  transform:translate(0px,-5px) rotate(25.54deg) translate(0px,5px)  }
+58.53% {  transform:translate(0px,-5px) rotate(27.58deg) translate(0px,5px)  }
+60.20% {  transform:translate(0px,-5px) rotate(22.92deg) translate(0px,5px)  }
+61.77% {  transform:translate(0px,-5px) rotate(11.52deg) translate(0px,5px)  }
+63.45% {  transform:translate(0px,-5px) rotate(2.6deg) translate(0px,5px)  }
+65.02% {  transform:translate(0px,-5px) rotate(0.94deg) translate(0px,5px)  }
+68.26% {  transform:translate(0px,-5px) rotate(-2.69deg) translate(0px,5px)  }
+73.19% {  transform:translate(0px,-5px) rotate(-7.08deg) translate(0px,5px)  }
+89.41% {  transform:translate(0px,-5px) rotate(-19.63deg) translate(0px,5px)  }
+91.09% {  transform:translate(0px,-5px) rotate(-20.76deg) translate(0px,5px)  }
+92.66% {  transform:translate(0px,-5px) rotate(-21.24deg) translate(0px,5px)  }
+94.33% {  transform:translate(0px,-5px) rotate(-15.64deg) translate(0px,5px)  }
+95.91% {  transform:translate(0px,-5px) rotate(-6.96deg) translate(0px,5px)  }
+97.58% {  transform:translate(0px,-5px) rotate(-3.2deg) translate(0px,5px)  }
+100% {  transform:translate(0px,-5px) rotate(0.94deg) translate(0px,5px)  }
+}
+.mw-af1 { animation-name: mw-af1; }
+@keyframes mw-af1 {
+0.00% {  transform:translate(2px,-106px) rotate(-120deg) translate(-2px,106px)  }
+8.17% {  transform:translate(2px,-106px) rotate(-117.88deg) translate(-2px,106px)  }
+12.98% {  transform:translate(2px,-106px) rotate(-117.15deg) translate(-2px,106px)  }
+17.90% {  transform:translate(2px,-106px) rotate(-117.04deg) translate(-2px,106px)  }
+22.72% {  transform:translate(2px,-106px) rotate(-117.57deg) translate(-2px,106px)  }
+30.89% {  transform:translate(2px,-106px) rotate(-119.53deg) translate(-2px,106px)  }
+40.62% {  transform:translate(2px,-106px) rotate(-122.12deg) translate(-2px,106px)  }
+45.54% {  transform:translate(2px,-106px) rotate(-122.85deg) translate(-2px,106px)  }
+50.36% {  transform:translate(2px,-106px) rotate(-122.96deg) translate(-2px,106px)  }
+55.28% {  transform:translate(2px,-106px) rotate(-122.43deg) translate(-2px,106px)  }
+63.45% {  transform:translate(2px,-106px) rotate(-120.47deg) translate(-2px,106px)  }
+73.19% {  transform:translate(2px,-106px) rotate(-117.88deg) translate(-2px,106px)  }
+78.00% {  transform:translate(2px,-106px) rotate(-117.15deg) translate(-2px,106px)  }
+82.92% {  transform:translate(2px,-106px) rotate(-117.04deg) translate(-2px,106px)  }
+87.84% {  transform:translate(2px,-106px) rotate(-117.57deg) translate(-2px,106px)  }
+95.91% {  transform:translate(2px,-106px) rotate(-119.53deg) translate(-2px,106px)  }
+100% {  transform:translate(2px,-106px) rotate(-120deg) translate(-2px,106px)  }
+}
+.mw-af2 { animation-name: mw-af2; }
+@keyframes mw-af2 {
+0.00% {  transform:translate(2px,-86px) rotate(-50deg) translate(-2px,86px)  }
+8.17% {  transform:translate(2px,-86px) rotate(-47.88deg) translate(-2px,86px)  }
+12.98% {  transform:translate(2px,-86px) rotate(-47.15deg) translate(-2px,86px)  }
+17.90% {  transform:translate(2px,-86px) rotate(-47.04deg) translate(-2px,86px)  }
+22.72% {  transform:translate(2px,-86px) rotate(-47.57deg) translate(-2px,86px)  }
+30.89% {  transform:translate(2px,-86px) rotate(-49.53deg) translate(-2px,86px)  }
+40.62% {  transform:translate(2px,-86px) rotate(-52.12deg) translate(-2px,86px)  }
+45.54% {  transform:translate(2px,-86px) rotate(-52.85deg) translate(-2px,86px)  }
+50.36% {  transform:translate(2px,-86px) rotate(-52.96deg) translate(-2px,86px)  }
+55.28% {  transform:translate(2px,-86px) rotate(-52.43deg) translate(-2px,86px)  }
+63.45% {  transform:translate(2px,-86px) rotate(-50.47deg) translate(-2px,86px)  }
+73.19% {  transform:translate(2px,-86px) rotate(-47.88deg) translate(-2px,86px)  }
+78.00% {  transform:translate(2px,-86px) rotate(-47.15deg) translate(-2px,86px)  }
+82.92% {  transform:translate(2px,-86px) rotate(-47.04deg) translate(-2px,86px)  }
+87.84% {  transform:translate(2px,-86px) rotate(-47.57deg) translate(-2px,86px)  }
+95.91% {  transform:translate(2px,-86px) rotate(-49.53deg) translate(-2px,86px)  }
+100% {  transform:translate(2px,-86px) rotate(-50deg) translate(-2px,86px)  }
+}
+.mw-ab1 { animation-name: mw-ab1; }
+@keyframes mw-ab1 {
+0.00% {  transform:translate(2px,-106px) rotate(-8deg) translate(-2px,106px)  }
+4.92% {  transform:translate(2px,-106px) rotate(-15.26deg) translate(-2px,106px)  }
+8.17% {  transform:translate(2px,-106px) rotate(-19.31deg) translate(-2px,106px)  }
+9.74% {  transform:translate(2px,-106px) rotate(-20.94deg) translate(-2px,106px)  }
+11.41% {  transform:translate(2px,-106px) rotate(-22.26deg) translate(-2px,106px)  }
+12.98% {  transform:translate(2px,-106px) rotate(-23.22deg) translate(-2px,106px)  }
+14.66% {  transform:translate(2px,-106px) rotate(-23.8deg) translate(-2px,106px)  }
+16.23% {  transform:translate(2px,-106px) rotate(-24deg) translate(-2px,106px)  }
+17.90% {  transform:translate(2px,-106px) rotate(-23.8deg) translate(-2px,106px)  }
+19.47% {  transform:translate(2px,-106px) rotate(-23.22deg) translate(-2px,106px)  }
+21.15% {  transform:translate(2px,-106px) rotate(-22.26deg) translate(-2px,106px)  }
+22.72% {  transform:translate(2px,-106px) rotate(-20.94deg) translate(-2px,106px)  }
+24.40% {  transform:translate(2px,-106px) rotate(-19.31deg) translate(-2px,106px)  }
+27.64% {  transform:translate(2px,-106px) rotate(-15.26deg) translate(-2px,106px)  }
+32.56% {  transform:translate(2px,-106px) rotate(-8deg) translate(-2px,106px)  }
+37.38% {  transform:translate(2px,-106px) rotate(-0.74deg) translate(-2px,106px)  }
+40.62% {  transform:translate(2px,-106px) rotate(3.31deg) translate(-2px,106px)  }
+42.30% {  transform:translate(2px,-106px) rotate(4.94deg) translate(-2px,106px)  }
+43.87% {  transform:translate(2px,-106px) rotate(6.26deg) translate(-2px,106px)  }
+45.54% {  transform:translate(2px,-106px) rotate(7.22deg) translate(-2px,106px)  }
+47.12% {  transform:translate(2px,-106px) rotate(7.8deg) translate(-2px,106px)  }
+48.79% {  transform:translate(2px,-106px) rotate(8deg) translate(-2px,106px)  }
+50.36% {  transform:translate(2px,-106px) rotate(7.8deg) translate(-2px,106px)  }
+52.04% {  transform:translate(2px,-106px) rotate(7.22deg) translate(-2px,106px)  }
+53.61% {  transform:translate(2px,-106px) rotate(6.26deg) translate(-2px,106px)  }
+55.28% {  transform:translate(2px,-106px) rotate(4.94deg) translate(-2px,106px)  }
+56.85% {  transform:translate(2px,-106px) rotate(3.31deg) translate(-2px,106px)  }
+60.20% {  transform:translate(2px,-106px) rotate(-0.74deg) translate(-2px,106px)  }
+65.02% {  transform:translate(2px,-106px) rotate(-8deg) translate(-2px,106px)  }
+69.94% {  transform:translate(2px,-106px) rotate(-15.26deg) translate(-2px,106px)  }
+73.19% {  transform:translate(2px,-106px) rotate(-19.31deg) translate(-2px,106px)  }
+74.76% {  transform:translate(2px,-106px) rotate(-20.94deg) translate(-2px,106px)  }
+76.43% {  transform:translate(2px,-106px) rotate(-22.26deg) translate(-2px,106px)  }
+78.00% {  transform:translate(2px,-106px) rotate(-23.22deg) translate(-2px,106px)  }
+79.68% {  transform:translate(2px,-106px) rotate(-23.8deg) translate(-2px,106px)  }
+81.25% {  transform:translate(2px,-106px) rotate(-24deg) translate(-2px,106px)  }
+82.92% {  transform:translate(2px,-106px) rotate(-23.8deg) translate(-2px,106px)  }
+84.49% {  transform:translate(2px,-106px) rotate(-23.22deg) translate(-2px,106px)  }
+86.17% {  transform:translate(2px,-106px) rotate(-22.26deg) translate(-2px,106px)  }
+87.84% {  transform:translate(2px,-106px) rotate(-20.94deg) translate(-2px,106px)  }
+89.41% {  transform:translate(2px,-106px) rotate(-19.31deg) translate(-2px,106px)  }
+92.66% {  transform:translate(2px,-106px) rotate(-15.26deg) translate(-2px,106px)  }
+97.58% {  transform:translate(2px,-106px) rotate(-8deg) translate(-2px,106px)  }
+100% {  transform:translate(2px,-106px) rotate(-8deg) translate(-2px,106px)  }
+}
+.mw-ab2 { animation-name: mw-ab2; }
+@keyframes mw-ab2 {
+0.00% {  transform:translate(2px,-86px) rotate(-25deg) translate(-2px,86px)  }
+100% {  transform:translate(2px,-86px) rotate(-25deg) translate(-2px,86px)  }
+}
+@media (prefers-reduced-motion: reduce) { .mw-anim { animation-play-state: paused; } }</style>
+  <svg x="0" y="0" width="500" height="500" viewBox="0 0 500 500" overflow="visible">
+    <g class="mw-anim mw-actor" transform="translate(250,343) scale(1,1) rotate(0) translate(0,-70) rotate(0) translate(0,70)"><g class="moonwalk-profile">
+      <!-- 奥の脚 -->
+      <g class="mw-anim mw-lb1" transform="translate(0,-60) rotate(-26.75) translate(0,60)">
+        <polygon points="-4,-62 4,-62 3.5,-32 -3.5,-32" fill="#384455" stroke="#657284" stroke-width="1.5" />
+        <g class="mw-anim mw-lb2" transform="translate(0,-32) rotate(25.81) translate(0,32)">
+          <polygon points="-3.5,-32 3.5,-32 2.5,-9 -2.5,-9" fill="#1c2633" stroke="#657284" stroke-width="1.5" />
+          <ellipse cx="0" cy="-32" rx="4.2" ry="3.6" fill="#344253" stroke="#657284" stroke-width="1.2" />
+          <rect x="-2.5" y="-9.5" width="5" height="5" fill="#eef0e9" stroke="#384455" stroke-width="0.8" />
+          <g class="mw-anim mw-lb3" transform="translate(0,-5) rotate(0.94) translate(0,5)">
+            <path d="M-4,-5.5 L7,-5.5 C9.5,-5.5 11.5,-3.2 11.5,-1 L-4,-1 Z" fill="#020617" stroke="#334155" stroke-width="1.2" />
+            <circle cx="8.5" cy="-3.3" r="1" fill="#242c3a" opacity="0.7" />
+          </g>
+        </g>
+      </g>
+
+      <g class="mw-anim mw-torso" transform="translate(0,-60) rotate(4) translate(0,60)">
+        <!-- 奥の腕 -->
+        <g class="mw-anim mw-ab1" transform="translate(2,-106) rotate(-8) translate(-2,106)">
+          <polygon points="-1.5,-107 5.5,-107 5,-86 -1,-86" fill="#1c2633" stroke="#657284" stroke-width="1.5" />
+
+          <g class="mw-anim mw-ab2" transform="translate(2,-86) rotate(-25) translate(-2,86)">
+            <polygon points="-1,-86 5,-86 4.5,-67 -0.5,-67" fill="#384455" stroke="#657284" stroke-width="1.5" />
+            <ellipse cx="2" cy="-63.5" rx="3.8" ry="4.6" fill="#242c3a" stroke="#657284" stroke-width="1.2" />
+
+          </g>
+        </g>
+        <!-- 胴体 -->
+        <polygon points="-10,-60 8,-60 6,-70 -8,-70" fill="#303b4c" stroke="#657284" stroke-width="1.5" />
+        <rect x="-8" y="-71" width="14" height="3" fill="#657284" />
+        <rect x="-2" y="-71.5" width="4" height="4" fill="#F59E0B" />
+        <polygon points="-14,-110 14,-110 8,-70 -10,-70" fill="#202938" stroke="#657284" stroke-width="1.8" />
+        <path d="M-11,-108L8,-77M11,-108L-8,-77" fill="none" stroke="#d9af58" stroke-width="4" />
+        <path d="M-9,-72H8M-9,-68H8M-8,-64H8" stroke="#d9af58" stroke-width="2" />
+        <polygon points="-5,-110 7,-110 2,-78 -2,-78" fill="#d9af58" />
+        <polygon points="-1,-108 3,-108 3,-76 1,-70 -1,-76" fill="#242c3a" />
+        <polygon points="-14,-110 -4,-86 -9,-86" fill="#303b4c" stroke="#657284" stroke-width="1" />
+        <polygon points="14,-110 4,-86 9,-86" fill="#303b4c" stroke="#657284" stroke-width="1" />
+      </g>
+
+      <!-- 手前の脚 -->
+      <g class="mw-anim mw-lf1" transform="translate(0,-60) rotate(-11.19) translate(0,60)">
+        <polygon points="-4,-62 4,-62 3.5,-32 -3.5,-32" fill="#242c3a" stroke="#657284" stroke-width="1.5" />
+        <g class="mw-anim mw-lf2" transform="translate(0,-32) rotate(54.39) translate(0,32)">
+          <polygon points="-3.5,-32 3.5,-32 2.5,-9 -2.5,-9" fill="#1a2230" stroke="#657284" stroke-width="1.5" />
+          <ellipse cx="0" cy="-32" rx="4.2" ry="3.6" fill="#303b4c" stroke="#657284" stroke-width="1.2" />
+          <rect x="-2.5" y="-9.5" width="5" height="5" fill="#eef0e9" stroke="#384455" stroke-width="0.8" />
+          <g class="mw-anim mw-lf3" transform="translate(0,-5) rotate(-3.2) translate(0,5)">
+            <path d="M-4,-5.5 L7,-5.5 C9.5,-5.5 11.5,-3.2 11.5,-1 L-4,-1 Z" fill="#020617" stroke="#334155" stroke-width="1.2" />
+            <circle cx="8.5" cy="-3.3" r="1" fill="#242c3a" opacity="0.7" />
+          </g>
+        </g>
+      </g>
+
+      <g class="mw-anim mw-torso" transform="translate(0,-60) rotate(4) translate(0,60)">
+        <!-- 手前の腕 -->
+        <g class="mw-anim mw-af1" transform="translate(2,-106) rotate(-120) translate(-2,106)">
+          <polygon points="-1.5,-107 5.5,-107 5,-86 -1,-86" fill="#242c3a" stroke="#657284" stroke-width="1.5" />
+          <rect x="-1.2" y="-99" width="6.5" height="4.5" fill="#d9af58" stroke="#a27a35" stroke-width="1" />
+          <g class="mw-anim mw-af2" transform="translate(2,-86) rotate(-50) translate(-2,86)">
+            <polygon points="-1,-86 5,-86 4.5,-67 -0.5,-67" fill="#242c3a" stroke="#657284" stroke-width="1.5" />
+            <ellipse cx="2" cy="-63.5" rx="3.8" ry="4.6" fill="#242c3a" stroke="#657284" stroke-width="1.2" />
+            <rect x="0.5" y="-65" width="2" height="2" fill="#f3d58e" /><rect x="2.5" y="-62" width="2" height="2" fill="#FDE047" />
+          </g>
+        </g>
+        <!-- 頭（右向きの横顔） -->
+        <path d="M-8,-120Q-12,-134 0,-137Q8,-140 13,-129L12,-120L8,-123L3,-122L-3,-117Z" fill="#0b1018" stroke="#47505c" stroke-width=".7" />
+        <polygon points="-2,-112 5,-112 4,-106 -1,-106" fill="#303b4c" />
+        <path d="M-4,-120 L8,-120 L13,-115 L10,-108 L-2,-108 Z" fill="#e6bda3" stroke="#657284" stroke-width="1.5" />
+        <path d="M-8,-128 C-14,-120 -10,-106 -4,-104 L0,-112 Z" fill="#020617" />
+        <path d="M12,-124 C16,-116 15,-108 11,-102 L9,-104 C12,-110 13,-116 10,-122 Z" fill="#020617" />
+        <polygon points="6,-117 13,-117 11,-112 5,-113" fill="#657284" />
+        <line x1="8" y1="-110" x2="12" y2="-110" stroke="#BE185D" stroke-width="1.5" />
+        <!-- 帽子 -->
+
+      </g>
+      </g></g>
+  </svg>
+</svg>
