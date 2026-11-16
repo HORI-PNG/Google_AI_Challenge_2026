@@ -78,7 +78,7 @@ export function MindfulnessScreen() {
       <div className="space-y-2">
         <p className="text-xs font-bold tracking-widest text-accent-strong">ひと息、つこう。</p>
         <h1 className="font-display text-2xl">1分間のマインドフルネス</h1>
-        <p className="text-sm leading-7 text-muted">集中したいときも、リフレッシュしたいときも。<br />登場したマイケルを、1分間見つめてみよう。</p>
+        <p className="text-sm leading-7 text-muted">マイケルを1分間見つめよう</p>
       </div>
 
       <div className="mindfulness-stage" data-phase={phase} aria-label="ステージ下から跳び上がり、着地して静止する演出">
@@ -111,7 +111,6 @@ export function MindfulnessScreen() {
         ) : (
           <p role="timer" aria-label={`残り${remaining}秒`} className="font-num text-3xl tabular-nums">{Math.floor(remaining / 60)}:{String(remaining % 60).padStart(2, "0")}</p>
         )}
-        {phase === "watching" && <p className="text-xs text-muted">呼吸はいつもどおり。気がそれたら、そっと視線を戻して。</p>}
       </div>
       {imageError && <p role="alert" className="text-sm text-accent-strong">マイケルを読み込めませんでした。ページを再読み込みしてください。</p>}
       <div className="flex flex-col gap-3">
