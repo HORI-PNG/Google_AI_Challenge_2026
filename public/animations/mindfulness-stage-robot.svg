@@ -1,0 +1,96 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 440" width="240" height="440">
+<defs>
+    <linearGradient id="jacket" x1="0" x2="1"><stop stop-color="#10151f"/><stop offset=".48" stop-color="#242c3a"/><stop offset="1" stop-color="#090e17"/></linearGradient>
+    <linearGradient id="gold" x1="0" y1="0" x2="1" y2=".4"><stop stop-color="#a97527"/><stop offset=".28" stop-color="#ffe4a1"/><stop offset=".53" stop-color="#c28c35"/><stop offset=".75" stop-color="#f6d17e"/><stop offset="1" stop-color="#9b6420"/></linearGradient>
+    <linearGradient id="skin" x1="0" x2="1"><stop stop-color="#d3a68d"/><stop offset=".5" stop-color="#f0c9ae"/><stop offset="1" stop-color="#b9836c"/></linearGradient>
+    <linearGradient id="lens" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#1c3741"/><stop offset="1" stop-color="#060e15"/></linearGradient>
+    <pattern id="bandolier" width="8" height="18" patternUnits="userSpaceOnUse"><rect width="8" height="18" fill="url(#gold)"/><path d="M1 1H7V15H1ZM3 2V14" fill="none" stroke="#fff0bb" stroke-width=".7"/><path d="M0 17H8" stroke="#755020"/></pattern>
+  </defs>
+<style>.robot-arm-left { transform-box: view-box; transform-origin: 78px 109px; }
+.robot-forearm-left { transform-box: view-box; transform-origin: 55px 170px; }
+.robot-arm-right { transform-box: view-box; transform-origin: 162px 109px; }
+.robot-forearm-right { transform-box: view-box; transform-origin: 185px 170px; }
+.robot-leg-left { transform-box: view-box; transform-origin: 102px 239px; }
+.robot-calf-left { transform-box: view-box; transform-origin: 84px 330px; }
+.robot-leg-right { transform-box: view-box; transform-origin: 138px 239px; }
+.robot-calf-right { transform-box: view-box; transform-origin: 156px 330px; }
+.robot-head { transform-box: view-box; transform-origin: 120px 91px; }.robot-arm-left { animation: robot-arm-left 3800ms cubic-bezier(.65,0,.25,1) infinite; }
+@keyframes robot-arm-left { 0% { transform: rotate(0deg); } 12% { transform: rotate(0deg); } 18% { transform: rotate(70deg); } 30% { transform: rotate(70deg); } 36% { transform: rotate(25deg); } 48% { transform: rotate(25deg); } 54% { transform: rotate(0deg); } 66% { transform: rotate(0deg); } 72% { transform: rotate(60deg); } 84% { transform: rotate(60deg); } 90% { transform: rotate(0deg); } 100% { transform: rotate(0deg); } }.robot-forearm-left { animation: robot-forearm-left 3800ms cubic-bezier(.65,0,.25,1) infinite; }
+@keyframes robot-forearm-left { 0% { transform: rotate(0deg); } 12% { transform: rotate(0deg); } 18% { transform: rotate(-95deg); } 30% { transform: rotate(-95deg); } 36% { transform: rotate(-115deg); } 48% { transform: rotate(-115deg); } 54% { transform: rotate(-150deg); } 66% { transform: rotate(-150deg); } 72% { transform: rotate(-100deg); } 84% { transform: rotate(-100deg); } 90% { transform: rotate(0deg); } 100% { transform: rotate(0deg); } }.robot-arm-right { animation: robot-arm-right 3800ms cubic-bezier(.65,0,.25,1) infinite; }
+@keyframes robot-arm-right { 0% { transform: rotate(0deg); } 12% { transform: rotate(0deg); } 18% { transform: rotate(-70deg); } 30% { transform: rotate(-70deg); } 36% { transform: rotate(-15deg); } 48% { transform: rotate(-15deg); } 54% { transform: rotate(-60deg); } 66% { transform: rotate(-60deg); } 72% { transform: rotate(-30deg); } 84% { transform: rotate(-30deg); } 90% { transform: rotate(0deg); } 100% { transform: rotate(0deg); } }.robot-forearm-right { animation: robot-forearm-right 3800ms cubic-bezier(.65,0,.25,1) infinite; }
+@keyframes robot-forearm-right { 0% { transform: rotate(0deg); } 12% { transform: rotate(0deg); } 18% { transform: rotate(95deg); } 30% { transform: rotate(95deg); } 36% { transform: rotate(125deg); } 48% { transform: rotate(125deg); } 54% { transform: rotate(100deg); } 66% { transform: rotate(100deg); } 72% { transform: rotate(110deg); } 84% { transform: rotate(110deg); } 90% { transform: rotate(0deg); } 100% { transform: rotate(0deg); } }.robot-calf-left { animation: robot-calf-left 3800ms cubic-bezier(.65,0,.25,1) infinite; }
+@keyframes robot-calf-left { 0% { transform: rotate(0deg); } 12% { transform: rotate(0deg); } 18% { transform: rotate(-6deg); } 30% { transform: rotate(-6deg); } 36% { transform: rotate(0deg); } 48% { transform: rotate(0deg); } 54% { transform: rotate(5deg); } 66% { transform: rotate(5deg); } 72% { transform: rotate(0deg); } 84% { transform: rotate(0deg); } 90% { transform: rotate(0deg); } 100% { transform: rotate(0deg); } }.robot-calf-right { animation: robot-calf-right 3800ms cubic-bezier(.65,0,.25,1) infinite; }
+@keyframes robot-calf-right { 0% { transform: rotate(0deg); } 12% { transform: rotate(0deg); } 18% { transform: rotate(0deg); } 30% { transform: rotate(0deg); } 36% { transform: rotate(6deg); } 48% { transform: rotate(6deg); } 54% { transform: rotate(0deg); } 66% { transform: rotate(0deg); } 72% { transform: rotate(-5deg); } 84% { transform: rotate(-5deg); } 90% { transform: rotate(0deg); } 100% { transform: rotate(0deg); } }.robot-head { animation: robot-head 3800ms cubic-bezier(.65,0,.25,1) infinite; }
+@keyframes robot-head { 0% { transform: rotate(0deg); } 12% { transform: rotate(0deg); } 18% { transform: rotate(-12deg); } 30% { transform: rotate(-12deg); } 36% { transform: rotate(-12deg); } 48% { transform: rotate(-12deg); } 54% { transform: rotate(10deg); } 66% { transform: rotate(10deg); } 72% { transform: rotate(10deg); } 84% { transform: rotate(10deg); } 90% { transform: rotate(0deg); } 100% { transform: rotate(0deg); } }@media (prefers-reduced-motion: reduce) { .robot-arm-left, .robot-arm-right, .robot-forearm-left, .robot-forearm-right, .robot-calf-left, .robot-calf-right, .robot-head { animation: none; } .robot-arm-left { transform: rotate(70deg); } .robot-forearm-left { transform: rotate(-95deg); } .robot-arm-right { transform: rotate(-70deg); } .robot-forearm-right { transform: rotate(95deg); } .robot-head { transform: rotate(-12deg); } }</style>
+<g class="robot-rig" transform="translate(8 0) scale(.933333 1)" stroke-linecap="round" stroke-linejoin="round">
+  <g class="robot-leg-left">
+    <path d="M88 231L119 241L97 336L72 330Z" fill="url(#jacket)" stroke="#596170" stroke-width="1.4"/>
+    <path d="M99 252L85 318" fill="none" stroke="#66707e" opacity=".55"/>
+    <circle cx="96" cy="248" r="2" fill="#cdd2d7"/>
+    <g class="robot-calf-left">
+      <path d="M72 328L97 334L74 404L51 400Z" fill="url(#jacket)" stroke="#596170" stroke-width="1.4"/>
+      <path d="M85 343L62 393" stroke="#66707e" opacity=".55"/>
+      <path d="M51 400L74 404L70 417L47 414Z" fill="#f0f0e8" stroke="#cbd0d1"/>
+      <g class="robot-foot-left">
+        <path d="M47 410L70 414L70 423Q62 431 38 431L23 430Q20 423 31 419Z" fill="#0a0e14" stroke="#75818d" stroke-width="1.4"/>
+        <path d="M26 427L65 426" stroke="#a6adb6" stroke-width="1.2"/>
+      </g>
+    </g>
+  </g>
+  <g class="robot-leg-right">
+    <path d="M121 241L152 231L168 330L143 336Z" fill="url(#jacket)" stroke="#596170" stroke-width="1.4"/>
+    <path d="M141 252L155 318" fill="none" stroke="#66707e" opacity=".55"/>
+    <circle cx="144" cy="248" r="2" fill="#cdd2d7"/>
+    <g class="robot-calf-right">
+      <path d="M143 334L168 328L189 400L166 404Z" fill="url(#jacket)" stroke="#596170" stroke-width="1.4"/>
+      <path d="M155 343L178 393" stroke="#66707e" opacity=".55"/>
+      <path d="M166 404L189 400L193 414L170 417Z" fill="#f0f0e8" stroke="#cbd0d1"/>
+      <g class="robot-foot-right">
+        <path d="M170 414L193 410L208 419Q219 423 216 430L201 431Q177 431 170 423Z" fill="#0a0e14" stroke="#75818d" stroke-width="1.4"/>
+        <path d="M175 426L213 427" stroke="#a6adb6" stroke-width="1.2"/>
+      </g>
+    </g>
+  </g>
+      <!-- 軍服、白い襟元、交差した金の装飾、三段のベルト。 -->
+    <path d="M89 96L108 90H132L151 96L166 110L157 155L154 213L145 239H95L86 213L83 155L74 110Z" fill="url(#jacket)" stroke="#78808d" stroke-width="1.5"/>
+    <path d="M104 93L120 134L136 93L129 89H110Z" fill="#f1eee4"/>
+    <path d="M97 95L113 139L120 134L103 94ZM143 95L127 139L120 134L137 94Z" fill="#080d15" stroke="#68717c"/>
+    <path d="M80 105L92 101L151 189L140 203Z" fill="url(#bandolier)" stroke="#e0bc6c" stroke-width="1.2"/>
+    <path d="M148 101L160 106L105 196L85 206L82 190L96 183Z" fill="url(#bandolier)" stroke="#f2d287" stroke-width="1.2"/>
+    <path d="M88 211Q120 216 152 211L153 236Q120 242 87 236Z" fill="url(#gold)" stroke="#e7c36e"/>
+    <path d="M89 219Q120 224 151 219M88 229Q120 234 152 229" fill="none" stroke="#735022" stroke-width="2"/>
+    <g fill="#f6df9e" stroke="#9e762c"><rect x="111" y="214" width="16" height="6" rx="1"/><rect x="111" y="224" width="16" height="6" rx="1"/><rect x="111" y="234" width="16" height="5" rx="1"/></g>
+    <path d="M68 117L74 115L77 128L70 133L64 128Z" fill="url(#gold)"/>
+    <path d="M169 115L175 117L177 128L170 133L164 128Z" fill="url(#gold)"/>
+
+  <g class="robot-arm-left">
+    <path d="M70 105L86 113L65 176L47 169Z" fill="url(#jacket)" stroke="#667181" stroke-width="1.4"/>
+    <path d="M50 153L67 159L63 171L46 165Z" fill="url(#gold)" stroke="#e6c16a"/>
+    <g class="robot-forearm-left">
+      <path d="M47 168L65 175L53 225L35 220Z" fill="#e4e9e8" stroke="#a3adae" stroke-width="1.3"/>
+      <path d="M45 180L61 185M42 191L58 196M39 202L55 207" stroke="#99a6a7" stroke-width="1.2"/>
+      <path d="M38 221L52 226L51 238L44 244L32 239L30 231Z" fill="url(#skin)" stroke="#7d584b"/>
+      <path d="M35 231L45 234M37 237L45 239" stroke="#9f705b"/>
+    </g>
+  </g>
+  <g class="robot-arm-right">
+    <path d="M154 113L170 105L193 169L175 176Z" fill="url(#jacket)" stroke="#667181" stroke-width="1.4"/>
+    <g class="robot-forearm-right">
+      <path d="M175 169L193 165L205 220L187 226Z" fill="url(#jacket)" stroke="#667181" stroke-width="1.4"/>
+      <path d="M181 181L197 177" stroke="#8d2933" stroke-width="2"/>
+      <path d="M189 226L202 221L210 232L208 240L196 244L189 238Z" fill="url(#skin)" stroke="#7d584b"/>
+      <path d="M196 234L205 231M196 239L203 237" stroke="#9f705b"/>
+    </g>
+  </g>
+  <g class="robot-head">    <!-- 顔の細部を描き込まず、髪とサングラスで舞台姿を表す。 -->
+    <path d="M108 76L107 95Q118 111 132 96L131 74Z" fill="url(#skin)" stroke="#936752"/>
+    <path d="M95 30Q89 11 109 8Q127 1 141 16Q155 26 149 48L144 77Q135 94 118 91Q105 85 99 70L92 49Z" fill="#0b1018" stroke="#47505c" stroke-width="1.2"/>
+    <path d="M103 32Q119 19 140 35L141 61Q135 78 125 83L111 76L103 62L99 46Z" fill="url(#skin)"/>
+    <path d="M97 28Q94 9 112 8Q121 -1 136 12Q149 11 149 29L141 40L132 28L119 27L110 36Z" fill="#0b1018"/>
+    <path d="M103 32Q96 40 103 47Q109 53 102 59Q98 65 105 72M142 26Q150 40 144 49Q138 59 145 70Q148 82 137 86M99 43Q91 55 99 65Q103 74 97 81" fill="none" stroke="#111721" stroke-width="3.5"/>
+    <path d="M102 42L116 40L119 44L128 41L140 43L137 54L130 57L123 53L118 47L114 56L107 56L102 51Z" fill="url(#lens)" stroke="#ccb884" stroke-width="1.2"/>
+    <path d="M102 44L97 43M139 45L144 43M105 44L112 43M127 44L134 45" stroke="#b8d0d4" stroke-width="1"/>
+    <path d="M120 51L116 61L122 63M115 70L124 70" fill="none" stroke="#a5735e" stroke-width="1.2"/>
+</g>
+</g>
+</svg>

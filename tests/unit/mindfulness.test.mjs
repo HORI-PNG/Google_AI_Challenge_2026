@@ -21,3 +21,16 @@ describe("瞑想終了時のムーブ", () => {
     }
   });
 });
+
+describe("終了ムーブの動き", () => {
+  it("4種類すべてに繰り返すアニメーションがある", async () => {
+    const { readFileSync } = await import("node:fs");
+    for (const finish of MINDFULNESS_FINISHES) {
+      const svg = readFileSync(new URL(`../../public${finish.src}`, import.meta.url), "utf8");
+      const style = svg.match(/<style>([\s\S]*?)<\/style>/)?.[1];
+      assert.ok(style?.includes("@keyframes"), finish.id);
+      assert.match(style, /animation[^;{}]*infinite/, finish.id);
+      assert.ok(style.includes("prefers-reduced-motion"), finish.id);
+    }
+  });
+});
