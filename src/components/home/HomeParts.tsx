@@ -435,12 +435,13 @@ const ENTRIES: { href: string; label: string; icon: IconName | "mascot" }[] = [
   { href: "/ask", label: "聞く", icon: "mascot" },
   { href: "/review", label: "復習", icon: "review" },
   { href: "/map", label: "場所", icon: "map" },
+  { href: "/mindfulness", label: "瞑想", icon: "mascot" },
 ];
 
-/** ほかの画面への入り口（グラフ・ハカドリに聞く・復習・はかどり場所マップ）を、アイコンの 1 列にまとめる */
+/** ほかの画面への入り口（グラフ・ハカドリに聞く・復習・場所・瞑想）を、アイコンの 1 列にまとめる */
 export function EntryRow({ className = "" }: { className?: string }) {
   return (
-    <nav aria-label="ほかの画面" className={`grid grid-cols-4 gap-1 ${className}`}>
+    <nav aria-label="ほかの画面" className={`grid grid-cols-5 gap-1 ${className}`}>
       {ENTRIES.map((e) => (
         <Link
           key={e.href}

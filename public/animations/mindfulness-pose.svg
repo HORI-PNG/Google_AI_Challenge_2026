@@ -1,0 +1,71 @@
+<!-- moonwalk.svg の正面ポーズ。scripts/create-mindfulness-pose.mjs で生成 -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-65 -160 130 170" width="260" height="340">
+<g >
+        <g transform="translate(-5,-60) rotate(-12.85) translate(5,60)">
+          <polygon points="-9,-62 -1,-62 -1.5,-32 -8.5,-32" fill="#FFFFFF" stroke="#0F172A" stroke-width="1.5" />
+          <g transform="translate(-5,-32) rotate(5.75) translate(5,32)">
+            <polygon points="-8.5,-32 -1.5,-32 -2.5,-9 -7.5,-9" fill="#F1F5F9" stroke="#0F172A" stroke-width="1.5" />
+            <ellipse cx="-5" cy="-32" rx="4.2" ry="3.6" fill="#E2E8F0" stroke="#0F172A" stroke-width="1.2" />
+            <rect x="-7.5" y="-9.5" width="5" height="5" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="0.8" />
+            <g transform="translate(-5,-5) rotate(7.09) translate(5,5)">
+              <path d="M-10,-1 C-10,-7 0,-7 0,-1 Z" fill="#020617" stroke="#334155" stroke-width="1.2" />
+            </g>
+          </g>
+        </g>
+        <g transform="translate(5,-60) rotate(13.83) translate(-5,60)">
+          <polygon points="1,-62 9,-62 8.5,-32 1.5,-32" fill="#FFFFFF" stroke="#0F172A" stroke-width="1.5" />
+          <g transform="translate(5,-32) rotate(-7.71) translate(-5,32)">
+            <polygon points="1.5,-32 8.5,-32 7.5,-9 2.5,-9" fill="#F1F5F9" stroke="#0F172A" stroke-width="1.5" />
+            <ellipse cx="5" cy="-32" rx="4.2" ry="3.6" fill="#E2E8F0" stroke="#0F172A" stroke-width="1.2" />
+            <rect x="2.5" y="-9.5" width="5" height="5" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="0.8" />
+            <g transform="translate(5,-5) rotate(-6.12) translate(-5,5)">
+              <path d="M0,-1 C0,-7 10,-7 10,-1 Z" fill="#020617" stroke="#334155" stroke-width="1.2" />
+            </g>
+          </g>
+        </g>
+        <g transform="translate(0,-60) rotate(2.75) translate(0,60)">
+          <polygon points="-10,-71 10,-71 10,-58 -10,-58" fill="#E2E8F0" stroke="#0F172A" stroke-width="1.5" />
+          <rect x="-10" y="-71" width="20" height="3" fill="#0F172A" />
+          <rect x="-2" y="-71.5" width="4" height="4" fill="#F59E0B" />
+          <polygon points="-15,-110 15,-110 12,-68 -12,-68" fill="#F8FAFC" stroke="#0F172A" stroke-width="1.8" />
+          <polygon points="-6,-110 6,-110 0,-82" fill="#0284C7" />
+          <polygon points="-1.2,-108 1.2,-108 1.6,-80 0,-77 -1.6,-80" fill="#FFFFFF" />
+          <polygon points="-6,-110 -1,-88 -5,-90" fill="#E2E8F0" stroke="#0F172A" stroke-width="1" />
+          <polygon points="6,-110 1,-88 5,-90" fill="#E2E8F0" stroke="#0F172A" stroke-width="1" />
+          <line x1="0" y1="-82" x2="0" y2="-68" stroke="#CBD5E1" stroke-width="1" />
+          <g transform="translate(0,-108) rotate(-5.37) translate(0,108)">
+            <rect x="-2.5" y="-110" width="5" height="4" fill="#E2E8F0" />
+            <path d="M-8,-124 C-12,-116 -10,-106 -6,-104 L-5,-118 Z" fill="#020617" />
+            <path d="M8,-124 C12,-116 10,-106 6,-104 L5,-118 Z" fill="#020617" />
+            <ellipse cx="0" cy="-116" rx="6.5" ry="8.5" fill="#FCE7F3" stroke="#0F172A" stroke-width="1.5" />
+            <rect x="-5.5" y="-121" width="11" height="3" rx="1.5" fill="#0F172A" opacity="0.75" />
+            <line x1="-2" y1="-110.5" x2="2" y2="-110.5" stroke="#BE185D" stroke-width="1.5" />
+            <path d="M2,-125 C4,-118 3,-112 1,-108" fill="none" stroke="#020617" stroke-width="1.6" />
+            <g transform="rotate(-7, 0, -128)">
+              <path d="M-11,-128 L-10,-146 Q0,-150 10,-146 L11,-128 Z" fill="#FFFFFF" stroke="#0F172A" stroke-width="1.8" />
+              <path d="M-3,-147 Q0,-143 3,-147" fill="none" stroke="#CBD5E1" stroke-width="1.5" />
+              <rect x="-11" y="-133" width="22" height="5" fill="#020617" />
+              <ellipse cx="0" cy="-127.5" rx="21" ry="3.5" fill="#FFFFFF" stroke="#0F172A" stroke-width="1.8" />
+            </g>
+          </g>
+          <g transform="translate(-13,-106) rotate(159.26) translate(13,106)">
+            <polygon points="-16,-107 -10,-107 -10.5,-86 -15.5,-86" fill="#FFFFFF" stroke="#0F172A" stroke-width="1.5" />
+            <rect x="-16" y="-99" width="6" height="4.5" fill="#0284C7" stroke="#0369A1" stroke-width="1" />
+            <g transform="translate(-13,-86) rotate(61.04) translate(13,86)">
+              <polygon points="-15.5,-86 -10.5,-86 -11,-67 -15,-67" fill="#FFFFFF" stroke="#0F172A" stroke-width="1.5" />
+              <ellipse cx="-13" cy="-63.5" rx="3.8" ry="4.6" fill="#FFFFFF" stroke="#0F172A" stroke-width="1.2" />
+              <rect x="-14.5" y="-65" width="2" height="2" fill="#38BDF8" /><rect x="-12.5" y="-62" width="2" height="2" fill="#FDE047" />
+            </g>
+          </g>
+          <g transform="translate(13,-106) rotate(-70.55) translate(-13,106)">
+            <polygon points="10,-107 16,-107 15.5,-86 10.5,-86" fill="#FFFFFF" stroke="#0F172A" stroke-width="1.5" />
+
+            <g transform="translate(13,-86) rotate(-4.88) translate(-13,86)">
+              <polygon points="10.5,-86 15.5,-86 15,-67 11,-67" fill="#FFFFFF" stroke="#0F172A" stroke-width="1.5" />
+              <ellipse cx="13" cy="-63.5" rx="3.8" ry="4.6" fill="#FFFFFF" stroke="#0F172A" stroke-width="1.2" />
+
+            </g>
+          </g>
+        </g>
+      </g>
+</svg>

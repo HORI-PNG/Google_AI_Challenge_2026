@@ -715,3 +715,17 @@
     scroll-behavior: auto !important;
   }
 }
+
+/* 登場後は静止画をそのまま見せる。瞑想中の繰り返しアニメーションは使わない。 */
+.mindfulness-enter {
+  animation: mindfulness-rise 800ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes mindfulness-rise {
+  from { transform: translateY(120%); }
+  to { transform: translateY(0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mindfulness-enter { animation: none; }
+}
