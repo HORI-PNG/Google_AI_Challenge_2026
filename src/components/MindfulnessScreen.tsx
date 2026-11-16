@@ -1,9 +1,9 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { Button, buttonClass } from "@/components/ui/Ui";
+import { MindfulnessPerformer } from "@/components/MindfulnessPerformer";
 
 import { MINDFULNESS_DURATION_MS, MINDFULNESS_ENTRANCE_MS, MINDFULNESS_JUMP_FRAMES, pickMindfulnessFinish, type MindfulnessFinish, type MindfulnessFinishId } from "@/lib/mindfulness";
 
@@ -13,8 +13,8 @@ export function MindfulnessScreen() {
   const [phase, setPhase] = useState<Phase>("ready");
   const [finish, setFinish] = useState<MindfulnessFinish | null>(null);
   const previousFinish = useRef<MindfulnessFinishId | null>(null);
-  const [imageReady, setImageReady] = useState(false);
-  const [imageError, setImageError] = useState(false);
+  const [characterReady, setCharacterReady] = useState(false);
+  const [characterError, setCharacterError] = useState(false);
   const deadline = useRef(0);
   const performer = useRef<HTMLDivElement>(null);
   const completion = useRef<HTMLHeadingElement>(null);
@@ -94,17 +94,10 @@ export function MindfulnessScreen() {
           <div className="mindfulness-stage-smoke mindfulness-stage-smoke-left" aria-hidden="true" />
           <div className="mindfulness-stage-smoke mindfulness-stage-smoke-right" aria-hidden="true" />
           <div ref={performer} className="mindfulness-performer" aria-hidden={phase === "ready"}>
-            <Image
-              key={phase === "done" && finish ? finish.id : "standing"}
-              src={phase === "done" && finish ? finish.src : "/animations/mindfulness-stage-performer.svg"}
-              alt={phase === "done" && finish ? finish.alt : "黒と金の舞台衣装とサングラスで、足を開いて腕を下ろし、仁王立ちするキャラクター"}
-              width={240}
-              height={440}
-              unoptimized
-              priority
-              onLoad={() => { setImageReady(true); setImageError(false); }}
-              onError={() => { setImageError(true); setImageReady(false); setPhase("ready"); }}
-              className="mindfulness-performer-image"
+            <MindfulnessPerformer
+              finish={phase === "done" && finish ? finish.id : null}
+              onReady={() => { setCharacterReady(true); setCharacterError(false); }}
+              onError={() => { setCharacterError(true); setCharacterReady(false); setPhase("ready"); }}
             />
           </div>
         </div>
@@ -118,12 +111,12 @@ export function MindfulnessScreen() {
           <h2 ref={completion} tabIndex={-1} className="font-display text-xl">おつかれさま。自分のペースで戻ろう。</h2>
         )}
       </div>
-      {imageError && <p role="alert" className="text-sm text-accent-strong">マイケルを読み込めませんでした。ページを再読み込みしてください。</p>}
+      {characterError && <p role="alert" className="text-sm text-accent-strong">マイケルを読み込めませんでした。ページを再読み込みしてください。</p>}
       <div className="flex flex-col gap-3">
         {active ? (
           <Button variant="secondary" onClick={() => setPhase("ready")}>途中で終了する</Button>
         ) : (
-          <Button disabled={!imageReady} onClick={start}>{phase === "done" ? "もう一度、1分間" : "1分間、はじめる"}</Button>
+          <Button disabled={!characterReady} onClick={start}>{!characterReady && !characterError ? "準備しています…" : phase === "done" ? "もう一度、1分間" : "1分間、はじめる"}</Button>
         )}
         <Link href="/" className={buttonClass("ghost")}>ホームに戻る</Link>
       </div>

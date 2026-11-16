@@ -11,11 +11,14 @@ export const MINDFULNESS_JUMP_FRAMES: Keyframe[] = [
   { offset: 1, transform: "translateX(-50%) translateY(0) scale(1, 1)" },
 ];
 
+export const MINDFULNESS_CHARACTER_MODEL = "/animations/mindfulness-stage-character.glb";
+export const MINDFULNESS_CHARACTER_POSTER = "/animations/mindfulness-stage-idle.png";
+
 export const MINDFULNESS_FINISHES = [
-  { id: "singing", label: "歌う", src: "/animations/mindfulness-stage-singing.svg", alt: "マイクを口元に上げ、口と頭を動かして歌い始めるキャラクター" },
-  { id: "spin-kick", label: "スピン＋キック", src: "/animations/mindfulness-stage-spin-kick.svg", alt: "その場で回転して片脚を蹴り上げる動きを繰り返すキャラクター" },
-  { id: "robot", label: "ロボットダンス", src: "/animations/mindfulness-stage-robot.svg", alt: "首と肘と膝を曲げ伸ばしし、カクカクとリズムを取るキャラクター" },
-  { id: "moonwalk", label: "ムーンウォーク", src: "/animations/mindfulness-stage-moonwalk.svg", alt: "横を向いたまま交互にかかとを上げ、足を滑らせるムーンウォークのキャラクター" },
+  { id: "singing", label: "歌う", alt: "マイクを口元に上げ、口と頭を動かして歌い始めるキャラクター" },
+  { id: "spin-kick", label: "スピン＋キック", alt: "その場で回転して片脚を蹴り上げる動きを繰り返すキャラクター" },
+  { id: "robot", label: "ロボットダンス", alt: "首と肘と膝を曲げ伸ばしし、カクカクとリズムを取るキャラクター" },
+  { id: "moonwalk", label: "ムーンウォーク", alt: "横を向いたまま交互にかかとを上げ、足を滑らせるムーンウォークのキャラクター" },
 ] as const;
 
 export type MindfulnessFinish = (typeof MINDFULNESS_FINISHES)[number];
