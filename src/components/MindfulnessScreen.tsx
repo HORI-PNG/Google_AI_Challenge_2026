@@ -11,7 +11,6 @@ type Phase = "ready" | "entering" | "watching" | "done";
 
 export function MindfulnessScreen() {
   const [phase, setPhase] = useState<Phase>("ready");
-  const [remaining, setRemaining] = useState(60);
   const [imageReady, setImageReady] = useState(false);
   const [imageError, setImageError] = useState(false);
   const deadline = useRef(0);
@@ -19,7 +18,6 @@ export function MindfulnessScreen() {
   const completion = useRef<HTMLHeadingElement>(null);
 
   function start() {
-    setRemaining(60);
     setPhase("entering");
   }
 
@@ -49,7 +47,6 @@ export function MindfulnessScreen() {
     // 間隔を数える方式にせず、タブを切り替えても経過時間がずれないようにする。
     function tick() {
       const milliseconds = Math.max(0, deadline.current - performance.now());
-      setRemaining(Math.ceil(milliseconds / 1000));
       if (milliseconds === 0) setPhase("done");
     }
     const timer = window.setInterval(tick, 100);
@@ -88,8 +85,9 @@ export function MindfulnessScreen() {
           <div className="mindfulness-stage-smoke mindfulness-stage-smoke-right" aria-hidden="true" />
           <div ref={performer} className="mindfulness-performer" aria-hidden={phase === "ready"}>
             <Image
-              src="/animations/mindfulness-stage-performer.svg"
-              alt="黒と金の舞台衣装とサングラスで、足を開いて腕を下ろし、仁王立ちするキャラクター"
+              key={phase === "done" ? "singing" : "standing"}
+              src={phase === "done" ? "/animations/mindfulness-stage-singing.svg" : "/animations/mindfulness-stage-performer.svg"}
+              alt={phase === "done" ? "マイクを口元に上げ、口と頭を動かして歌い始めるキャラクター" : "黒と金の舞台衣装とサングラスで、足を開いて腕を下ろし、仁王立ちするキャラクター"}
               width={240}
               height={440}
               unoptimized
@@ -104,18 +102,16 @@ export function MindfulnessScreen() {
         {phase === "ready" && <p className="mindfulness-stage-ready">ステージ下から、ジャンプして登場。<br />着地したら、静かな1分が始まります。</p>}
       </div>
 
-      <div className="min-h-24 space-y-2">
+      <div className="space-y-2">
         <p role="status" className="font-bold">{message}</p>
-        {phase === "done" ? (
+        {phase === "done" && (
           <h2 ref={completion} tabIndex={-1} className="font-display text-xl">おつかれさま。自分のペースで戻ろう。</h2>
-        ) : (
-          <p role="timer" aria-label={`残り${remaining}秒`} className="font-num text-3xl tabular-nums">{Math.floor(remaining / 60)}:{String(remaining % 60).padStart(2, "0")}</p>
         )}
       </div>
       {imageError && <p role="alert" className="text-sm text-accent-strong">マイケルを読み込めませんでした。ページを再読み込みしてください。</p>}
       <div className="flex flex-col gap-3">
         {active ? (
-          <Button variant="secondary" onClick={() => { setPhase("ready"); setRemaining(60); }}>途中で終了する</Button>
+          <Button variant="secondary" onClick={() => setPhase("ready")}>途中で終了する</Button>
         ) : (
           <Button disabled={!imageReady} onClick={start}>{phase === "done" ? "もう一度、1分間" : "1分間、はじめる"}</Button>
         )}
