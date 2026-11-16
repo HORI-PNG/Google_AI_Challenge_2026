@@ -5,9 +5,9 @@ import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { Button, buttonClass } from "@/components/ui/Ui";
 
+import { MINDFULNESS_DURATION_MS, MINDFULNESS_ENTRANCE_MS, MINDFULNESS_JUMP_FRAMES } from "@/lib/mindfulness";
+
 type Phase = "ready" | "entering" | "watching" | "done";
-const DURATION_MS = 60_000;
-const ENTRANCE_MS = 800;
 
 export function MindfulnessScreen() {
   const [phase, setPhase] = useState<Phase>("ready");
@@ -15,6 +15,7 @@ export function MindfulnessScreen() {
   const [imageReady, setImageReady] = useState(false);
   const [imageError, setImageError] = useState(false);
   const deadline = useRef(0);
+  const performer = useRef<HTMLDivElement>(null);
   const completion = useRef<HTMLHeadingElement>(null);
 
   function start() {
@@ -23,14 +24,24 @@ export function MindfulnessScreen() {
   }
 
   useEffect(() => {
-    if (phase !== "entering") return;
+    if (phase !== "entering" || !performer.current) return;
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    // 登場の時間を60秒に含めない。CSSと同じ長さで、動きを減らす設定にも対応する。
-    const timer = window.setTimeout(() => {
-      deadline.current = performance.now() + DURATION_MS;
+    let active = true;
+    // 実際の着地アニメーションが完了してから60秒を数える。
+    const animation = performer.current.animate(MINDFULNESS_JUMP_FRAMES, {
+      duration: reduce ? 0 : MINDFULNESS_ENTRANCE_MS,
+      fill: "both",
+      easing: "linear",
+    });
+    animation.finished.then(() => {
+      if (!active) return;
+      deadline.current = performance.now() + MINDFULNESS_DURATION_MS;
       setPhase("watching");
-    }, reduce ? 0 : ENTRANCE_MS);
-    return () => window.clearTimeout(timer);
+    }).catch(() => { /* 中止・画面移動で取り消したアニメーションは完了扱いにしない。 */ });
+    return () => {
+      active = false;
+      animation.cancel();
+    };
   }, [phase]);
 
   useEffect(() => {
@@ -70,21 +81,27 @@ export function MindfulnessScreen() {
         <p className="text-sm leading-7 text-muted">集中したいときも、リフレッシュしたいときも。<br />登場したマイケルを、1分間見つめてみよう。</p>
       </div>
 
-      <div className="mindfulness-stage relative isolate flex h-[350px] items-end justify-center overflow-hidden rounded-[var(--radius)] border border-border bg-[#0c1222]">
-        <div aria-hidden="true" className="absolute inset-0 bg-[radial-gradient(ellipse_at_50%_20%,#39435c_0%,transparent_65%)]" />
-        <div aria-hidden="true" className="absolute inset-x-8 bottom-6 h-4 rounded-[50%] bg-black/40" />
-        <Image
-          src="/animations/mindfulness-pose.svg"
-          alt="白いスーツと帽子で、正面を向いて静止するマイケル"
-          width={260}
-          height={340}
-          unoptimized
-          priority
-          onLoad={() => { setImageReady(true); setImageError(false); }}
-          onError={() => { setImageError(true); setImageReady(false); setPhase("ready"); }}
-          className={`relative mb-7 h-[290px] w-auto ${phase === "ready" ? "invisible" : ""} ${phase === "entering" ? "mindfulness-enter" : ""}`}
-        />
-        {phase === "ready" && <p className="absolute inset-x-6 top-1/2 -translate-y-1/2 text-sm leading-7 text-slate-200">準備ができたら、スタート。<br />下からマイケルが登場します。</p>}
+      <div className="mindfulness-stage" data-phase={phase} aria-label="ステージ下から跳び上がり、着地して静止する演出">
+        <div className="mindfulness-stage-lights" aria-hidden="true" />
+        <div className="mindfulness-stage-air">
+          <div className="mindfulness-stage-smoke mindfulness-stage-smoke-left" aria-hidden="true" />
+          <div className="mindfulness-stage-smoke mindfulness-stage-smoke-right" aria-hidden="true" />
+          <div ref={performer} className="mindfulness-performer" aria-hidden={phase === "ready"}>
+            <Image
+              src="/animations/mindfulness-stage-performer.svg"
+              alt="黒と金の舞台衣装とサングラスで、足を開いて腕を下ろし、仁王立ちするキャラクター"
+              width={240}
+              height={440}
+              unoptimized
+              priority
+              onLoad={() => { setImageReady(true); setImageError(false); }}
+              onError={() => { setImageError(true); setImageReady(false); setPhase("ready"); }}
+              className="mindfulness-performer-image"
+            />
+          </div>
+        </div>
+        <div className="mindfulness-stage-floor" aria-hidden="true"><div className="mindfulness-stage-hatch" /></div>
+        {phase === "ready" && <p className="mindfulness-stage-ready">ステージ下から、ジャンプして登場。<br />着地したら、静かな1分が始まります。</p>}
       </div>
 
       <div className="min-h-24 space-y-2">
