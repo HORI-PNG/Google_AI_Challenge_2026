@@ -7,7 +7,6 @@ import { FeedbackCard } from "@/components/home/FeedbackCard";
 import { CalendarButton } from "@/components/home/CalendarButton";
 import { NearbyPlaces } from "@/components/home/NearbyPlaces";
 import {
-  EntryRow,
   ForecastCard,
   ForecastEvidence,
   ForecastRetry,
@@ -25,7 +24,8 @@ import { mascotMoodFromScores } from "@/lib/mascotMood";
 
 // ホームの3つの系統（Figma Make のデザインの HomeNotebook／HomeGlass／HomeOffice）。
 // どれも同じ HomeViewProps を受け取り、並べ方だけが違う。
-// 段階15：どの系統も「はかどり印」をいちばん強く見せ、ほかの画面への入り口はアイコンの 1 列にまとめた
+// 段階15：どの系統も「はかどり印」をいちばん強く見せる。
+// 段階17：ほかの画面への入り口・日記を書く・ユーザー情報は、全テーマ共通の下のメニュー（BottomNav）に移した
 
 /** 手帳（ことり・よぞら・もりのとしょかん・ソーダ・さくらもち）。カードの枠を減らし、罫線と余白で区切る */
 export function HomeNotebook(props: HomeViewProps) {
@@ -42,18 +42,17 @@ export function HomeNotebook(props: HomeViewProps) {
           </h2>
           <ReflectionContent {...props} />
         </section>
-        <EntryRow className="ruled pt-4" />
       </div>
     </main>
   );
 }
 
-/** クリア（すりガラス）。予報を上に大きく、下にタイル。画面の下のメニューは GlassNav（全画面で共通） */
+/** クリア（すりガラス）。予報を上に大きく、下にタイル。画面の下のメニューは BottomNav（全テーマ・全画面で共通） */
 export function HomeGlass(props: HomeViewProps) {
   const view = forecastView(props.forecast);
   return (
     <main className="min-h-dvh pb-6">
-      <HomeHeader props={props} actions={false} />
+      <HomeHeader props={props} />
       <div className="relative z-10 space-y-4 px-4 pt-5">
         <div className="flex items-center gap-3 px-1">
           <Mascot mood={props.greeting.mood} size={48} />
@@ -104,7 +103,6 @@ export function HomeGlass(props: HomeViewProps) {
         </section>
 
       </div>
-      {/* ほかの画面への入り口・日記を書く・ユーザー情報は、どの画面にも出る下のメニュー（GlassNav）にある */}
     </main>
   );
 }
@@ -201,7 +199,6 @@ export function HomeOffice(props: HomeViewProps) {
           </div>
         )}
 
-        <EntryRow className="mt-6 border-t border-border pt-4" />
       </div>
     </main>
   );

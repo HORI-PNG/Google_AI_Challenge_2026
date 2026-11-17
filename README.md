@@ -37,20 +37,9 @@ npm run deploy:rules  # セキュリティルールを Firebase に反映（初�
 
 ## 瞑想機能だけを確認する
 
-瞑想機能は Fork の `stage-16-mindfulness` ブランチにあります。`main` にはまだ統合していません。Node.js v22 以上と Git をインストールし、次のコマンドで取得・起動してください。
+`npm run dev` で起動し、ブラウザーで [http://localhost:3000/mindfulness](http://localhost:3000/mindfulness) を直接開きます。このページは API キー・`.env.local`・Google ログインなしで確認できます。日記・AI 分析・データ保存などを使う場合は、`.env.example` に沿った環境変数の設定とログインが必要です。
 
-```bash
-git clone --branch stage-16-mindfulness --single-branch https://github.com/fk-tak/Google_AI_Challenge_2026.git
-cd Google_AI_Challenge_2026
-npm ci
-npm run dev -- --webpack
-```
-
-ターミナルを開いたまま、自分の PC のブラウザーで [http://localhost:3000/mindfulness](http://localhost:3000/mindfulness) を直接開いてください。トップ画面 `/` はログイン画面になります。
-
-この瞑想ページは API キー・`.env.local`・Google ログインなしで確認できます。日記・AI 分析・データ保存などを使う場合は、`.env.example` に沿った環境変数の設定とログインが必要です。
-
-確認には、動作確認済みの `--webpack` 付きコマンドを推奨します。通常の `npm run dev`（Turbopack）は検証環境で `next/font` の内部モジュール解決エラーが発生しました。
+Turbopack で `next/font` のエラーが出る環境では、`npm run dev -- --webpack` で起動してください。
 
 ## Firebase
 - Google ログイン（Firebase Authentication）と Cloud Firestore を使います

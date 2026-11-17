@@ -6,14 +6,14 @@ import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useLayoutEffect, useRef, useState, type MouseEvent } from "react";
 import { useAuth } from "@/components/AuthProvider";
 import { AccountDetails } from "@/components/home/HomeParts";
-import { useTheme } from "@/components/ThemeProvider";
 import { Icon, type IconName } from "@/components/ui/Icon";
 import { Mascot } from "@/components/ui/Mascot";
 import type { UserProfile } from "@/lib/userProfile";
 
-// クリアのテーマの、画面の下のメニュー（段階15）。どの画面にも出す。
-// 7 つの項目を横にすべらせて選ぶ（画面に見えるのは 3 つ）。真ん中のガラスの上に来た項目が選ばれている。
-// 押すと、その項目がガラスの上まですべってから開く。指でなぞって動かすこともできる
+// 画面の下のメニュー（段階15 でクリア用に作り、段階17 で全テーマ共通にした）。ログイン後のどの画面にも出す。
+// 7 つの項目を横にすべらせて選ぶ（画面に見えるのは 3 つ）。真ん中の丸の上に来た項目が選ばれている。
+// 押すと、その項目が丸の上まですべってから開く。指でなぞって動かすこともできる。
+// 色はテーマのトークン（globals.css の .bottom-nav／.bottom-nav-lens）で描く
 
 type NavItem = { id: string; label: string; icon: IconName | "mascot"; href: string | null };
 
@@ -49,18 +49,17 @@ function indexFor(pathname: string): number {
   return found >= 0 ? found : ITEMS.findIndex((i) => i.id === "diary");
 }
 
-export function GlassNav() {
-  const { theme } = useTheme();
+export function BottomNav() {
   const { state, profile } = useAuth();
   const pathname = usePathname();
-  if (theme?.layout !== "glass" || state.status !== "signedIn" || profile.status !== "ready" || pathname === "/welcome") {
+  if (state.status !== "signedIn" || profile.status !== "ready" || pathname === "/welcome") {
     return null;
   }
   // 画面が変わったら、その画面の項目を真ん中にして描き直す
-  return <GlassNavBar key={pathname} pathname={pathname} user={state.user} profile={profile.profile} />;
+  return <BottomNavBar key={pathname} pathname={pathname} user={state.user} profile={profile.profile} />;
 }
 
-function GlassNavBar({ pathname, user, profile }: { pathname: string; user: User; profile: UserProfile }) {
+function BottomNavBar({ pathname, user, profile }: { pathname: string; user: User; profile: UserProfile }) {
   const router = useRouter();
   const scroller = useRef<HTMLDivElement>(null);
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -153,8 +152,8 @@ function GlassNavBar({ pathname, user, profile }: { pathname: string; user: User
             onClick={() => setPanelOpen(false)}
           />
           <div
-            id="glass-account-panel"
-            className="account-panel fixed inset-x-4 bottom-[100px] z-40 mx-auto max-w-[416px] rounded-[var(--radius)] border border-border p-4"
+            id="bottom-nav-account-panel"
+            className="account-panel fixed inset-x-4 bottom-[100px] z-40 mx-auto max-w-[416px] rounded-[var(--radius)] border border-border p-4 shadow-[0_18px_55px_color-mix(in_srgb,var(--foreground)_16%,transparent)]"
           >
             <AccountDetails nickname={profile.nickname} name={profile.name} grade={profile.grade} email={user.email} />
           </div>
@@ -163,14 +162,14 @@ function GlassNavBar({ pathname, user, profile }: { pathname: string; user: User
 
       <nav
         aria-label="メニュー"
-        className="material-nav fixed inset-x-4 bottom-3 z-40 mx-auto h-[80px] max-w-[416px] overflow-hidden rounded-[var(--radius)]"
+        className="bottom-nav fixed inset-x-4 bottom-3 z-40 mx-auto h-[80px] max-w-[416px] overflow-hidden rounded-[var(--radius)]"
       >
-        {/* 真ん中のガラス（選ばれている所）。項目はこの上をすべる */}
-        <div aria-hidden="true" className="glass-lens pointer-events-none absolute inset-y-2 left-1/3 w-1/3 rounded-[var(--radius-control)]" />
+        {/* 真ん中の丸（選ばれている所）。項目はこの上をすべる */}
+        <div aria-hidden="true" className="bottom-nav-lens pointer-events-none absolute inset-y-2 left-1/3 w-1/3 rounded-[var(--radius-control)]" />
         <div
           ref={scroller}
           onScroll={onScroll}
-          className="glass-nav-scroller relative z-10 flex h-full snap-x snap-mandatory overflow-x-auto overscroll-x-contain"
+          className="bottom-nav-scroller relative z-10 flex h-full snap-x snap-mandatory overflow-x-auto overscroll-x-contain"
         >
           {SLOTS.map((v) => {
             const item = ITEMS[v % N];
@@ -201,7 +200,7 @@ function GlassNavBar({ pathname, user, profile }: { pathname: string; user: User
                   type="button"
                   onClick={() => choose(v)}
                   aria-expanded={copy ? undefined : panelOpen}
-                  aria-controls={copy ? undefined : "glass-account-panel"}
+                  aria-controls={copy ? undefined : "bottom-nav-account-panel"}
                   className={className}
                   {...hidden}
                 >
