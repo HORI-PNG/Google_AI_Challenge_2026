@@ -1,7 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
 import { Button, SpeechBubble } from "@/components/ui/Ui";
 import { Icon, WeatherIcon, type IconName } from "@/components/ui/Icon";
 import { Mascot } from "@/components/ui/Mascot";
@@ -24,60 +23,16 @@ export const SCORE_LABELS = [
   ["stress", "ストレス"],
 ] as const;
 
-export function HomeHeader({
-  props,
-  compact = false,
-  actions = true,
-}: {
-  props: HomeViewProps;
-  compact?: boolean;
-  /** 「日記を書く」とユーザー情報を出すか（クリアは下のメニュー GlassNav に入っているので出さない） */
-  actions?: boolean;
-}) {
+/** ホームの上の見出し（日付だけ。「日記を書く」とユーザー情報は、下のメニュー BottomNav にある） */
+export function HomeHeader({ props, compact = false }: { props: HomeViewProps; compact?: boolean }) {
   return (
-    <header className="home-header sticky top-0 z-30 flex min-h-[68px] items-center justify-between border-b border-border bg-[color-mix(in_srgb,var(--background)_88%,transparent)] px-4 py-3 backdrop-blur-[var(--card-blur)]">
+    <header className="home-header sticky top-0 z-30 flex min-h-[60px] items-center border-b border-border bg-[color-mix(in_srgb,var(--background)_88%,transparent)] px-4 py-3 backdrop-blur-[var(--card-blur)]">
       <h1 className={`font-display ${compact ? "text-base" : "text-xl"}`}>{props.dateLabel}</h1>
-      {actions && <div className="flex items-center gap-2">
-        <Link
-          href="/diary/new"
-          className="header-diary-button inline-flex min-h-11 items-center gap-1.5 rounded-[var(--radius-control)] bg-accent px-4 text-sm font-bold text-accent-foreground shadow-[var(--button-shadow)] transition active:scale-[.98]"
-        >
-          <Icon name="edit" size={17} />
-          日記を書く
-        </Link>
-        <AccountMenu props={props} />
-      </div>}
     </header>
   );
 }
 
-function AccountMenu({ props }: { props: HomeViewProps }) {
-  const [open, setOpen] = useState(false);
-  return (
-    <div className="relative">
-      <button
-        type="button"
-        onClick={() => setOpen((v) => !v)}
-        className="account-trigger grid size-11 place-items-center rounded-full border-2 border-card bg-soft-accent text-accent-strong shadow-[0_0_0_1px_var(--border)] transition active:scale-95"
-        aria-label="ログイン中のユーザー情報"
-        aria-expanded={open}
-        aria-controls="account-panel"
-      >
-        <Icon name="user" size={22} />
-      </button>
-      {open && (
-        <div
-          id="account-panel"
-          className="account-panel absolute right-0 top-[calc(100%+12px)] z-40 w-[min(310px,calc(100vw-32px))] rounded-[var(--radius)] border border-border p-4 shadow-[0_18px_55px_color-mix(in_srgb,var(--foreground)_16%,transparent)]"
-        >
-          <AccountDetails nickname={props.nickname} name={props.name} grade={props.grade} email={props.email} />
-        </div>
-      )}
-    </div>
-  );
-}
-
-/** ユーザー情報のパネルの中身（ヘッダーのメニューと、クリアの下のメニューで共有する） */
+/** ユーザー情報のパネルの中身（下のメニュー BottomNav の「ユーザー」で出す） */
 export function AccountDetails({
   nickname,
   name,
@@ -428,32 +383,4 @@ export function ReflectionContent({
 
 export function latestTitle(latest: LatestDiaryState) {
   return latest.status === "loaded" ? "最新の日記" : "日記";
-}
-
-const ENTRIES: { href: string; label: string; icon: IconName | "mascot" }[] = [
-  { href: "/mood", label: "グラフ", icon: "chart" },
-  { href: "/ask", label: "聞く", icon: "mascot" },
-  { href: "/review", label: "復習", icon: "review" },
-  { href: "/map", label: "場所", icon: "map" },
-  { href: "/mindfulness", label: "瞑想", icon: "mascot" },
-];
-
-/** ほかの画面への入り口（グラフ・ハカドリに聞く・復習・場所・瞑想）を、アイコンの 1 列にまとめる */
-export function EntryRow({ className = "" }: { className?: string }) {
-  return (
-    <nav aria-label="ほかの画面" className={`grid grid-cols-5 gap-1 ${className}`}>
-      {ENTRIES.map((e) => (
-        <Link
-          key={e.href}
-          href={e.href}
-          className="flex min-h-[72px] flex-col items-center justify-center gap-1.5 rounded-[var(--radius-control)] text-xs font-bold transition active:scale-[.97]"
-        >
-          <span className="grid size-10 place-items-center rounded-full bg-soft-accent text-accent-strong" aria-hidden="true">
-            {e.icon === "mascot" ? <Mascot mood="normal" size={34} /> : <Icon name={e.icon} size={21} />}
-          </span>
-          {e.label}
-        </Link>
-      ))}
-    </nav>
-  );
 }

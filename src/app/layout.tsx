@@ -1,7 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Klee_One, M_PLUS_Rounded_1c, Noto_Sans_JP, Roboto_Mono, Zen_Maru_Gothic } from "next/font/google";
 import { AuthProvider } from "@/components/AuthProvider";
-import { GlassNav } from "@/components/GlassNav";
+import { BottomNav } from "@/components/BottomNav";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import { THEME_IDS, THEME_STORAGE_KEY } from "@/lib/themes";
 import "./globals.css";
@@ -78,8 +78,8 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
           <ThemeProvider>
             <div className="app-shell mx-auto flex min-h-dvh w-full max-w-[448px] flex-col overflow-x-hidden text-foreground">
               {children}
-              {/* クリアのテーマだけ、どの画面にも下のメニューを出す */}
-              <GlassNav />
+              {/* ログイン後のどの画面にも、下のメニューを出す（全テーマ共通） */}
+              <BottomNav />
             </div>
           </ThemeProvider>
         </AuthProvider>
