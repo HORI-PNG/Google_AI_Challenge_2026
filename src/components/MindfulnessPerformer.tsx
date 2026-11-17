@@ -10,6 +10,7 @@ import {
 } from "@/lib/mindfulness";
 
 type RenderMode = "loading" | "model" | "fallback" | "error";
+type RenderErrorStage = "modules" | "renderer" | "environment" | "asset-url" | "fetch" | "parse" | "clips" | "scene" | "context-lost";
 type Controller = { play: (finish: MindfulnessFinishId | null) => void };
 
 type Props = {
@@ -30,6 +31,7 @@ export function MindfulnessPerformer({ finish = null, replayKey, className = "",
   const posterFailed = useRef(false);
   const mode = useRef<RenderMode>("loading");
   const [renderMode, setRenderMode] = useState<RenderMode>("loading");
+  const [rendererError, setRendererError] = useState<RenderErrorStage | null>(null);
 
   useEffect(() => {
     callbacks.current = { onReady, onError };
@@ -47,16 +49,19 @@ export function MindfulnessPerformer({ finish = null, replayKey, className = "",
     let active = true;
     const abort = new AbortController();
     let release = () => {};
+    let stage: RenderErrorStage = "modules";
 
     function changeMode(next: RenderMode) {
       mode.current = next;
       setRenderMode(next);
     }
 
-    function fallback() {
+    function fallback(reason: RenderErrorStage) {
       release();
       controller.current = null;
       if (!active) return;
+      // URLや例外本文を残さず、静止画へ切り替わった段階だけ診断可能にする。
+      setRendererError(reason);
       if (posterFailed.current) {
         changeMode("error");
         callbacks.current.onError?.();
@@ -76,6 +81,7 @@ export function MindfulnessPerformer({ finish = null, replayKey, className = "",
         ]);
         if (!active) return;
 
+        stage = "renderer";
         const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true, powerPreference: "high-performance" });
         renderer.setClearColor(0x000000, 0);
         renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.75));
@@ -87,6 +93,7 @@ export function MindfulnessPerformer({ finish = null, replayKey, className = "",
         renderer.domElement.setAttribute("aria-hidden", "true");
         container.appendChild(renderer.domElement);
 
+        stage = "scene";
         const scene = new THREE.Scene();
         const camera = new THREE.PerspectiveCamera(28, 1, 0.05, 30);
         const group = new THREE.Group();
@@ -235,7 +242,7 @@ export function MindfulnessPerformer({ finish = null, replayKey, className = "",
         }
         function onContextLost(event: Event) {
           event.preventDefault();
-          fallback();
+          fallback("context-lost");
         }
 
         release = () => {
@@ -261,6 +268,7 @@ export function MindfulnessPerformer({ finish = null, replayKey, className = "",
         renderer.domElement.addEventListener("webglcontextlost", onContextLost);
         document.addEventListener("visibilitychange", onVisibility);
         motion.addEventListener("change", onMotionChange);
+        stage = "environment";
         const room = new RoomEnvironment();
         const pmrem = new THREE.PMREMGenerator(renderer);
         try {
@@ -271,22 +279,30 @@ export function MindfulnessPerformer({ finish = null, replayKey, className = "",
           pmrem.dispose();
         }
 
-        const response = await fetch(MINDFULNESS_CHARACTER_MODEL, { signal: abort.signal });
+        stage = "asset-url";
+        // srcdocでも埋め込み元の基準URLから同じ素材を取得する。
+        const modelUrl = new URL(MINDFULNESS_CHARACTER_MODEL, document.baseURI);
+        const modelDirectory = new URL(".", modelUrl).href;
+        stage = "fetch";
+        const response = await fetch(modelUrl, { signal: abort.signal });
         if (!response.ok) throw new Error("キャラクターを読み込めませんでした");
         const bytes = await response.arrayBuffer();
         if (!active || released) return;
+        stage = "parse";
         const loader = new GLTFLoader();
         loader.setMeshoptDecoder(MeshoptDecoder);
-        const gltf = await loader.parseAsync(bytes, new URL("/animations/", window.location.href).href);
+        const gltf = await loader.parseAsync(bytes, modelDirectory);
         if (!active || released) {
           disposeModel(gltf.scene);
           return;
         }
+        stage = "clips";
         const clips = new Map(gltf.animations.map((clip) => [clip.name, clip]));
         if (MINDFULNESS_FINISHES.some((finish) => !clips.has(finish.id))) {
           disposeModel(gltf.scene);
           throw new Error("キャラクターの動きを読み込めませんでした");
         }
+        stage = "scene";
         model = gltf.scene;
         const bounds = new THREE.Box3().setFromObject(model);
         const size = bounds.getSize(new THREE.Vector3());
@@ -313,10 +329,11 @@ export function MindfulnessPerformer({ finish = null, replayKey, className = "",
         resize();
         controller.current = { play: applyFinish };
         applyFinish(currentFinish.current);
+        setRendererError(null);
         changeMode("model");
         callbacks.current.onReady?.();
       } catch {
-        if (active && !abort.signal.aborted) fallback();
+        if (active && !abort.signal.aborted) fallback(stage);
       }
     }
 
@@ -334,7 +351,7 @@ export function MindfulnessPerformer({ finish = null, replayKey, className = "",
     : MINDFULNESS_FINISHES.find((move) => move.id === finish)?.alt ?? "黒と金の舞台衣装とサングラスで仁王立ちするキャラクター";
 
   return (
-    <div className={`mindfulness-model ${className}`} role="img" aria-label={label} data-renderer={renderMode}>
+    <div className={`mindfulness-model ${className}`} role="img" aria-label={label} data-renderer={renderMode} data-renderer-error={rendererError ?? undefined}>
       <div ref={host} className="mindfulness-model-canvas" aria-hidden="true" />
       {/* eslint-disable-next-line @next/next/no-img-element -- 描画失敗時に同じ静止画を直接表示するためのフォールバック。 */}
       <img
