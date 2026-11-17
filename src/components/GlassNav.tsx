@@ -12,7 +12,7 @@ import { Mascot } from "@/components/ui/Mascot";
 import type { UserProfile } from "@/lib/userProfile";
 
 // クリアのテーマの、画面の下のメニュー（段階15）。どの画面にも出す。
-// 6 つの項目を横にすべらせて選ぶ（画面に見えるのは 3 つ）。真ん中のガラスの上に来た項目が選ばれている。
+// 7 つの項目を横にすべらせて選ぶ（画面に見えるのは 3 つ）。真ん中のガラスの上に来た項目が選ばれている。
 // 押すと、その項目がガラスの上まですべってから開く。指でなぞって動かすこともできる
 
 type NavItem = { id: string; label: string; icon: IconName | "mascot"; href: string | null };
@@ -23,6 +23,7 @@ const ITEMS: NavItem[] = [
   { id: "diary", label: "日記を書く", icon: "edit", href: "/diary/new" },
   { id: "review", label: "復習", icon: "review", href: "/review" },
   { id: "map", label: "場所", icon: "map", href: "/map" },
+  { id: "mindfulness", label: "瞑想", icon: "mascot", href: "/mindfulness" },
   // ユーザー情報（とテーマ）のパネルを開く
   { id: "user", label: "ユーザー", icon: "user", href: null },
 ];

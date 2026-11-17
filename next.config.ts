@@ -19,14 +19,6 @@ const nextConfig: NextConfig = {
     "/api/ask": ["./src/prompts/**/*.md"],
     "/api/quiz": ["./src/prompts/**/*.md"],
   },
-  turbopack: {
-    rules: {
-      "*.css": {
-        loaders: ["@tailwindcss/turbopack"],
-        as: "*.css",
-      },
-    },
-  },
 };
 
 export default nextConfig;
