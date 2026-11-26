@@ -50,6 +50,8 @@ npm run deploy:rules  # セキュリティルールを Firebase に反映（初�
 
 ## 瞑想機能だけを確認する
 
+瞑想機能は、キャラクターを作り直すまで「準備中」の表示にしています（段階20）。前の画面は `src/components/MindfulnessScreen.tsx` に残してあり、`src/app/mindfulness/page.tsx` から呼べば戻せます。
+
 `npm run dev` で起動し、ブラウザーで [http://localhost:3000/mindfulness](http://localhost:3000/mindfulness) を直接開きます。このページは API キー・`.env.local`・Google ログインなしで確認できます。日記・AI 分析・データ保存などを使う場合は、`.env.example` に沿った環境変数の設定とログインが必要です。
 
 Turbopack で `next/font` のエラーが出る環境では、`npm run dev -- --webpack` で起動してください。
