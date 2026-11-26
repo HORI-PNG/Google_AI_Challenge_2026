@@ -23,7 +23,7 @@ const ITEMS: NavItem[] = [
   { id: "diary", label: "日記を書く", icon: "edit", href: "/diary/new" },
   { id: "review", label: "復習", icon: "review", href: "/review" },
   { id: "map", label: "場所", icon: "map", href: "/map" },
-  { id: "mindfulness", label: "瞑想", icon: "mascot", href: "/mindfulness" },
+  { id: "mindfulness", label: "瞑想", icon: "meditation", href: "/mindfulness" },
   // ユーザー情報（とテーマ）のパネルを開く
   { id: "user", label: "ユーザー", icon: "user", href: null },
 ];
