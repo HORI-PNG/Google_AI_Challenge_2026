@@ -11,6 +11,19 @@ Google AI Challenge（Google Japan 25周年）② Work & Learning 部門への�
 - Gemini API（Places API は任意。初期は Google マップへのリンクだけ）
 - 公開先：Vercel（Vercel プロジェクト `renote`。`main` に merge すると自動で公開し直される）
 
+## 使った AI ツール
+アプリの中で動く AI は、すべて Google の Gemini です。開発の作業には、Google 以外の AI ツールも補助として使いました。
+
+| 用途 | ツール |
+|---|---|
+| **アプリの中の AI**（感情の点数化、はかどり予報、過ごし方の提案、キャラクターの返事、音声の文字起こし、「聞く」、復習クイズ） | **Gemini API** |
+| プロンプトの試作・調整（`src/prompts/` と同じ内容） | **Google AI Studio** |
+| UIテーマのデザイン（`design/`） | Figma Make |
+| コードを書く作業（開発の補助） | Claude Code（主な実装）、Google Antigravity（キャラクターのアニメーションの最初の案）、Codex（瞑想機能の一部） |
+
+- AI エージェントへの指示は、どのツールでも同じものを読むように `AGENTS.md` と `.agents/rules/` にまとめています（`CLAUDE.md` は `AGENTS.md` を読み込む 1 行だけ）
+- Gemini がつながらないときも、別の Gemini モデルに切り替えるだけで、他社の AI には切り替えません（`src/lib/server/gemini.ts`）
+
 ## 公開（Vercel）
 - 環境変数は Vercel のプロジェクト設定に入れる（`.env.example` と同じ項目。`GEMINI_API_KEY` は sensitive）
 - Firebase Authentication の「承認済みドメイン」に、公開した URL を足す（Google ログインに必要）
